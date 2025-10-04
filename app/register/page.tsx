@@ -1,5 +1,6 @@
 "use client"
 
+import { BorderColor } from '@mui/icons-material';
 import { Container, TextField, Button, Link, Typography, Box, Snackbar, Alert, IconButton, InputAdornment } from '@mui/material';
 import Grid from '@mui/material/Grid'; // https://mui.com/material-ui/migration/upgrade-to-grid-v2/
 
@@ -38,7 +39,20 @@ const RegisterPage = () => {
                                 Register
                             </Typography>
 
-
+                            <TextField
+                                id="name"
+                                label="Name"
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                InputLabelProps={{ style: {color: 'white'}, }}
+                                InputProps={{
+                                    style: {color: "white", 
+                                    borderColor: "blue"}
+                                }}
+                            />
                         </Box>
 
                     </Grid>
