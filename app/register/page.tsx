@@ -48,8 +48,14 @@ const RegisterPage = () => {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 sx={{
-                                    input: {color: 'white'},
+                                    '& .MuiInputLabel-root': {
+                                        color: 'white',
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: 'white',
+                                    },
                                     '& .MuiOutlinedInput-root': {
+                                        color: 'white',
                                         '& fieldset': {
                                             borderColor: 'blue',
                                         },
@@ -62,6 +68,64 @@ const RegisterPage = () => {
                                     },
                                 }}
                             />
+                            <TextField
+                                id="phone"
+                                label="Phone"
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                sx={{
+                                    '& .MuiInputLabel-root': {
+                                        color: 'white',
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: 'white',
+                                    },
+                                    '& .MuiOutlinedInput-root': {
+                                        color: 'white',
+                                        '& fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                    },
+                                }}
+                            />
+                            <TextField
+                                id="email"
+                                label="Email"
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                sx={{
+                                    '& .MuiInputLabel-root': {
+                                        color: 'white',
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: 'white',
+                                    },
+                                    '& .MuiOutlinedInput-root': {
+                                        color: 'white',
+                                        '& fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                    },
+                                }}
+                            />                            
                         </Box>
 
                     </Grid>
