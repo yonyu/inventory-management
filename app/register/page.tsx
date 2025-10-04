@@ -3,6 +3,8 @@
 import { BorderColor } from '@mui/icons-material';
 import { Container, TextField, Button, Link, Typography, Box, Snackbar, Alert, IconButton, InputAdornment } from '@mui/material';
 import Grid from '@mui/material/Grid'; // https://mui.com/material-ui/migration/upgrade-to-grid-v2/
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 import {useState} from 'react';
 
@@ -125,7 +127,51 @@ const RegisterPage = () => {
                                         },
                                     },
                                 }}
-                            />                            
+                            />
+                            <TextField
+                                id="password"
+                                label="Password"
+                                type={showPassword ? 'text' : 'password'}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                sx={{
+                                    '& .MuiInputLabel-root': {
+                                        color: 'white',
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: 'white',
+                                    },
+                                    '& .MuiOutlinedInput-root': {
+                                        color: 'white',
+                                        '& fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                    },
+
+                                }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                sx={{color: "white"}}
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />                               
                         </Box>
 
                     </Grid>
