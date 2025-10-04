@@ -171,7 +171,36 @@ const RegisterPage = () => {
                                         </InputAdornment>
                                     ),
                                 }}
-                            />                               
+                            />
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                sx={{
+                                    mt: 2,
+                                    width: '100%',
+                                    backgroundColor: 'blue',
+                                    '&:hover': {
+                                        backgroundColor: 'darkblue',
+                                    },
+                                }}
+                                >
+                                Submit
+                            </Button>
+                            <Link
+                                href="/login"
+                                variant="body2"
+                                sx={{
+                                    mt: 2,
+                                    color: 'white',
+                                    '&:hover': {
+                                        color: '#fff',
+                                    },
+                                }}
+                            >
+                                <Typography variant="body2" sx={{mt: 2}}>
+                                    Already have an account? Login
+                                </Typography>
+                            </Link>                         
                         </Box>
 
                     </Grid>
