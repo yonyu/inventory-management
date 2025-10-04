@@ -47,10 +47,19 @@ const RegisterPage = () => {
                                 fullWidth
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                InputLabelProps={{ style: {color: 'white'}, }}
-                                InputProps={{
-                                    style: {color: "white", 
-                                    borderColor: "blue"}
+                                sx={{
+                                    input: {color: 'white'},
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                    },
                                 }}
                             />
                         </Box>
