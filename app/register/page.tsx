@@ -156,21 +156,22 @@ const RegisterPage = () => {
                                             borderColor: 'blue',
                                         },
                                     },
-
                                 }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                sx={{color: "white"}}
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                edge="end"
-                                            >
-                                                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    sx={{color: "white"}}
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    },
+                                }}                                    
                             />
                             <Button
                                 type="submit"
@@ -178,9 +179,9 @@ const RegisterPage = () => {
                                 sx={{
                                     mt: 2,
                                     width: '100%',
-                                    backgroundColor: 'blue',
+                                    backgroundColor: 'darkblue',
                                     '&:hover': {
-                                        backgroundColor: 'darkblue',
+                                        backgroundColor: 'blue',
                                     },
                                 }}
                                 >
