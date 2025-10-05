@@ -48,19 +48,27 @@ const RegisterPage = () => {
                                 fullWidth
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                slotProps={{
-                                    inputLabel: {
-                                        style: {
-                                            color: 'white',
-                                        },
+                                sx={{
+                                    '& .MuiInputLabel-root': {
+                                        color: 'white',
                                     },
-                                    input: {
-                                        style: {
-                                            color: 'white',
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: 'white',
+                                    },
+                                    '& .MuiOutlinedInput-root': {
+                                        color: 'white',
+                                        '& fieldset': {
                                             borderColor: 'blue',
                                         },
+                                        '&:hover fieldset': {
+                                            borderColor: 'blue',
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#1976d2',
+                                            borderWidth: '2px',
+                                        },
                                     },
-                                }}  
+                                }}
                             />
 
                             <TextField
@@ -87,7 +95,8 @@ const RegisterPage = () => {
                                             borderColor: 'blue',
                                         },
                                         '&.Mui-focused fieldset': {
-                                            borderColor: 'blue',
+                                            borderColor: '#1976d2',
+                                            borderWidth: '2px',
                                         },
                                     },
                                 }}
@@ -117,7 +126,8 @@ const RegisterPage = () => {
                                             borderColor: 'blue',
                                         },
                                         '&.Mui-focused fieldset': {
-                                            borderColor: 'blue',
+                                            borderColor: '#1976d2',
+                                            borderWidth: '2px',
                                         },
                                     },
                                 }}
@@ -149,7 +159,8 @@ const RegisterPage = () => {
                                             borderColor: 'blue',
                                         },
                                         '&.Mui-focused fieldset': {
-                                            borderColor: 'blue',
+                                            borderColor: '#1976d2',
+                                            borderWidth: '2px',
                                         },
                                     },
                                 }}
