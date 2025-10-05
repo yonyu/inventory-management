@@ -1,6 +1,5 @@
 "use client"
 
-import { BorderColor } from '@mui/icons-material';
 import { Container, TextField, Button, Link, Typography, Box, Snackbar, Alert, IconButton, InputAdornment } from '@mui/material';
 import Grid from '@mui/material/Grid'; // https://mui.com/material-ui/migration/upgrade-to-grid-v2/
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -23,7 +22,7 @@ const RegisterPage = () => {
 
     return (
         <>
-            <Container maxWidth="xl">
+            <Container maxWidth={false}>
                 <Grid container spacing={2} alignItems="center" justifyContent="center"
                     sx={{minHeight:"100vh"}}
                 >
@@ -49,27 +48,21 @@ const RegisterPage = () => {
                                 fullWidth
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                sx={{
-                                    '& .MuiInputLabel-root': {
-                                        color: 'white',
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: 'white',
-                                    },
-                                    '& .MuiOutlinedInput-root': {
-                                        color: 'white',
-                                        '& fieldset': {
-                                            borderColor: 'blue',
+                                slotProps={{
+                                    inputLabel: {
+                                        style: {
+                                            color: 'white',
                                         },
-                                        '&:hover fieldset': {
-                                            borderColor: 'blue',
-                                        },
-                                        '&.Mui-focused fieldset': {
+                                    },
+                                    input: {
+                                        style: {
+                                            color: 'white',
                                             borderColor: 'blue',
                                         },
                                     },
-                                }}
+                                }}  
                             />
+
                             <TextField
                                 id="phone"
                                 label="Phone"
@@ -99,6 +92,7 @@ const RegisterPage = () => {
                                     },
                                 }}
                             />
+
                             <TextField
                                 id="email"
                                 label="Email"
@@ -128,6 +122,7 @@ const RegisterPage = () => {
                                     },
                                 }}
                             />
+
                             <TextField
                                 id="password"
                                 label="Password"
@@ -138,6 +133,7 @@ const RegisterPage = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 sx={{
+                                    input: {color: 'white', background: 'black'},
                                     '& .MuiInputLabel-root': {
                                         color: 'white',
                                     },
@@ -158,11 +154,20 @@ const RegisterPage = () => {
                                     },
                                 }}
                                 slotProps={{
+                                    inputLabel: {
+                                        style: {
+                                            color: 'white',
+                                        },
+                                    },
                                     input: {
+                                        style: {
+                                            color: 'white',
+                                            borderColor: 'blue'
+                                        },
                                         endAdornment: (
                                             <InputAdornment position="end">
                                                 <IconButton
-                                                    sx={{color: "white"}}
+                                                    sx={{color: 'white'}}
                                                     onClick={() => setShowPassword(!showPassword)}
                                                     edge="end"
                                                 >
@@ -170,23 +175,25 @@ const RegisterPage = () => {
                                                 </IconButton>
                                             </InputAdornment>
                                         ),
-                                    },
+                                    },         
                                 }}                                    
                             />
+
                             <Button
                                 type="submit"
                                 variant="contained"
                                 sx={{
-                                    mt: 2,
-                                    width: '100%',
                                     backgroundColor: 'darkblue',
                                     '&:hover': {
                                         backgroundColor: 'blue',
                                     },
+                                    mt: 2,
+                                    width: '100%'
                                 }}
-                                >
+                            >
                                 Submit
                             </Button>
+
                             <Link
                                 href="/login"
                                 variant="body2"
@@ -205,6 +212,37 @@ const RegisterPage = () => {
                         </Box>
 
                     </Grid>
+
+                    <Grid
+                        size={{ xs: 12, md: 6}}
+
+                    >
+                        <Box
+                            sx={{
+                                width: '100%',
+                                height: '100vh',
+                                display: { xs: 'none', md: 'block' },
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Box
+                                component="img"
+                                src="images/pos.png"
+                                alt="register image"
+                                sx={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    display: { xs: 'none', md: 'block' },
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+
+                            />
+                        </Box>
+                    </Grid>
+
 
                 </Grid>
             </Container>
