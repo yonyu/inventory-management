@@ -20,6 +20,27 @@ const RegisterPage = () => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
+
+    const handleRegister = async(e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!name || !phone || !email || !password) {
+            setSnackbarMessage('Please fill in all fields.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+        }
+        //console.log({name, phone, email, password});
+    }
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prevShowPassword) => !prevShowPassword);
+    };
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    }
+
+    
     return (
         <>
             <Container maxWidth={false}>
@@ -35,6 +56,7 @@ const RegisterPage = () => {
                             sx={{
                                 p: 3
                             }}
+                            onSubmit={handleRegister}
                         >
                             <Typography variant="h4" gutterBottom>
                                 Register
@@ -179,10 +201,10 @@ const RegisterPage = () => {
                                             <InputAdornment position="end">
                                                 <IconButton
                                                     sx={{color: 'white'}}
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    edge="end"
+                                                    onClick={ togglePasswordVisibility }
+
                                                 >
-                                                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
                                                 </IconButton>
                                             </InputAdornment>
                                         ),
@@ -256,6 +278,23 @@ const RegisterPage = () => {
 
 
                 </Grid>
+
+
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                >
+
+                    <Alert 
+                        onClose={handleCloseSnackbar}
+                        severity={snackbarSeverity}
+                        sx={{ width: '100%' }}>
+                        { snackbarMessage }
+                    </Alert>
+                </Snackbar>
+
+
             </Container>
         </>
     )
