@@ -6,7 +6,7 @@ import User from "@/models/user";
 
 
 export async function POST(req: Request) {
-    //await dbConnect();
+    await dbConnect();
     
     const body = await req.json();
     const { name, email, phone, password } = body;
