@@ -71,6 +71,22 @@ const RegisterPage = () => {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 sx={{
+                                    input: {
+                                        color: 'white',
+                                        backgroundColor: 'black',
+                                        '&:-webkit-autofill': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                        '&:-webkit-autofill:hover': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                        '&:-webkit-autofill:focus': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                    },
                                     '& .MuiInputLabel-root': {
                                         color: 'white',
                                     },
@@ -102,6 +118,22 @@ const RegisterPage = () => {
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 sx={{
+                                    input: {
+                                        color: 'white',
+                                        backgroundColor: 'black',
+                                        '&:-webkit-autofill': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                        '&:-webkit-autofill:hover': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                        '&:-webkit-autofill:focus': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                    },
                                     '& .MuiInputLabel-root': {
                                         color: 'white',
                                     },
@@ -133,6 +165,22 @@ const RegisterPage = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 sx={{
+                                    input: {
+                                        color: 'white',
+                                        backgroundColor: 'black',
+                                        '&:-webkit-autofill': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                        '&:-webkit-autofill:hover': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                        '&:-webkit-autofill:focus': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                    },
                                     '& .MuiInputLabel-root': {
                                         color: 'white',
                                     },
@@ -165,7 +213,22 @@ const RegisterPage = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 sx={{
-                                    input: {color: 'white', background: 'black'},
+                                    input: {
+                                        color: 'white',
+                                        backgroundColor: 'black',
+                                        '&:-webkit-autofill': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                        '&:-webkit-autofill:hover': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                        '&:-webkit-autofill:focus': {
+                                            WebkitBoxShadow: '0 0 0 1000px black inset',
+                                            WebkitTextFillColor: 'white',
+                                        },
+                                    },
                                     '& .MuiInputLabel-root': {
                                         color: 'white',
                                     },
