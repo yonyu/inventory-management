@@ -3,9 +3,10 @@ import User from "@/models/user";
 import bcrypt from "bcrypt";
 import dbConnect from "@/utils/dbConnect";
 
+
 export const authOptions = {
     session: {
-        strategy: "jwt",
+        strategy: "jwt" as const,
     },
     providers: [
         CredentialsProvider({
@@ -42,4 +43,27 @@ export const authOptions = {
             },
         }),
     ],
+    callbacks: {
+        async jwt({ token }: { token: any }) {
+            const userByEmail = await User.findOne({email: token.email});
+            userByEmail.password = undefined;
+            token.user = userByEmail;
+
+            // if (user) {
+            //     token.sub = user._id.toString();
+            // }
+            return token;
+        },
+        session: async ({ session, token }: { session: any, token: any }) => {
+
+            session.user = token.user;
+
+            return session;
+        },
+    },
+    secret: process.env.NEXTAUTH_SECRET,
+    pages: {
+        signIn: "/login",
+    }, 
+    
 };
