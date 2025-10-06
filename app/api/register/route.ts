@@ -21,11 +21,36 @@ export async function POST(req: Request) {
 
         console.log("User created successfully", user);
 
-        return NextResponse.json({ msg: "User created successfully" }, { status: 201 });
+        return NextResponse.json({ msg: "User created successfully" }, { 
+            status: 201,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            }
+        });
 
     } catch(error) {
         console.log(error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        return NextResponse.json({ err: errorMessage }, { status: 500 });
+        return NextResponse.json({ err: errorMessage }, { 
+            status: 500,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            }
+        });
     }
+}
+
+export async function OPTIONS() {
+    return new Response(null, {
+        status: 200,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        },
+    });
 }

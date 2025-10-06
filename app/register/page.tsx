@@ -30,6 +30,32 @@ const RegisterPage = () => {
             return;
         }
         //console.log({name, phone, email, password});
+
+        try {
+
+            const response = await fetch(`${process.env.API}/register`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({name, phone, email, password})
+            });
+
+            if (response.ok) {
+                setSnackbarMessage("Registration successful");
+                setSnackbarSeverity("success");
+            
+            } else {
+                const data = await response.json();
+                setSnackbarMessage(data.err || "Registration failed");
+                setSnackbarSeverity("error");
+            }
+
+
+        } catch(err) {
+            setSnackbarMessage("An error occurred please try again!");
+            setSnackbarSeverity("error");
+        }
     }
 
     const togglePasswordVisibility = () => {
