@@ -5,11 +5,15 @@ import { Button, TextField, Link, Typography, Box, Snackbar, Alert, IconButton, 
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {useState} from 'react';
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 
 
 const LoginPage = () => {
 
+    const { data } = useSession();
+    
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -52,6 +56,9 @@ const LoginPage = () => {
                     message: 'Login successful',
                     severity: 'success'
                 });
+                if (data) {
+                    router.push(`/dashboard/${data?.user?.role}`)
+                }
             }
 
         } catch (error) {
@@ -64,6 +71,13 @@ const LoginPage = () => {
         }
     }
 
+    const handleCloseSnackbar = () => {
+        setSnackbar({
+            ...snackbar,
+            open: false,
+        });
+    }
+
     const togglePasswordVisibility = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
     };
@@ -72,9 +86,9 @@ const LoginPage = () => {
         <Box
             sx={{
                 backgroundImage: 'url(/images/pos.png)',
-                backgroundSize: 'auto',
-                backgroundPosition: 'top left',
-                backgroundRepeat: 'repeat',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
                 height: '100vh',
                 width: '100vw',
                 display: 'flex',
@@ -259,6 +273,21 @@ const LoginPage = () => {
                 </Link>  
                  
             </Box>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                //onClose={() => setSnackbar({ ...snackbar, open: false })}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    security={snackbar.severity}
+                    sx={{ width: '100%' }}
+                >
+                    { snackbar.message }
+                </Alert>
+            </Snackbar>
         </Box>
     )
 }
