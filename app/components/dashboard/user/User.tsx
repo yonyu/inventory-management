@@ -130,7 +130,6 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
 
   return (
     <Box sx={{ display: 'flex', }}>
-      <CssBaseline />
 
       <AppBar position="fixed" open={open}
         sx={{
@@ -165,6 +164,12 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
         slotProps={{
           paper: { className: 'hidden-scrollbar' }
         }}
+        sx={{
+          '& .MuiDrawer-paper': {
+            backgroundColor: '#000',
+            color: '#fff'
+          }
+        }}
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
@@ -192,14 +197,14 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
                 <ChevronLeftIcon 
                   sx={{ color: 'white' }}
                 />
-              </>            
+              </>
             )}
           </IconButton>
         </DrawerHeader>
 
         <Divider
           sx={{
-            color: 'white',
+            borderColor: 'white',
             backgroundColor: '2px solid white',
           }}
         />
@@ -229,6 +234,7 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
                     {
                       minWidth: 0,
                       justifyContent: 'center',
+                      color: 'white',
                     },
                     open
                       ? {
@@ -262,7 +268,7 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
 
         <Divider 
           sx={{
-            color: 'white',
+            borderColor: 'white',
             backgroundColor: '2px solid white',
           }}
         />
