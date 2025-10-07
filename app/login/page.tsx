@@ -277,7 +277,6 @@ const LoginPage = () => {
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={6000}
-                //onClose={() => setSnackbar({ ...snackbar, open: false })}
                 onClose={handleCloseSnackbar}
             >
                 <Alert
