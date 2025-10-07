@@ -43,12 +43,17 @@ const RegisterPage = () => {
                 body: JSON.stringify({name, phone, email, password})
             });
 
+            const data = await response.json();
+            //console.log(data);
+
             if (response.ok) {
-                setSnackbarMessage("Registration successful");
+                setSnackbarMessage(data?.msg || "Registration successful");
+
+                
                 setSnackbarSeverity("success");
             
             } else {
-                const data = await response.json();
+                //const data = await response.json();
                 setSnackbarMessage(data.err || "Registration failed");
                 setSnackbarSeverity("error");
             }
@@ -58,6 +63,8 @@ const RegisterPage = () => {
             setSnackbarMessage("An error occurred please try again!");
             setSnackbarSeverity("error");
         }
+
+        setOpenSnackbar(true);
     }
 
     const togglePasswordVisibility = () => {
