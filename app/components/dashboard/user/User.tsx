@@ -23,7 +23,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import Collapse from "@mui/material/Collapse";
 import ExpandLessIcon from  '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-//import SnapPOS from "@/components/nav/SnapPOS";
+import SnapPOS from "../../../components/nav/SnapPOS";
 
 //import TopNav from "@/components/nav/TopNav";
 const drawerWidth = 380;
@@ -191,8 +191,8 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
 
                 }}>
 
-                  { /* <SnapPOS */}
-                  snap
+                  <SnapPOS />
+
                 </Typography>
                 <ChevronLeftIcon 
                   sx={{ color: 'white' }}

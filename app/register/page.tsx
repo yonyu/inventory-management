@@ -7,6 +7,8 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 import {useState} from 'react';
 
+import SnapPOS from '../components/nav/SnapPOS';
+
 
 const RegisterPage = () => {
     const [name, setName] = useState('');
@@ -84,6 +86,10 @@ const RegisterPage = () => {
                             }}
                             onSubmit={handleRegister}
                         >
+                            <Typography variant="h4" gutterBottom>
+                                <SnapPOS />
+                            </Typography>
+
                             <Typography variant="h4" gutterBottom>
                                 Register
                             </Typography>

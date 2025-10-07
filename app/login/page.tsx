@@ -7,6 +7,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {useState} from 'react';
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
+import SnapPOS from "../components/nav/SnapPOS";
 
 
 const LoginPage = () => {
@@ -118,6 +119,10 @@ const LoginPage = () => {
                 
                 onSubmit={handleSubmit}
             >
+                <Typography variant="h4" gutterBottom>
+                    <SnapPOS />
+                </Typography>
+
                 <Typography variant="h4" gutterBottom>
                     Login
                 </Typography>
