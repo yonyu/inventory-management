@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 
-import { Box, Button, Grid, Typography, Card, CardActionArea, CardContent } from "@mui/material"; //OK-s
+import { Box, Button, Grid, Typography, Card, CardActionArea, CardContent } from "@mui/material";
 import { styled } from "@mui/system";
 import { Dashboard, Inventory, Add, ListAlt, Assessment, People, Settings, ShoppingCart, BarChart } from "@mui/icons-material";
 
@@ -20,7 +20,7 @@ const pages = [
     { name : '45', icon: <People />, path: '/customers' },
     { name : '35', icon: <Settings />, path: '/settings' },
     { name : '65', icon: <BarChart />, path: '/analytics' },
-];//OK-e
+];
 
 // Background and styling
 const BackgroundBox = styled(Box) ({
@@ -57,14 +57,12 @@ const Home = () => {
     return (
         <BackgroundBox>
 
-
-
             <Overlay />
             <ContentBox>
                 { /* Hero Section */}
                 <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
                     <Box sx={{ textAlign: 'center', mb: 5 }}>
-                        { /* Heading */}
+                        { /* Heading */}                    
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -75,13 +73,14 @@ const Home = () => {
                                 sx={{
                                     fontWeight: 'bold',
                                     mb: 2,
-                                    background: 'linear-gradient(90deg, #ff8a00, #e5)',
+                                    background: 'linear-gradient(90deg, #ff8a00, #ffeb3b)',
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
+                                    //color: 'white',
                                     animation: 'gradient 5s ease infinite',
                                 }}
                             >
-                                text 1
+                                Welcome to the Product Inventory System
                             </Typography>
 
 
@@ -97,12 +96,7 @@ const Home = () => {
                                         transition={{ delay: 0.2, duration: 0.5 }}
                                     >
                                         <Typography>
-
-
-
-
-
-                                            Manage your products, inventory, and orders efficiently
+                                            Manage your products, inventory, and orders efficiently with our intuitive dashboard.
                                         </Typography>
                                     </motion.div>
 
@@ -111,67 +105,68 @@ const Home = () => {
                             </motion.div>
 
 
-                            {/* 114 */}
-                            {/*Rreponsive Navigation Cards */ }
-                            <Grid container spacing={4} justifyContent='center'>
-                                {pages && pages.map((page, index) => (
-                                    <Grid key={index} sx={{ xs:12, sm:6, md:4, }}>
-                                        <motion.div
-                                            initial={{ scale: 0.9, opacity: 0, }}
-                                            animate={{ scale: 1, opacity: 1, }}
-                                            transition={{ delay: index * 0.2, duration: 0.5 }}
-                                        >
-
-
-
-
-
-
-                                            <Card
-                                                sx={{
-                                                    minHeight: 180,
-                                                    boxShadow: 5,
-                                                    borderRadius: 2,
-                                                    backgroundColor: '#000',
-                                                    color: '#fff',
-                                                    transition: 'transform 0.3s background-color',
-                                                    '&:hover': {
-                                                        transform: 'scale(1.05)',
-                                                        backgroundColor: 'blue',
-                                                        color: '#fff',
-                                                    },
-                                                }}
-                                            >
-                                                <CardActionArea
-
-
-                                                >
-                                                    <CardContent sx={{ textAlign: 'center', padding: 2 }}>
-                                                                        <Box sx={{ fontSize: 58, mb: 1, color: 'green'}}>
-                                                            {page.icon}
-                                                        </Box>
-                                                        <Typography variant="h5" component='div' sx={{ mb: 1 }} gutterBottom>
-                                                            {page.name}
-                                                        </Typography>
-                                                        <Typography variant="body2" sx={{ mb: 1, color: 'inherit' }}>
-                                                            {`Go to ${page.path} section`}
-                                                        </Typography>
-                                                    </CardContent>
-                                                </CardActionArea>
-                                            </Card>
-                                        </motion.div>  {/* 160 */}
-                                    </Grid>
-                                ))}
-                            </Grid>
-
+ 
                         </motion.div>
-
                     </Box>
-
                 </motion.div>
 
 
-                <Typography variant="h2" gutterBottom>
+
+
+                {/*Rreponsive Navigation Cards */ }
+                <Grid container spacing={4} justifyContent='center'>
+                    {pages && pages.map((page, index) => (
+                        <Grid key={index} sx={{ 
+                            xs:12, 
+                            sm:6, 
+                            md:4, }}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0, }}
+                                animate={{ scale: 1, opacity: 1, }}
+                                transition={{ delay: index * 0.2, duration: 0.5 }}
+                            >
+                                <Card
+                                    sx={{
+                                        minHeight: 180,
+                                        boxShadow: 5,
+                                        borderRadius: 2,
+                                        backgroundColor: '#000',
+                                        color: '#fff',
+                                        transition: 'transform 0.3s background-color',
+                                        '&:hover': {
+                                            transform: 'scale(1.05)',
+                                            backgroundColor: 'blue',
+                                            color: '#fff',
+                                        },
+                                    }}
+                                >
+                                    <CardActionArea
+
+
+
+
+                                    >
+                                        <CardContent sx={{ textAlign: 'center', padding: 2 }}>
+                                            <Box sx={{ fontSize: 58, mb: 1, color: 'green'}}>{page.icon}</Box>
+                                            <Typography variant="h5" component='div' sx={{ mb: 1 }} gutterBottom>
+                                                {page.name}
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ mb: 1, color: 'inherit' }}>
+                                                {`Go to ${page.path} section`}
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </motion.div>
+                        </Grid>
+                    ))}
+                </Grid>
+
+
+
+
+                {/* <Typography variant="h2" gutterBottom>
                     Welcome to the Dashboard
                 </Typography>
                 <Typography variant="h4" gutterBottom>
@@ -184,20 +179,10 @@ const Home = () => {
                 </Typography>
                 <Button variant="contained" color="primary" onClick={() => router.push('/dashboard')}>
                     Get Started
-                </Button>
+                </Button> */}
             </ContentBox>
         </BackgroundBox>
     );
 }
 
-
-const Analytics = () => {
-    return (
-        <>
-            <h1>Analytics</h1>
-        </>
-    )
-}
-
-
-export default Analytics;
+export default Home;

@@ -1,4 +1,4 @@
-"use client" //OK-s
+"use client"
 
 import * as React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
@@ -45,11 +45,9 @@ const closedMixin = (theme: Theme): CSSObject => ({
   overflowX: 'hidden',
   width: `calc(${theme.spacing(7)} + 1px)`,
   [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
+    width: `calc(${theme.spacing(15)} + 10px)`,
   },
 });
-
-
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex', 
@@ -58,7 +56,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-}));//OK-e: 61
+}));
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -67,7 +65,7 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme }) => ({
-  zIndex: theme.zIndex.drawer + 1,
+  zIndex: theme.zIndex.drawer + 100,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -87,8 +85,9 @@ const AppBar = styled(MuiAppBar, {
   ],
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme }) => ({
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== 'open',
+ })(({ theme }) => ({
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: 'nowrap',
@@ -117,7 +116,7 @@ import { useRouter } from "next/navigation";
 
 export default function SideNav({ children }: {children: React.ReactNode}) {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   const router = useRouter();
 
@@ -130,7 +129,7 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', }}>
       <CssBaseline />
 
       <AppBar position="fixed" open={open}
@@ -154,75 +153,56 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
           >
             <MenuIcon />
           </IconButton>
+
           { /* TopNav */ }
-          <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
-          </Typography>
+
+            Top
+
         </Toolbar>
       </AppBar>
 
       <Drawer variant="permanent" open={open}
-      
-      
+        slotProps={{
+          paper: { className: 'hidden-scrollbar' }
+        }}
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            {theme.direction === 'rtl' ? (
+              <>
+                <ChevronRightIcon
+                  sx={{ color: 'white' }}
+                />
+              </>
+            ) : (
+              <>
+                <Typography sx={{ 
+                  variant:'body3',
+                  color: 'red',
+                  fontFamily: "'Pacifico',cursive",
+                  fontSize: '1.5rem',
+                  textAlign: 'center',
+                  marginRight: '70px',
+
+                }}>
+
+                  { /* <SnapPOS */}
+                  snap
+                </Typography>
+                <ChevronLeftIcon 
+                  sx={{ color: 'white' }}
+                />
+              </>            
+            )}
           </IconButton>
         </DrawerHeader>
-        <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={[
-                  {
-                    minHeight: 48,
-                    px: 2.5,
-                  },
-                  open
-                    ? {
-                        justifyContent: 'initial',
-                      }
-                    : {
-                        justifyContent: 'center',
-                      },
-                ]}
-              >
-                <ListItemIcon
-                  sx={[
-                    {
-                      minWidth: 0,
-                      justifyContent: 'center',
-                    },
-                    open
-                      ? {
-                          mr: 3,
-                        }
-                      : {
-                          mr: 'auto',
-                        },
-                  ]}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
-                        },
-                  ]}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
+
+        <Divider
+          sx={{
+            color: 'white',
+            backgroundColor: '2px solid white',
+          }}
+        />
 
         { /* start dashboard */ }
         <List>
@@ -280,28 +260,22 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
 
         </List>
 
-          <Divider 
-            sx={{
-              color: 'white',
-              backgroundColor: '2px solid white',
-            }}
-          />
+        <Divider 
+          sx={{
+            color: 'white',
+            backgroundColor: '2px solid white',
+          }}
+        />
 
-          { /* end dashboard */}
+        { /* end dashboard */}
         
       </Drawer>
+
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Typography sx={{ marginBottom: 2 }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit
-        </Typography>
-        <Typography sx={{ marginBottom: 2 }}>
-          Consequat mauris nunc congue nisi vitae suscipit.
-        </Typography>
+
+        {children}
       </Box>
     </Box>
   );
 }
-
-
-// 262

@@ -1,14 +1,12 @@
-// pages/index.js
 import React from 'react';
-import Transaction from './Transaction';
+import Transactions from './Transaction';
 import Analytics from './Analytics';
 import { Container, Typography } from "@mui/material";
 //import Ai from '@/components/ai/Ai';
 
-
 const HomePage = () => {
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth='xl'>
         <Typography variant='h4'
 
             style={{
@@ -30,13 +28,11 @@ const HomePage = () => {
 
         <Analytics />
 
-        <Typography variant='h5' sx={{ p: "8px" }}> Recent Transactions</Typography>
+        <Typography variant='h5' sx={{ p: '8px' }}> Recent Transactions</Typography>
 
-        <Transaction />
+        <Transactions />
     </Container>
   );
-};
-
-
+}
 
 export default HomePage;
