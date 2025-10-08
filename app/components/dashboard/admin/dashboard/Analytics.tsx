@@ -133,7 +133,7 @@ const Home = () => {
                                         borderRadius: 2,
                                         backgroundColor: '#000',
                                         color: '#fff',
-                                        transition: 'transform 0.3s background-color',
+                                        transition: 'transform 0.3s, background-color 0.3s',
                                         '&:hover': {
                                             transform: 'scale(1.05)',
                                             backgroundColor: 'blue',
@@ -164,22 +164,6 @@ const Home = () => {
                 </Grid>
 
 
-
-
-                {/* <Typography variant="h2" gutterBottom>
-                    Welcome to the Dashboard
-                </Typography>
-                <Typography variant="h4" gutterBottom>
-                    Manage your business efficiently
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                    euismod, nisl vitae ultricies lacinia, nisl nisl aliquam
-                    nisl, vitae aliquam nisl nisl sit amet nisl.
-                </Typography>
-                <Button variant="contained" color="primary" onClick={() => router.push('/dashboard')}>
-                    Get Started
-                </Button> */}
             </ContentBox>
         </BackgroundBox>
     );
