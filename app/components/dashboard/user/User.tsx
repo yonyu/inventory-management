@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import * as React from 'react';
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon'; //OK-e
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import * as React from "react";
+import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import MuiDrawer from "@mui/material/Drawer";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import CssBaseline from "@mui/material/CssBaseline";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
 import Collapse from "@mui/material/Collapse";
-import ExpandLessIcon from  '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SnapPOS from "../../../components/nav/SnapPOS";
 
 //import TopNav from "@/components/nav/TopNav";
@@ -30,29 +30,29 @@ const drawerWidth = 380;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
-  transition: theme.transitions.create('width', {
+  transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
-  overflowX: 'hidden',
+  overflowX: "hidden",
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
+  transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  overflowX: 'hidden',
+  overflowX: "hidden",
   width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up("sm")]: {
     width: `calc(${theme.spacing(15)} + 10px)`,
   },
 });
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex', 
-  alignItems: 'center',
-  justifyContent: 'flex-end',
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
@@ -63,10 +63,10 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 100,
-  transition: theme.transitions.create(['width', 'margin'], {
+  transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
@@ -76,7 +76,7 @@ const AppBar = styled(MuiAppBar, {
       style: {
         marginLeft: drawerWidth,
         width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
+        transition: theme.transitions.create(["width", "margin"], {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.enteringScreen,
         }),
@@ -86,37 +86,36 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== 'open',
- })(({ theme }) => ({
-    width: drawerWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    variants: [
-      {
-        props: ({ open }) => open,
-        style: {
-          ...openedMixin(theme),
-          '& .MuiDrawer-paper': openedMixin(theme),
-        },
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
+  variants: [
+    {
+      props: ({ open }) => open,
+      style: {
+        ...openedMixin(theme),
+        "& .MuiDrawer-paper": openedMixin(theme),
       },
-      {
-        props: ({ open }) => !open,
-        style: {
-          ...closedMixin(theme),
-          '& .MuiDrawer-paper': closedMixin(theme),
-        },
+    },
+    {
+      props: ({ open }) => !open,
+      style: {
+        ...closedMixin(theme),
+        "& .MuiDrawer-paper": closedMixin(theme),
       },
-    ],
-  }),
-);
-
+    },
+  ],
+}));
 
 import { useRouter } from "next/navigation";
 
-export default function SideNav({ children }: {children: React.ReactNode}) {
+export default function SideNav({ children }: { children: React.ReactNode }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
+  const [isCollapse, setIsCollapse] = React.useState(true);
 
   const router = useRouter();
 
@@ -128,12 +127,22 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
     setOpen(false);
   };
 
-  return (
-    <Box sx={{ display: 'flex', }}>
+  const handleCollapse = () => {
+    setIsCollapse(!isCollapse);
+  };
 
-      <AppBar position="fixed" open={open}
+  const handleNavigation = (path: String)=> {
+    router.push(`/dashboard/user/${path}`);
+  }
+
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <AppBar
+        position="fixed"
+        open={open}
         sx={{
-            backgroundColor: '#1a1a1a',
+          backgroundColor: "#1a1a1a",
         }}
         elevation={0}
       >
@@ -147,56 +156,50 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
               {
                 marginRight: 5,
               },
-              open && { display: 'none' },
+              open && { display: "none" },
             ]}
           >
             <MenuIcon />
           </IconButton>
-
-          { /* TopNav */ }
-
-            Top
-
+          {/* TopNav */}
+          Top
         </Toolbar>
       </AppBar>
 
-      <Drawer variant="permanent" open={open}
+      <Drawer
+        variant="permanent"
+        open={open}
         slotProps={{
-          paper: { className: 'hidden-scrollbar' }
+          paper: { className: "hidden-scrollbar" },
         }}
         sx={{
-          '& .MuiDrawer-paper': {
-            backgroundColor: '#000',
-            color: '#fff'
-          }
+          "& .MuiDrawer-paper": {
+            backgroundColor: "#000",
+            color: "#fff",
+          },
         }}
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? (
+            {theme.direction === "rtl" ? (
               <>
-                <ChevronRightIcon
-                  sx={{ color: 'white' }}
-                />
+                <ChevronRightIcon sx={{ color: "white" }} />
               </>
             ) : (
               <>
-                <Typography sx={{ 
-                  variant:'body3',
-                  color: 'red',
-                  fontFamily: "'Pacifico',cursive",
-                  fontSize: '1.5rem',
-                  textAlign: 'center',
-                  marginRight: '70px',
-
-                }}>
-
+                <Typography
+                  sx={{
+                    variant: "body3",
+                    color: "red",
+                    fontFamily: "'Pacifico',cursive",
+                    fontSize: "1.5rem",
+                    textAlign: "center",
+                    marginRight: "70px",
+                  }}
+                >
                   <SnapPOS />
-
                 </Typography>
-                <ChevronLeftIcon 
-                  sx={{ color: 'white' }}
-                />
+                <ChevronLeftIcon sx={{ color: "white" }} />
               </>
             )}
           </IconButton>
@@ -204,15 +207,15 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
 
         <Divider
           sx={{
-            borderColor: 'white',
-            backgroundColor: '2px solid white',
+            borderColor: "white",
+            backgroundColor: "2px solid white",
           }}
         />
 
-        { /* start dashboard */ }
+        {/* start dashboard */}
         <List>
-          {['dashboard'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+          {["dashboard"].map((text, index) => (
+            <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 onClick={() => router.push(`/dashboard/user`)}
                 sx={[
@@ -222,10 +225,10 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
                   },
                   open
                     ? {
-                        justifyContent: 'initial',
+                        justifyContent: "initial",
                       }
                     : {
-                        justifyContent: 'center',
+                        justifyContent: "center",
                       },
                 ]}
               >
@@ -233,15 +236,15 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
                   sx={[
                     {
                       minWidth: 0,
-                      justifyContent: 'center',
-                      color: 'white',
+                      justifyContent: "center",
+                      color: "white",
                     },
                     open
                       ? {
                           mr: 3,
                         }
                       : {
-                          mr: 'auto',
+                          mr: "auto",
                         },
                   ]}
                 >
@@ -262,19 +265,80 @@ export default function SideNav({ children }: {children: React.ReactNode}) {
               </ListItemButton>
             </ListItem>
           ))}
-
-
         </List>
 
-        <Divider 
+        <Divider
           sx={{
-            borderColor: 'white',
-            backgroundColor: '2px solid white',
+            borderColor: "white",
+            backgroundColor: "2px solid white",
           }}
         />
+        {/* end dashboard */}
 
-        { /* end dashboard */}
-        
+        {/* start category */}
+        <List>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleCollapse}
+          >
+
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon sx={{ color: "white" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Manage Category"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+              {isCollapse ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={isCollapse} timeout="auto" unmountOnExit>
+            {["all-category"].map((text, index) => (
+                <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+
+                    onClick={ ()=> handleNavigation(text) }
+                    sx={{ 
+                      minHeight: 48,
+                      px: 2.5,
+                      justifyContent: open ? "initial" : "center",
+                      marginLeft: "40px",
+                      color: "white",
+                      borderBottom: "2px solid white", // 290
+                    }}
+                  >
+                    <ListItemText
+                      primary={text.replace(/-/g, " ")}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </Collapse>
+        </List>
+        <Divider
+          sx={{
+            borderColor: "white",
+            backgroundColor: "2px solid white",
+          }}
+        />
+        {/* end category */}
+
       </Drawer>
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
