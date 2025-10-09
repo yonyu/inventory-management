@@ -2,7 +2,7 @@ import React from 'react';
 import Transactions from './Transaction';
 import Analytics from './Analytics';
 import { Container, Typography } from "@mui/material";
-//import Ai from '@/components/ai/Ai';
+import Ai from '../../../../components/ai/Ai';
 
 const HomePage = () => {
   return (
@@ -23,8 +23,7 @@ const HomePage = () => {
 
         >DashboardCard</Typography>
 
-        { /* <Ai /> */}
-        Ai
+        <Ai />
 
         <Analytics />
 
