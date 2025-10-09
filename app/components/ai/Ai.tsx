@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Markdown from 'react-markdown';
 
 import { Button, Box, Modal, TextField, CircularProgress, Typography } from '@mui/material';
 import { border, borderColor } from '@mui/system';
@@ -31,9 +32,19 @@ export default function Page() {
     const [query, setQuery] = useState('');
     const [open, setOpen] = useState(false);
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+    const handleOpen = () => setOpen(true);
+
+    const handleClose = () => setOpen(false);
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(reponse)
+        .then(() => {
+            alert('Response copied to clipboard')
+        })
+        .catch((err) => {
+            console.log('Could not copy text ', err);
+        });
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -44,6 +55,7 @@ export default function Page() {
             const data = await runAi(query);
             //console.log('ai content', response);
             setResponse(data || '');
+            handleOpen();
 
         } catch(err) {
             console.log(err);
@@ -141,11 +153,18 @@ export default function Page() {
                     <Typography id='modal-title' variant='h6' component='h2'>
                         AI Response
                     </Typography>
-                    <Box id='modal-description' sx={{  mt: 2 }}>
-                        loading response
-                        <CircularProgress />
+                    <Box id='modal-description' sx={{ mt: 2 }}>
+                        {
+                            loading ? (
+                                <CircularProgress />
+                            ) : (
+                                <Markdown>{reponse}</Markdown>
+                            )
+                        }
+
                     </Box>
                     <Button
+                        onClick={copyToClipboard}
                         color='primary'
                         sx={{
                             mt: 2,
@@ -157,12 +176,18 @@ export default function Page() {
                             },
                         }}
                     >
-
+                        Copy to Clipboard
+                    </Button>
+                    <Button
+                        onClick={handleClose}
+                        variant='contained'
+                        color='secondary'
+                        sx={{ mt: 2}}
+                    >
+                        Close
                     </Button>
                 </Box>
             </Modal>
         </div>
     );
 }
-
-// 116
