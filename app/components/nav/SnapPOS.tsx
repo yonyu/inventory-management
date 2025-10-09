@@ -120,21 +120,21 @@ const styles = [
     },
 ];
 
-const StyledTypography = styled(Typography)``;
+const StyledSpan = styled('span')``;
 
 const SnapPOS = () => {
     const logoText = 'StockSmart';
     return (
-    <Box display='flex'>
+    <Box component="span" display='flex'>
 
         {
             logoText.split('').map((char, index) => (
-                <StyledTypography 
+                <StyledSpan 
                     key={index} 
                     sx={styles[index]}
                 >
                     {char}
-                </StyledTypography>
+                </StyledSpan>
             ))
         }
     </Box>

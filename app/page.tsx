@@ -286,37 +286,36 @@ const Home = () => {
               </Box>
             </motion.div>
           </Stack>
-          <Typography color="primary" sx={{ mt: 2, fontWeight: "bold" }}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Box
+              sx={{
+                display: "inline-block",
+                padding: "0.5rem 1.5rem",
+                borderRadius: "25px",
+                background: "linear-gradient(135deg, #ff8a00, #e52e71)",
+                color: "#fff",
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                textAlign: "center",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+                transition: "transform 0.3s ease, transform 0.2s ease",
+                mt: 2,
+                "&:hover": {
+                  background: "linear-gradient(135deg, #66bb6a, #388e3c)",
+                  transform: "scale(1.05)",
+                  boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.25)",
+                },
+              }}
             >
-              <Box
-                sx={{
-                  display: "inline-block",
-                  padding: "0.5rem 1.5rem",
-                  borderRadius: "25px",
-                  background: "linear-gradient(135deg, #ff8a00, #e52e71)",
-                  color: "#fff",
-                  fontSize: "1.2rem",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
-                  transition: "transform 0.3s ease, transform 0.2s ease",
-                  "&:hover": {
-                    background: "linear-gradient(135deg, #66bb6a, #388e3c)",
-                    transform: "scale(1.05)",
-                    boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.25)",
-                  },
-                }}
-              >
-                <Typography variant="body1">
-                  {isAnnual ? "$990 / year" : "$10 / month"}
-                </Typography>
-              </Box>
-            </motion.div>
-          </Typography>
+              <Typography variant="body1">
+                {isAnnual ? "$990 / year" : "$10 / month"}
+              </Typography>
+            </Box>
+          </motion.div>
         </Box>
 
         {/*Reponsive Navigation Cards */}
