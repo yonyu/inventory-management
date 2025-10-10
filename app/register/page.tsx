@@ -7,7 +7,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 import {useState} from 'react';
 
-import SnapPOS from '../components/nav/SnapPOS';
+import SnapPOS from '@/components/nav/SnapPOS';
 
 
 const RegisterPage = () => {

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import SnapPOS from "./components/nav/SnapPOS";
+import SnapPOS from "@/components/nav/SnapPOS";
 
 import {
   Box,
@@ -367,7 +367,7 @@ const Home = () => {
                           {page.name}
                         </Typography>
                         <Typography variant="body2" sx={{ color: "inherit" }}>
-                          {`Go to ${page.path} section`}
+                          {`Go to ${(page as any).path} section`}
                         </Typography>
                       </CardContent>
                     </CardActionArea>

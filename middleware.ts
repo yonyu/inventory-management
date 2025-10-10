@@ -26,7 +26,7 @@ export default withAuth(
     async function middleware(req) {
         const url = req.nextUrl.clone();
         const pathname = req.nextUrl.pathname;
-        const role = req.nextauth.token?.user?.role; 
+        const role = (req.nextauth.token?.user as any)?.role; 
 
         // Check if the user is authenticated
         if (!req.nextauth.token) {
