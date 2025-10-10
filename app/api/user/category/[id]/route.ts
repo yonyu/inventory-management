@@ -6,16 +6,17 @@ import Category from "@/models/category";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await dbConnect();
 
+  const { id } = await params;
   const body = await req.json();
 
   try {
     const { _id, ...updateBody } = body;
     const updatingCategory = await Category.findByIdAndUpdate(
-      params.id,
+      id,
       updateBody,
       { new: true }
     );
@@ -29,12 +30,14 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await dbConnect();
 
+  const { id } = await params;
+
   try {
-    const deletingCategory = await Category.findByIdAndDelete(params.id);
+    const deletingCategory = await Category.findByIdAndDelete(id);
 
     return NextResponse.json({ deletingCategory }, { status: 200 });
   } catch (error: any) {
