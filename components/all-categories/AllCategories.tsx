@@ -8,8 +8,8 @@ import {
     TextField,
     Typography,
     IconButton,
-    //Table,
-    //TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper,
+
+
     Modal,
     Snackbar,
 
@@ -28,8 +28,8 @@ import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import Paper from '@mui/material/Paper';
 
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+
+
 
 import Grid from '@mui/material/Grid';
 
@@ -43,25 +43,12 @@ import Grid from '@mui/material/Grid';
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-import { Edit, Delete, Add } from "@mui/icons-material"; // 46
+import { Edit, Delete, Add } from "@mui/icons-material";
 
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 
-import CircularProgress from "@mui/material/CircularProgress"; // 51
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { useAddCategoryMutation, useGetCategoriesQuery, useDeleteCategoryMutation, useUpdateCategoryMutation } from "@/lib/features/categories/categoriesApiSlice";
 
@@ -80,8 +67,7 @@ const CategoryTable = () => { // 56
 
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    //const { data, isError, isLoading, isSuccess } = useGetCategoriesQuery(numberOfCategories);
-    const [openAddModal, setOpenAddModal] = React.useState(false); // 64
+    const [openAddModal, setOpenAddModal] = React.useState(false);
     const [newCategoryName, setNewCategoryName] = useState("");
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -106,6 +92,7 @@ const CategoryTable = () => { // 56
         setEditCategoryName(category.name);
     };
 
+
     const handleEditCategory= () => {
         // Not working: update relies on id is specified
         // const updatedCategory= { ...selectedCategory, name: editCategoryName };
@@ -118,9 +105,19 @@ const CategoryTable = () => { // 56
             .catch((error: any)=>{
                 setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
             });
+
     }
 
-    const handleChangePage = (event: unknown, newPage: number) => { // 68
+
+
+
+    const [addCategory] = useAddCategoryMutation();
+    const [deleteCategory] = useDeleteCategoryMutation();
+    const [updateCategory] = useUpdateCategoryMutation();
+
+
+
+    const handleChangePage = (event: unknown, newPage: number) => { // 120
         setPage(newPage);
     };
 
@@ -128,21 +125,18 @@ const CategoryTable = () => { // 56
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    }; // 76
+    };
 
 
-    const handleCloseAddModal = () => { // 79
+    const handleCloseAddModal = () => {
         setOpenAddModal(false);
     };
 
-    const handleOpenAddModal=()=>{ // 83
+    const handleOpenAddModal=()=>{
+
         setOpenAddModal(true);
     };
 
-
-    const [addCategory] = useAddCategoryMutation();
-    const [deleteCategory] = useDeleteCategoryMutation();
-    const [updateCategory] = useUpdateCategoryMutation();
 
     const handleAddCategory= ()=> {
         const newCategory = { name: newCategoryName };
@@ -150,9 +144,12 @@ const CategoryTable = () => { // 56
         addCategory(newCategory).unwrap()
             .then(()=>{
                 setSnackbar({ open: true, message: "Category added successfully", severity: "success", });
+
                 handleCloseAddModal();
+
             })
             .catch((error: any)=>{
+
                 setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
 
                 console.error("Error adding category:", error);
@@ -161,7 +158,6 @@ const CategoryTable = () => { // 56
 
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
-
 
     const handleDeleteCategory= () => {
         deleteCategory(selectedCategory?._id).unwrap()
@@ -173,6 +169,8 @@ const CategoryTable = () => { // 56
             .catch((error: any)=>{
                 setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
             });
+
+
     }
 
 
@@ -181,7 +179,6 @@ const CategoryTable = () => { // 56
         setOpenDeleteModal(true);
 
     }
-
 
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
@@ -198,10 +195,10 @@ const CategoryTable = () => { // 56
         setFilter(e.target.value);
     }
 
-    return ( // 123, 94
-        <Box sx={{ p: 2 }}>
+    return (
+        <Box sx={{ p: 2, }} >
             <Typography variant="h4" sx={{ mb: 2 }}
-                style={{ // 93
+                style={{
                     fontSize: "3rem",
                     color: "0073e6", // a nice blue color
                     marginBottom: "20px", // 1rem = 16px
@@ -216,7 +213,7 @@ const CategoryTable = () => { // 56
             >
                 Categories
             </Typography>
-            <Grid container spacing={2} sx={{ mb: 2 }}> {/* 141, 108 */}
+            <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                         fullWidth
@@ -243,13 +240,13 @@ const CategoryTable = () => { // 56
                         }}
                     />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 4 }}>     {/* 134  item xs={12} sm={4}> */}
+                <Grid size={{ xs: 12, sm: 4 }}>     {/* item xs={12} sm={4}> */}
                     <Button
                         fullWidth
                         variant="contained"
                         startIcon={ <Add />}
                         onClick={handleOpenAddModal}
-                        sx={{ // 137
+                        sx={{
                             backgroundColor: "blue",
                             "&:hover": {
                                 backgroundColor: "blue",
@@ -309,7 +306,7 @@ const CategoryTable = () => { // 56
                                         </IconButton>
                                         <IconButton
 
-                                            // onClick={() => handleDeleteCategory(category._id)}
+
                                             sx={{ color: "red" }}
                                         >
                                             <Delete
@@ -329,7 +326,7 @@ const CategoryTable = () => { // 56
                         )}
                     </TableBody>
                 </Table>
-            </TableContainer> { /* 273, 223 */}
+            </TableContainer>
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
@@ -341,7 +338,7 @@ const CategoryTable = () => { // 56
                 sx={{ backgroundColor: "white"}}
             />
 
-            {/* start add category modal 291 */}
+            {/* start add category modal */}
             <Modal
                 open={openAddModal}
                 onClose={handleCloseAddModal}
@@ -349,7 +346,7 @@ const CategoryTable = () => { // 56
                 aria-describedby="add-category-modal-description"
                 sx={modalBackdropStyle}
             >
-                <Box sx={modalStyle}>{/* 248 */}
+                <Box sx={modalStyle}>
                     <Typography id="add-categor-modal" variant="h6" component="h2">
                         Add Category
                     </Typography>
@@ -380,7 +377,7 @@ const CategoryTable = () => { // 56
                         }}
 
                     />
-                    <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}> {/* 283  ???? */}
+                    <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
                             onClick={handleCloseAddModal}
 
@@ -389,7 +386,7 @@ const CategoryTable = () => { // 56
                             variant="contained"
                             color="primary"
                             onClick={handleAddCategory}
-                            sx={{ // 285
+                            sx={{
                                 backgroundColor: "blue",
                                 "&:hover": {
                                     backgroundColor: "blue",
@@ -402,10 +399,10 @@ const CategoryTable = () => { // 56
                 </Box>
             </Modal>
 
-            {/* end add category modal  377 */}
+            {/* end add category modal */}
 
 
-            {/* start edit category modal 384 */}
+            {/* start edit category modal */}
             <Modal
                 open={openEditModal}
                 onClose={handleCloseEditModal}
@@ -442,7 +439,7 @@ const CategoryTable = () => { // 56
                             },
                         }}
 
-                    /> {/* 420 */}
+                    />
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
                             onClick={handleCloseEditModal}
@@ -463,14 +460,14 @@ const CategoryTable = () => { // 56
                     </Box>
                 </Box>
             </Modal>
-            {/* end edit category modal  441 */}
+            {/* end edit category modal */}
 
 
 
 
 
 
-            {/* start delete category modal 448 */}
+            {/* start delete category modal */}
             <Modal
                 open={openDeleteModal}
                 onClose={handleCloseDeleteModal}
@@ -490,7 +487,7 @@ const CategoryTable = () => { // 56
 
                         { JSON.stringify(selectedCategory) }
 
-                    </Typography>{/* 467 */}
+                    </Typography>
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
 
@@ -513,11 +510,11 @@ const CategoryTable = () => { // 56
                 </Box>
             </Modal>
 
-            {/* end delete category modal  490 */}
+            {/* end delete category modal */}
 
 
 
-            {/* snackbar  494*/}
+            {/* snackbar */}
             <Snackbar
                 open={snackbar.open}
                 onClose={handleCloseSnackbar}
@@ -537,7 +534,7 @@ const CategoryTable = () => { // 56
 
         </Box>
     );
-} // end CategoryTable()  // 514, 463, 432
+} // end CategoryTable()
 
 
 
@@ -558,4 +555,4 @@ const modalBackdropStyle = {
     backdropFilter: "blur(5px)",
 };
 
-export default CategoryTable; // 484
+export default CategoryTable;
