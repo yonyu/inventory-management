@@ -8,8 +8,8 @@ import {
     TextField,
     Typography,
     IconButton,
-    Table,
-    TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper,
+    //Table,
+    //TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper,
     Modal,
     Snackbar,
 
@@ -19,11 +19,19 @@ import {
     Alert,
 
 } from "@mui/material";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TablePagination from '@mui/material/TablePagination';
+import Paper from '@mui/material/Paper';
+
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import Grid from '@mui/material/Grid';
-
 
 
 
@@ -50,28 +58,38 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 import CircularProgress from "@mui/material/CircularProgress"; // 51
 
-import { useAddCategoryMutation } from "@/lib/features/categories/categoriesApiSlice";
+import { useAddCategoryMutation, useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
 
 
 const CategoryTable = () => { // 56
 
     const dispatch = useAppDispatch();
 
+    const { data, error, isLoading: loading } = useGetCategoriesQuery();
+
+    let categories: any;
+    categories = data?.categories || [];
+    console.log("categories", categories);
+
     const [page, setPage] = React.useState(0);
 
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    const [openAddModal, setOpenAddModal] = React.useState(false); // 64
-    const [newCategoryName, setNewCategoryName] = useState("");
     //const [numberOfCategories, setNumberOfCategories] = useState(10);
     //const { data, isError, isLoading, isSuccess } = useGetCategoriesQuery(numberOfCategories);
-
+    const [openAddModal, setOpenAddModal] = React.useState(false); // 64
+    const [newCategoryName, setNewCategoryName] = useState("");
 
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
         severity: "success",
     });
+
+
+
+
+
     const handleChangePage = (event: unknown, newPage: number) => { // 68
         setPage(newPage);
     };
@@ -148,6 +166,9 @@ const CategoryTable = () => { // 56
 
 
 
+                        
+
+
                         sx={{  // 118
                             input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
@@ -183,7 +204,7 @@ const CategoryTable = () => { // 56
                 </Grid>
             </Grid>
             <TableContainer component={Paper} sx={{overflowX: 'auto' }} >
-                <Table hover>
+                <Table>
                     <TableHead>
                         <TableRow>
                             <TableCell>S.No</TableCell>
@@ -191,10 +212,10 @@ const CategoryTable = () => { // 56
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
+
+
+
                     <TableBody>
-
-
-
                         {loading ? (
                             <TableRow>
                                 <TableCell colSpan={3}>
@@ -206,10 +227,10 @@ const CategoryTable = () => { // 56
                             </TableRow>
                         ) : error ? (
                             <TableRow>
-                                <TableCell colSpan={3}>Error: {error}</TableCell>
+                                <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
                             </TableRow>
                         ) : (
-                            filteredCategories.slice(page * rowsPerPage, page * rowsPerPage) (
+                            categories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((category: any, index: number) => (
                                 <TableRow key={category._id}>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                     <TableCell>{category.name}</TableCell>
@@ -231,67 +252,38 @@ const CategoryTable = () => { // 56
                                             />
                                         </IconButton>
                                         <IconButton
+
+
                                             onClick={() => handleDeleteCategory(category)}
                                             sx={{ color: "red" }}
                                         >
-                                            <Delete />
+                                            <Delete
+
+
+                                                sx={{
+                                                    color: "red",
+                                                    "&:hover": {
+                                                        color: "darkred",
+                                                    },
+                                                }}
+
+                                            />
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
-                            )
-
-                        }
-
-
-
+                            ))
+                        )}
                     </TableBody>
+
+
+
+
                 </Table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </TableContainer> { /* 223 */}
+            </TableContainer> { /* 273, 223 */}
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={10}// 229
+                count={categories.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
@@ -305,12 +297,7 @@ const CategoryTable = () => { // 56
 
 
 
-
-
-
-
-
-            {/* start add category modal 246 */}
+            {/* start add category modal 291 */}
             <Modal
                 open={openAddModal}
                 onClose={handleCloseAddModal}
