@@ -41,16 +41,6 @@ import Grid from '@mui/material/Grid';
 
 
 
-
-
-
-
-
-
-
-
-
-
 import { Edit, Delete, Add } from "@mui/icons-material"; // 46
 
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
@@ -58,7 +48,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 import CircularProgress from "@mui/material/CircularProgress"; // 51
 
-import { useAddCategoryMutation, useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
+import { useAddCategoryMutation, useGetCategoriesQuery, useDeleteCategoryMutation, useUpdateCategoryMutation } from "@/lib/features/categories/categoriesApiSlice";
 
 
 const CategoryTable = () => { // 56
@@ -75,10 +65,15 @@ const CategoryTable = () => { // 56
 
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    //const [numberOfCategories, setNumberOfCategories] = useState(10);
+
     //const { data, isError, isLoading, isSuccess } = useGetCategoriesQuery(numberOfCategories);
     const [openAddModal, setOpenAddModal] = React.useState(false); // 64
     const [newCategoryName, setNewCategoryName] = useState("");
+
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
+
+    const [selectedCategory, setSelectedCategory] = useState<any>(null);
 
     const [snackbar, setSnackbar] = useState({
         open: false,
@@ -108,10 +103,11 @@ const CategoryTable = () => { // 56
     const handleOpenAddModal=()=>{ // 83
         setOpenAddModal(true);
     };
-    const handleEditCategory = (category: any)=> {};
-    const handleDeleteCategory = (category: any)=> {};
+
 
     const [addCategory] = useAddCategoryMutation();
+    const [deleteCategory] = useDeleteCategoryMutation();
+    const [updateCategory] = useUpdateCategoryMutation();
 
     const handleAddCategory= ()=> {
         const newCategory = { name: newCategoryName };
@@ -130,8 +126,39 @@ const CategoryTable = () => { // 56
 
 
 
+    const handleCloseEditModal = () => setOpenEditModal(false);
+
+    const handleCloseDeleteModal = () => setOpenDeleteModal(false);
+
+    const handleDeleteCategory= () => {
+        deleteCategory(selectedCategory?._id).unwrap()
+            .then(()=>{
+                setSnackbar({ open: true, message: "Category deleted successfully", severity: "success", });
+                handleCloseDeleteModal();
+
+            })
+            .catch((error: any)=>{
+                setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
+            });
+    }
 
 
+    const handleOpenDeleteModal = (category: any) => {
+        setSelectedCategory(category);
+        setOpenDeleteModal(true);
+
+    }
+
+    const handleEditCategory= () => {
+        updateCategory(selectedCategory?._id).unwrap()
+            .then(()=>{
+                setSnackbar({ open: true, message: "Category opened successfully", severity: "success", });
+                handleCloseEditModal();
+            })
+            .catch((error: any)=>{
+                setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
+            });
+    }
 
 
     const handleCloseSnackbar = () => {
@@ -213,8 +240,6 @@ const CategoryTable = () => { // 56
                         </TableRow>
                     </TableHead>
 
-
-
                     <TableBody>
                         {loading ? (
                             <TableRow>
@@ -237,7 +262,7 @@ const CategoryTable = () => { // 56
                                     <TableCell>
                                         <IconButton
 
-                                            onClick={() => handleEditCategory(category)}
+                                            onClick={() => handleEditCategory()}
                                             sx={{ color: "blue" }}
                                         >
                                             <Edit
@@ -253,12 +278,11 @@ const CategoryTable = () => { // 56
                                         </IconButton>
                                         <IconButton
 
-
-                                            onClick={() => handleDeleteCategory(category)}
+                                            // onClick={() => handleDeleteCategory(category._id)}
                                             sx={{ color: "red" }}
                                         >
                                             <Delete
-
+                                                onClick={() => handleOpenDeleteModal(category)}
 
                                                 sx={{
                                                     color: "red",
@@ -413,64 +437,50 @@ const CategoryTable = () => { // 56
 
 
 
+            {/* start delete category modal 423 */}
+            <Modal
+                open={openDeleteModal}
+                onClose={handleCloseDeleteModal}
+                aria-labelledby="delete-category-modal"
+                aria-describedby="delet-category-modal-description"
+                sx={modalBackdropStyle}
+            >
+                <Box
+                    sx={modalStyle}
 
+                >
+                    <Typography id="delete-category-modal" variant="h6" component="h2">
+                        Delete Category
+                    </Typography>
+                    <Typography sx={{ mt: 2 }}>
+                        Are you sure you want to delete this category?
 
+                        { JSON.stringify(selectedCategory) }
 
+                    </Typography>
+                    <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+                        <Button
 
+                            onClick={handleCloseDeleteModal}
+                            sx={{ mr: 1 }}>Cancel</Button>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={handleDeleteCategory}
+                            sx={{
+                                backgroundColor: "red",
+                                "&:hover": {
+                                    backgroundColor: "darkred",
+                                },
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/* start delete category modal 403 */}
-            {/*<Modal>*/}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/*</Modal>*/}
-
-            {/* end delete category modal  442*/}
+            {/* end delete category modal  466*/}
 
 
 
