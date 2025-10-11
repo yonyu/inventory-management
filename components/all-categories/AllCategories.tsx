@@ -51,6 +51,23 @@ import CircularProgress from "@mui/material/CircularProgress"; // 51
 import { useAddCategoryMutation, useGetCategoriesQuery, useDeleteCategoryMutation, useUpdateCategoryMutation } from "@/lib/features/categories/categoriesApiSlice";
 
 
+const modalStyle = {
+    position: "absolute" as const,
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 600,
+    bgcolor: "black",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    color: "white",
+};
+
+const modalBackdropStyle = {
+    backdropFilter: "blur(5px)",
+};
+
 const CategoryTable = () => { // 56
 
     const dispatch = useAppDispatch();
@@ -65,13 +82,11 @@ const CategoryTable = () => { // 56
 
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-
     //const { data, isError, isLoading, isSuccess } = useGetCategoriesQuery(numberOfCategories);
     const [openAddModal, setOpenAddModal] = React.useState(false); // 64
     const [newCategoryName, setNewCategoryName] = useState("");
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [openEditModal, setOpenEditModal] = useState(false);
 
     const [selectedCategory, setSelectedCategory] = useState<any>(null);
 
@@ -81,15 +96,21 @@ const CategoryTable = () => { // 56
         severity: "success",
     });
 
+    const [editCategoryName, setEditCategoryName] = useState("");
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const handleCloseEditModal = () => setOpenEditModal(false);
 
-
-
+    const handleOpenEditModal = (category: any) => {
+        setOpenEditModal(true);
+        setSelectedCategory(category);
+        setEditCategoryName(category.name);
+    };
 
     const handleChangePage = (event: unknown, newPage: number) => { // 68
         setPage(newPage);
     };
 
- // 72
+
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
@@ -126,8 +147,6 @@ const CategoryTable = () => { // 56
 
 
 
-    const handleCloseEditModal = () => setOpenEditModal(false);
-
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
     const handleDeleteCategory= () => {
@@ -150,9 +169,9 @@ const CategoryTable = () => { // 56
     }
 
     const handleEditCategory= () => {
-        updateCategory(selectedCategory?._id).unwrap()
+        updateCategory({ id: selectedCategory?._id, data: { name: editCategoryName } }).unwrap()
             .then(()=>{
-                setSnackbar({ open: true, message: "Category opened successfully", severity: "success", });
+                setSnackbar({ open: true, message: "Category updated successfully", severity: "success", });
                 handleCloseEditModal();
             })
             .catch((error: any)=>{
@@ -192,11 +211,7 @@ const CategoryTable = () => { // 56
 
 
 
-
-                        
-
-
-                        sx={{  // 118
+                        sx={{
                             input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
@@ -262,7 +277,7 @@ const CategoryTable = () => { // 56
                                     <TableCell>
                                         <IconButton
 
-                                            onClick={() => handleEditCategory()}
+                                            onClick={() => handleOpenEditModal(category)}
                                             sx={{ color: "blue" }}
                                         >
                                             <Edit
@@ -283,7 +298,6 @@ const CategoryTable = () => { // 56
                                         >
                                             <Delete
                                                 onClick={() => handleOpenDeleteModal(category)}
-
                                                 sx={{
                                                     color: "red",
                                                     "&:hover": {
@@ -298,10 +312,6 @@ const CategoryTable = () => { // 56
                             ))
                         )}
                     </TableBody>
-
-
-
-
                 </Table>
             </TableContainer> { /* 273, 223 */}
             <TablePagination
@@ -312,14 +322,8 @@ const CategoryTable = () => { // 56
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{ // 232
-                    backgroundColor: "white"
-                }}
+                sx={{ backgroundColor: "white"}}
             />
-
-
-
-
 
             {/* start add category modal 291 */}
             <Modal
@@ -330,7 +334,7 @@ const CategoryTable = () => { // 56
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>{/* 248 */}
-                    <Typography id="add-categor-modal" variant="h6" >
+                    <Typography id="add-categor-modal" variant="h6" component="h2">
                         Add Category
                     </Typography>
                     <TextField
@@ -338,15 +342,12 @@ const CategoryTable = () => { // 56
                         variant="outlined"
                         label="Category Name"
                         value={newCategoryName}
-
                         onChange={(e) => setNewCategoryName(e.target.value)}
-
-
 
                         slotProps={{
                             inputLabel: { style: { color: 'white', },  },
                         }}
-                        sx={{ // 266
+                        sx={{
                             mt: 2,
                             input: { color: "white",  },
                             "& .MuiOutlinedInput-root": {
@@ -385,59 +386,75 @@ const CategoryTable = () => { // 56
                 </Box>
             </Modal>
 
-
-            {/* end add category modal  298 */}
-
+            {/* end add category modal  377 */}
 
 
+            {/* start edit category modal 384 */}
+            <Modal
+                open={openEditModal}
+                onClose={handleCloseEditModal}
+                aria-labelledby="edit-category-modal"
+                aria-describedby="edit-category-modal-description"
+                sx={modalBackdropStyle}
+            >
+                <Box sx={modalStyle}>
+                    <Typography id="edit-categor-modal" variant="h6" component="h2">
+                        Edit Category
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Category Name"
+                        value={editCategoryName}
+                        onChange={(e) => setEditCategoryName(e.target.value)}
+                        slotProps={{ // InputLabelProps
+                            inputLabel: { style: { color: 'white', },  },
+                        }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white",  },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+
+                    /> {/* 420 */}
+                    <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+                        <Button
+                            onClick={handleCloseEditModal}
+                            sx={{ mr: 1 }}>Cancel</Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleEditCategory}
+                            sx={{
+                                backgroundColor: "blue",
+                                "&:hover": {
+                                    backgroundColor: "blue",
+                                },
+                            }}
+                        >
+                            Save
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
+            {/* end edit category modal  441 */}
 
 
 
 
-            {/* start edit category modal 307 */}
-            {/*<Modal>*/}
-
-            {/*</Modal>*/}
 
 
-
-
-
-
-
-
-
-
-
-            {/* end edit category modal  363*/}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/* start delete category modal 423 */}
+            {/* start delete category modal 448 */}
             <Modal
                 open={openDeleteModal}
                 onClose={handleCloseDeleteModal}
@@ -457,7 +474,7 @@ const CategoryTable = () => { // 56
 
                         { JSON.stringify(selectedCategory) }
 
-                    </Typography>
+                    </Typography>{/* 467 */}
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
 
@@ -480,11 +497,11 @@ const CategoryTable = () => { // 56
                 </Box>
             </Modal>
 
-            {/* end delete category modal  466*/}
+            {/* end delete category modal  490 */}
 
 
 
-            {/* 446 */}
+            {/* snackbar  494*/}
             <Snackbar
                 open={snackbar.open}
                 onClose={handleCloseSnackbar}
@@ -496,28 +513,16 @@ const CategoryTable = () => { // 56
                     onClose={handleCloseSnackbar}
                     security={snackbar.severity as "success" | "error" | "info" | "warning" | undefined}
                     sx={{ width: "100%" }}>
-                    {snackbar.message}  // 458, 424
+                    {snackbar.message}
                 </Alert>
             </Snackbar>
+
+
+
         </Box>
     );
-} // end CategoryTable()  // 463, 432
+} // end CategoryTable()  // 514, 463, 432
 
-const modalStyle = { // 465, 434
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 600,
-    bgcolor: "black",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-    color: "white",
-}; //478
 
-const modalBackdropStyle = { // 480
-    backdropFilter: "blur(5px)",
-};
 
 export default CategoryTable; // 484
