@@ -43,6 +43,19 @@ import Grid from '@mui/material/Grid';
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 import { Edit, Delete, Add } from "@mui/icons-material"; // 46
 
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
@@ -80,6 +93,8 @@ const CategoryTable = () => { // 56
         message: "",
         severity: "success",
     });
+
+    const [filter, setFilter] = useState("");
 
     const [editCategoryName, setEditCategoryName] = useState("");
     const [openEditModal, setOpenEditModal] = useState(false);
@@ -145,8 +160,8 @@ const CategoryTable = () => { // 56
     }
 
 
-
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
+
 
     const handleDeleteCategory= () => {
         deleteCategory(selectedCategory?._id).unwrap()
@@ -171,6 +186,17 @@ const CategoryTable = () => { // 56
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
     };
+
+
+    const filteredCategories = categories.filter((category : any) =>
+
+        category?.name?.toLowerCase().includes(filter.toLowerCase())
+    )
+
+
+    const handleFilterChange = (e : any)=> {
+        setFilter(e.target.value);
+    }
 
     return ( // 123, 94
         <Box sx={{ p: 2 }}>
@@ -197,6 +223,8 @@ const CategoryTable = () => { // 56
                         variant="outlined"
                         placeholder="Search......"
 
+                        value={filter}
+                        onChange={handleFilterChange}
 
 
                         sx={{
@@ -258,7 +286,7 @@ const CategoryTable = () => { // 56
                                 <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
                             </TableRow>
                         ) : (
-                            categories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((category: any, index: number) => (
+                            filteredCategories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((category: any, index: number) => (
                                 <TableRow key={category._id}>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                     <TableCell>{category.name}</TableCell>
@@ -305,7 +333,7 @@ const CategoryTable = () => { // 56
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={categories.length}
+                count={ filteredCategories.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
