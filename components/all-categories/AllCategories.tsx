@@ -41,6 +41,8 @@ import Grid from '@mui/material/Grid';
 
 
 
+
+
 import { Edit, Delete, Add } from "@mui/icons-material"; // 46
 
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
@@ -50,23 +52,6 @@ import CircularProgress from "@mui/material/CircularProgress"; // 51
 
 import { useAddCategoryMutation, useGetCategoriesQuery, useDeleteCategoryMutation, useUpdateCategoryMutation } from "@/lib/features/categories/categoriesApiSlice";
 
-
-const modalStyle = {
-    position: "absolute" as const,
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 600,
-    bgcolor: "black",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-    color: "white",
-};
-
-const modalBackdropStyle = {
-    backdropFilter: "blur(5px)",
-};
 
 const CategoryTable = () => { // 56
 
@@ -105,6 +90,20 @@ const CategoryTable = () => { // 56
         setSelectedCategory(category);
         setEditCategoryName(category.name);
     };
+
+    const handleEditCategory= () => {
+        // Not working: update relies on id is specified
+        // const updatedCategory= { ...selectedCategory, name: editCategoryName };
+        // updateCategory(updatedCategory).unwrap()
+        updateCategory({ id: selectedCategory?._id, data: { name: editCategoryName } }).unwrap()
+            .then(()=>{
+                setSnackbar({ open: true, message: "Category updated successfully", severity: "success", });
+                handleCloseEditModal();
+            })
+            .catch((error: any)=>{
+                setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
+            });
+    }
 
     const handleChangePage = (event: unknown, newPage: number) => { // 68
         setPage(newPage);
@@ -166,17 +165,6 @@ const CategoryTable = () => { // 56
         setSelectedCategory(category);
         setOpenDeleteModal(true);
 
-    }
-
-    const handleEditCategory= () => {
-        updateCategory({ id: selectedCategory?._id, data: { name: editCategoryName } }).unwrap()
-            .then(()=>{
-                setSnackbar({ open: true, message: "Category updated successfully", severity: "success", });
-                handleCloseEditModal();
-            })
-            .catch((error: any)=>{
-                setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
-            });
     }
 
 
@@ -524,5 +512,22 @@ const CategoryTable = () => { // 56
 } // end CategoryTable()  // 514, 463, 432
 
 
+
+const modalStyle = {
+    position: "absolute" as const,
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 600,
+    bgcolor: "black",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    color: "white",
+};
+
+const modalBackdropStyle = {
+    backdropFilter: "blur(5px)",
+};
 
 export default CategoryTable; // 484
