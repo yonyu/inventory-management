@@ -90,9 +90,6 @@ const UnitTable = () => {
 
 
     const handleEditUnit = () => {
-        // Not working: update relies on id is specified
-        // const updatedUnit= { ...selectedUnit, name: editUnitName };
-        // updateUnit(updatedUnit).unwrap()
         updateUnit({ id: selectedUnit?._id, data: { name: editUnitName } }).unwrap()
             .then(()=>{
                 setSnackbar({ open: true, message: "Unit updated successfully", severity: "success", });
@@ -322,17 +319,17 @@ const UnitTable = () => {
                         )}
                     </TableBody>
                 </Table>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={ filteredUnits.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    sx={{ backgroundColor: "white"}}
+                />
             </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={ filteredUnits.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{ backgroundColor: "white"}}
-            />
 
             {/* start add unit modal */}
             <Modal
@@ -343,7 +340,7 @@ const UnitTable = () => {
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="add-categor-modal" variant="h6" component="h2">
+                    <Typography id="add-unit-modal" variant="h6" component="h2">
                         Add Unit
                     </Typography>
                     <TextField
@@ -371,7 +368,6 @@ const UnitTable = () => {
                                 },
                             },
                         }}
-
                     />
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
@@ -459,10 +455,6 @@ const UnitTable = () => {
             {/* end edit unit modal */}
 
 
-
-
-
-
             {/* start delete unit modal */}
             <Modal
                 open={openDeleteModal}
@@ -471,10 +463,7 @@ const UnitTable = () => {
                 aria-describedby="delet-unit-modal-description"
                 sx={modalBackdropStyle}
             >
-                <Box
-                    sx={modalStyle}
-
-                >
+                <Box sx={modalStyle}>
                     <Typography id="delete-unit-modal" variant="h6" component="h2">
                         Delete Unit
                     </Typography>
@@ -486,7 +475,6 @@ const UnitTable = () => {
                     </Typography>
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
-
                             onClick={handleCloseDeleteModal}
                             sx={{ mr: 1 }}>Cancel</Button>
                         <Button
@@ -533,7 +521,6 @@ const UnitTable = () => {
 } // end UnitTable()
 
 
-
 const modalStyle = { // 334
     position: "absolute",
     top: "50%",
@@ -543,15 +530,15 @@ const modalStyle = { // 334
     p: 4,
     borderRadius: 2,
     boxShadow: 130,
-    width: "90",
+    width: "90%",
     maxWidth: "600px",
 
-    // border: "2px solid #000",     
-    // color: "white",
+    border: "2px solid #000",     
+    color: "white",
 };
 
 const modalBackdropStyle = {
-    backdropFilter: "blur(5px)",
+    backdropFilter: "blur(8px)",
 };
 
 export default UnitTable;

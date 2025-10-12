@@ -196,7 +196,7 @@ const CategoryTable = () => { // 56
     }
 
     return (
-        <Box sx={{ p: 2, }} >
+        <Box sx={{ p: 2, maxWidth: "100%", width: "4096px" }} >
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{
                     fontSize: "3rem",
@@ -204,7 +204,7 @@ const CategoryTable = () => { // 56
                     marginBottom: "20px", // 1rem = 16px
                     textAlign: "center",
                     fontWeight: "bold",
-                    textShadow: "1px 1px 2px rgba(0, 0, 0, 0.2)", // add a subtle shadow
+                    textShadow: "1px 1px 2px rgba(109, 71, 71, 0.2)", // add a subtle shadow
                     padding: "10px",
                     borderBottom: "2px solid #0073e6", // underline effect
                     letterSpacing: "1px",
@@ -258,7 +258,7 @@ const CategoryTable = () => { // 56
                     </Button>
                 </Grid>
             </Grid>
-            <TableContainer component={Paper} sx={{overflowX: 'auto' }} >
+            <TableContainer component={Paper} sx={{overflowX: 'auto'}} >
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -326,17 +326,18 @@ const CategoryTable = () => { // 56
                         )}
                     </TableBody>
                 </Table>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={ filteredCategories.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    sx={{ backgroundColor: "white"}}
+                />
             </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={ filteredCategories.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{ backgroundColor: "white"}}
-            />
+
 
             {/* start add category modal */}
             <Modal
@@ -347,7 +348,7 @@ const CategoryTable = () => { // 56
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="add-categor-modal" variant="h6" component="h2">
+                    <Typography id="add-category-modal" variant="h6" component="h2">
                         Add Category
                     </Typography>
                     <TextField
@@ -411,7 +412,7 @@ const CategoryTable = () => { // 56
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="edit-categor-modal" variant="h6" component="h2">
+                    <Typography id="edit-category-modal" variant="h6" component="h2">
                         Edit Category
                     </Typography>
                     <TextField
