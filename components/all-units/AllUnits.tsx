@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 import {
@@ -10,7 +9,6 @@ import {
     TextField,
     Typography,
     IconButton,
-
     Table,
     TableBody,
     TableCell,
@@ -19,33 +17,29 @@ import {
     TableRow,
     TablePagination,
     Paper,
-
     Modal,
     Snackbar,
-
     Alert,
-
 } from "@mui/material";
-// import Table from '@mui/material/Table';
-// import TableBody from '@mui/material/TableBody';
-// import TableCell from '@mui/material/TableCell';
-// import TableContainer from '@mui/material/TableContainer';
-// import TableHead from '@mui/material/TableHead';
-// import TableRow from '@mui/material/TableRow';
-// import TablePagination from '@mui/material/TablePagination';
-// import Paper from '@mui/material/Paper';
-
-
-
-
-
-import { Edit, Delete, Add } from "@mui/icons-material";
 
 import Grid from '@mui/material/Grid';
-
+import { Edit, Delete, Add } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { useAddUnitMutation, useGetUnitsQuery, useDeleteUnitMutation, useUpdateUnitMutation } from "@/lib/features/units/unitsApiSlice";
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -508,7 +502,7 @@ const UnitTable = () => {
             >
                 <Alert
                     onClose={handleCloseSnackbar}
-                    security={snackbar.severity as "success" | "error" | "info" | "warning" | undefined}
+                    severity={snackbar.severity as "success" | "error" | "info" | "warning" | undefined}
                     sx={{ width: "100%" }}>
                     {snackbar.message}
                 </Alert>

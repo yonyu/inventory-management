@@ -525,7 +525,7 @@ const CategoryTable = () => { // 56
             >
                 <Alert
                     onClose={handleCloseSnackbar}
-                    security={snackbar.severity as "success" | "error" | "info" | "warning" | undefined}
+                    severity={snackbar.severity as "success" | "error" | "info" | "warning" | undefined}
                     sx={{ width: "100%" }}>
                     {snackbar.message}
                 </Alert>
