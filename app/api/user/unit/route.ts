@@ -33,6 +33,10 @@ export async function POST(req: Request) {
     try {
         const { name } = await req.json();
 
+        if (!name) {
+            return NextResponse.json({ err: "Name is required" }, { status: 400 });
+        }
+
         const unit = await Unit.create({ name });
 
         return NextResponse.json({ unit }, { status: 201 });
