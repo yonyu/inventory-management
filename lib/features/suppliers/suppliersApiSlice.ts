@@ -3,8 +3,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface Supplier {
     _id?: string;
-    name: String;
-    status: Boolean;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    status: boolean;
 }
 
 interface SuppliersApiResponse {

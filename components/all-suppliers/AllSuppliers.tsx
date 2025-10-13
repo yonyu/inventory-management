@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 import {
     Box,
@@ -23,10 +22,21 @@ import {
 } from "@mui/material";
 
 import Grid from '@mui/material/Grid';
-import { Edit, Delete, Add } from "@mui/icons-material";
+import { Edit, Delete, Add, Refresh } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+
 import { useAddSupplierMutation, useGetSuppliersQuery, useDeleteSupplierMutation, useUpdateSupplierMutation } from "@/lib/features/suppliers/suppliersApiSlice";
+
+//import { addSupplier } from "@/reduxslice/supplierSlice"; //alt
+
+
+
+
+
+
+
 
 
 
@@ -58,7 +68,16 @@ const SupplierTable = () => {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const [openAddModal, setOpenAddModal] = React.useState(false);
-    const [newSupplierName, setNewSupplierName] = useState("");
+
+    const [form, setForm] = React.useState({
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        status: true,
+    });
+
+    //const [newSupplierName, setNewSupplierName] = useState("");
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
@@ -124,11 +143,29 @@ const SupplierTable = () => {
         setOpenAddModal(true);
     };
 
+    const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setForm((prevForm) => ({ ...prevForm, [name]: value }));
+
+    }
 
     const handleAddSupplier= ()=> {
-        const newSupplier = { name: newSupplierName };
+        //const newSupplier = { name: newSupplierName };
+        //console.log("AddSupplier", form);
 
-        addSupplier(newSupplier).unwrap()
+        // dispatch(addSupplier(form))
+        //     .unwrap()
+        //     .then(()=>{
+        //         //setSnackbar({ open: true, message: "Supplier added successfully", severity: "success", });
+        //         handleCloseAddModal();
+        //     })
+        //     .catch((error: any)=>{
+        //         //setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
+        //         console.log("Error adding supplier:", error);
+        //     });
+
+        addSupplier(form)
+            .unwrap()
             .then(()=>{
                 setSnackbar({ open: true, message: "Supplier added successfully", severity: "success", });
 
@@ -142,7 +179,6 @@ const SupplierTable = () => {
                 console.error("Error adding supplier:", error);
             });
     }
-
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
@@ -200,6 +236,22 @@ const SupplierTable = () => {
             >
                 Suppliers
             </Typography>
+
+            <Button
+                variant="contained"
+                color="primary"
+                startIcon={ <Refresh />}
+                onClick={()=> window.location.reload()}
+                sx={{
+                    backgroundColor: "blue",
+                    "&:hover": {
+                        backgroundColor: "blue",
+                    },
+                    height: "100%",
+                }}         
+    >
+                Reload
+            </Button>
             <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
@@ -250,7 +302,10 @@ const SupplierTable = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>S.No</TableCell>
-                            <TableCell>Supplier Name</TableCell>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Email</TableCell>
+                            <TableCell>Phone</TableCell>
+                            <TableCell>Address</TableCell>
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -274,6 +329,9 @@ const SupplierTable = () => {
                                 <TableRow key={supplier._id}>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                     <TableCell>{supplier.name}</TableCell>
+                                    <TableCell>{supplier.email}</TableCell>
+                                    <TableCell>{supplier.phone}</TableCell>
+                                    <TableCell>{supplier.address}</TableCell>
                                     <TableCell>
                                         <IconButton
 
@@ -340,13 +398,12 @@ const SupplierTable = () => {
                     <TextField
                         fullWidth
                         variant="outlined"
-                        label="Supplier Name"
-                        value={newSupplierName}
-                        onChange={(e) => setNewSupplierName(e.target.value)}
-
-                        slotProps={{
-                            inputLabel: { style: { color: 'white', },  },
-                        }}
+                        label="Name"
+                        name="name"
+                        value={form.name}
+                        onChange={handleFormChange}
+                        required
+                        slotProps={{ inputLabel: { style: { color: 'white', },  }, }}
                         sx={{
                             mt: 2,
                             input: { color: "white",  },
@@ -363,25 +420,114 @@ const SupplierTable = () => {
                             },
                         }}
                     />
-                    <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-                        <Button
-                            onClick={handleCloseAddModal}
+                    <TextField
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleFormChange}
+                        slotProps={{ inputLabel: { style: { color: 'white', },  }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white",  },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />
+                    <TextField
+                        type="number"
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Phone"
+                        name="phone"
+                        value={form.phone}
+                        onChange={handleFormChange}
+                        slotProps={{ inputLabel: { style: { color: 'white', },  }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white",  },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />
+                    <TextField
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Address"
+                        name="address"
+                        value={form.address}
+                        onChange={handleFormChange}
+                        slotProps={{ inputLabel: { style: { color: 'white', },  }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white",  },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />
 
-                            sx={{ mr: 1 }}>Cancel</Button>
+                    {/* <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}> */}
                         <Button
                             variant="contained"
-                            color="primary"
-                            onClick={handleAddSupplier}
                             sx={{
+                                mt: 2,
                                 backgroundColor: "blue",
                                 "&:hover": {
                                     backgroundColor: "blue",
                                 },
                             }}
+                            onClick={handleAddSupplier}
                         >
                             Add
                         </Button>
-                    </Box>
+                        <Button
+                            onClick={handleCloseAddModal}
+                            variant="outlined"
+                            sx={{
+                                mt: 2,
+                                ml: 2,
+                                color: "white",
+                                //input: { color: "white",  },
+                                borderColor: "blue",
+                                "&:hover": {
+                                    borderColor: "blue",
+                                },
+                            }}
+                        >                             
+                            Cancel
+                        </Button>
+{                   /* </Box> */}
                 </Box>
             </Modal>
 
@@ -403,7 +549,7 @@ const SupplierTable = () => {
                     <TextField
                         fullWidth
                         variant="outlined"
-                        label="Supplier Name"
+                        label="Name"
                         value={editSupplierName}
                         onChange={(e) => setEditSupplierName(e.target.value)}
                         slotProps={{ // InputLabelProps
@@ -429,7 +575,10 @@ const SupplierTable = () => {
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
                             onClick={handleCloseEditModal}
-                            sx={{ mr: 1 }}>Cancel</Button>
+                            sx={{ mt: 2 }}
+                        >
+                                Cancel
+                        </Button>
                         <Button
                             variant="contained"
                             color="primary"

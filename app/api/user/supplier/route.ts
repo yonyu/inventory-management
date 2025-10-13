@@ -19,7 +19,7 @@ export async function GET(req: Request) {
             supppliers = await suppplier.find({}).sort({ createdAt: -1 });
         }
 
-        return NextResponse.json({ supppliers }, { status: 200 });
+        return NextResponse.json({ suppliers: supppliers }, { status: 200 });
 
     } catch (error: any) {
         return NextResponse.json({ err: error.message }, { status: 500 });
