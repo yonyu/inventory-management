@@ -68,20 +68,11 @@ const SupplierTable = () => {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const [openAddModal, setOpenAddModal] = React.useState(false);
-
-    const [form, setForm] = React.useState({
-        name: "",
-        email: "",
-        phone: "",
-        address: "",
-        status: true,
-    });
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [selectedSupplier, setSelectedSupplier] = useState<any>(null);
+    const [openEditModal, setOpenEditModal] = useState(false);
 
     //const [newSupplierName, setNewSupplierName] = useState("");
-
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
-
-    const [selectedSupplier, setSelectedSupplier] = useState<any>(null);
 
     const [snackbar, setSnackbar] = useState({
         open: false,
@@ -89,32 +80,20 @@ const SupplierTable = () => {
         severity: "success",
     });
 
+    const [form, setForm] = React.useState({
+        _id: "",
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        status: true,
+    });
+
     const [filter, setFilter] = useState("");
 
-    const [editSupplierName, setEditSupplierName] = useState("");
-    const [openEditModal, setOpenEditModal] = useState(false);
+    //const [editSupplierName, setEditSupplierName] = useState("");
+
     const handleCloseEditModal = () => setOpenEditModal(false);
-
-    const handleOpenEditModal = (supplier: any) => {
-        setOpenEditModal(true);
-        setSelectedSupplier(supplier);
-        setEditSupplierName(supplier.name);
-    };
-
-
-    const handleEditSupplier = () => {
-        updateSupplier({ id: selectedSupplier?._id, data: { name: editSupplierName } }).unwrap()
-            .then(()=>{
-                setSnackbar({ open: true, message: "Supplier updated successfully", severity: "success", });
-                handleCloseEditModal();
-            })
-            .catch((error: any)=>{
-                setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
-            });
-
-    }
-
-
 
 
     const [addSupplier] = useAddSupplierMutation();
@@ -148,11 +127,33 @@ const SupplierTable = () => {
         setForm((prevForm) => ({ ...prevForm, [name]: value }));
 
     }
+    
+    const handleOpenEditModal = (supplier: any) => {
+        setOpenEditModal(true);
+        setSelectedSupplier(supplier);
+        setForm(supplier);
+        //setEditSupplierName(supplier.name);
+    };
+
+    const handleEditSupplier = () => {
+        const { _id, ...data } = form;
+        updateSupplier({ _id, data })
+            .unwrap()
+            .then(()=>{
+                setSnackbar({ open: true, message: "Supplier updated successfully", severity: "success", });
+                handleCloseEditModal();
+            })
+            .catch((error: any)=>{
+                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update supplier", severity: "error", });
+            });
+
+    }
 
     const handleAddSupplier= ()=> {
         //const newSupplier = { name: newSupplierName };
         //console.log("AddSupplier", form);
 
+        // Alternative way (classic)
         // dispatch(addSupplier(form))
         //     .unwrap()
         //     .then(()=>{
@@ -164,7 +165,8 @@ const SupplierTable = () => {
         //         console.log("Error adding supplier:", error);
         //     });
 
-        addSupplier(form)
+        const { _id, ...newSupplier } = form;
+        addSupplier(newSupplier)
             .unwrap()
             .then(()=>{
                 setSnackbar({ open: true, message: "Supplier added successfully", severity: "success", });
@@ -182,7 +184,14 @@ const SupplierTable = () => {
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
-    const handleDeleteSupplier = () => {
+    const handleOpenDeleteModal = (supplier: any) => {
+        setSelectedSupplier(supplier);
+        //setForm(supplier);
+        setOpenDeleteModal(true);
+
+    }
+
+    const handleDeleteSupplier = (/* selectedSupplier */) => {
         deleteSupplier(selectedSupplier?._id).unwrap()
             .then(()=>{
                 setSnackbar({ open: true, message: "Supplier deleted successfully", severity: "success", });
@@ -192,15 +201,6 @@ const SupplierTable = () => {
             .catch((error: any)=>{
                 setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
             });
-
-
-    }
-
-
-    const handleOpenDeleteModal = (supplier: any) => {
-        setSelectedSupplier(supplier);
-        setOpenDeleteModal(true);
-
     }
 
     const handleCloseSnackbar = () => {
@@ -252,6 +252,7 @@ const SupplierTable = () => {
     >
                 Reload
             </Button>
+
             <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
@@ -279,7 +280,7 @@ const SupplierTable = () => {
                         }}
                     />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 4 }}>     {/* item xs={12} sm={4}> */}
+                <Grid size={{ xs: 12, sm: 4 }}>     {/* <Grid item xs={12} sm={4}> */}
                     <Button
                         fullWidth
                         variant="contained"
@@ -297,6 +298,7 @@ const SupplierTable = () => {
                     </Button>
                 </Grid>
             </Grid>
+
             <TableContainer component={Paper} sx={{overflowX: 'auto'}} >
                 <Table>
                     <TableHead>
@@ -334,12 +336,10 @@ const SupplierTable = () => {
                                     <TableCell>{supplier.address}</TableCell>
                                     <TableCell>
                                         <IconButton
-
                                             onClick={() => handleOpenEditModal(supplier)}
                                             sx={{ color: "blue" }}
                                         >
                                             <Edit
-
                                                 sx={{
                                                     color: "blue",
                                                     "&:hover": {
@@ -350,19 +350,15 @@ const SupplierTable = () => {
                                             />
                                         </IconButton>
                                         <IconButton
-
-
-                                            sx={{ color: "red" }}
+                                            onClick={() => handleOpenDeleteModal(supplier)}
                                         >
                                             <Delete
-                                                onClick={() => handleOpenDeleteModal(supplier)}
                                                 sx={{
                                                     color: "red",
                                                     "&:hover": {
                                                         color: "darkred",
                                                     },
                                                 }}
-
                                             />
                                         </IconButton>
                                     </TableCell>
@@ -497,37 +493,35 @@ const SupplierTable = () => {
                         }}
                     />
 
-                    {/* <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}> */}
-                        <Button
-                            variant="contained"
-                            sx={{
-                                mt: 2,
+                    <Button
+                        variant="contained"
+                        sx={{
+                            mt: 2,
+                            backgroundColor: "blue",
+                            "&:hover": {
                                 backgroundColor: "blue",
-                                "&:hover": {
-                                    backgroundColor: "blue",
-                                },
-                            }}
-                            onClick={handleAddSupplier}
-                        >
-                            Add
-                        </Button>
-                        <Button
-                            onClick={handleCloseAddModal}
-                            variant="outlined"
-                            sx={{
-                                mt: 2,
-                                ml: 2,
-                                color: "white",
-                                //input: { color: "white",  },
+                            },
+                        }}
+                        onClick={handleAddSupplier}
+                    >
+                        Add
+                    </Button>
+                    <Button
+                        onClick={handleCloseAddModal}
+                        variant="outlined"
+                        sx={{
+                            mt: 2,
+                            ml: 2,
+                            color: "white",
+                            //input: { color: "white",  },
+                            borderColor: "blue",
+                            "&:hover": {
                                 borderColor: "blue",
-                                "&:hover": {
-                                    borderColor: "blue",
-                                },
-                            }}
-                        >                             
-                            Cancel
-                        </Button>
-{                   /* </Box> */}
+                            },
+                        }}
+                    >                             
+                        Cancel
+                    </Button>
                 </Box>
             </Modal>
 
@@ -550,8 +544,9 @@ const SupplierTable = () => {
                         fullWidth
                         variant="outlined"
                         label="Name"
-                        value={editSupplierName}
-                        onChange={(e) => setEditSupplierName(e.target.value)}
+                        name="name"
+                        value={form.name}
+                        onChange={handleFormChange}
                         slotProps={{ // InputLabelProps
                             inputLabel: { style: { color: 'white', },  },
                         }}
@@ -572,29 +567,118 @@ const SupplierTable = () => {
                         }}
 
                     />
-                    <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-                        <Button
-                            onClick={handleCloseEditModal}
-                            sx={{ mt: 2 }}
-                        >
-                                Cancel
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleEditSupplier}
-                            sx={{
-                                backgroundColor: "blue",
-                                "&:hover": {
-                                    backgroundColor: "blue",
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleFormChange}
+                        slotProps={{ // InputLabelProps
+                            inputLabel: { style: { color: 'white', },  },
+                        }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white",  },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
                                 },
-                            }}
-                        >
-                            Save
-                        </Button>
-                    </Box>
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+
+                    />
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Phone"
+                        name="phone"
+                        value={form.phone}
+                        onChange={handleFormChange}
+                        slotProps={{ // InputLabelProps
+                            inputLabel: { style: { color: 'white', },  },
+                        }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white",  },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+
+                    />
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Address"
+                        name="address"
+                        value={form.address}
+                        onChange={handleFormChange}
+                        slotProps={{ // InputLabelProps
+                            inputLabel: { style: { color: 'white', },  },
+                        }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white",  },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+
+                    />
+                    <Button
+                        variant="contained"
+                        onClick={handleEditSupplier}
+                        sx={{
+                            mt: 2,
+                            backgroundColor: "blue",
+                            "&:hover": {
+                                backgroundColor: "blue",
+                            },
+                        }}
+                    >
+                        Save
+                    </Button>
+                        <Button
+                        variant="contained"
+                        sx={{
+                            mt: 2,
+                            ml: 2,
+                            color: "white",
+                            borderColor: "blue",
+                            "&:hover": {
+                                borderColor: "blue",
+                            },
+                        }}
+                        onClick={handleCloseEditModal}
+                    >
+                        Cancel
+                    </Button>                       
                 </Box>
             </Modal>
+
             {/* end edit supplier modal */}
 
 
@@ -611,29 +695,38 @@ const SupplierTable = () => {
                         Delete Supplier
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
-                        Are you sure you want to delete this supplier?
-
-                        { JSON.stringify(selectedSupplier) }
-
+                        Are you sure you want to delete
+                        &nbsp;&quot;{selectedSupplier?.name}&quot;?
                     </Typography>
-                    <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-                        <Button
-                            onClick={handleCloseDeleteModal}
-                            sx={{ mr: 1 }}>Cancel</Button>
-                        <Button
-                            variant="contained"
-                            color="error"
-                            onClick={handleDeleteSupplier}
-                            sx={{
-                                backgroundColor: "red",
-                                "&:hover": {
-                                    backgroundColor: "darkred",
-                                },
-                            }}
-                        >
-                            Delete
-                        </Button>
-                    </Box>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        sx={{
+                            mt: 2,
+                            backgroundColor: "red",
+                            "&:hover": {
+                                backgroundColor: "darkred",
+                            },
+                        }}
+                        onClick={handleDeleteSupplier}
+                    >
+                        Delete
+                    </Button>
+                    <Button
+                        onClick={handleCloseDeleteModal}
+                        variant="outlined"
+                        sx={{
+                            mt: 2,
+                            ml: 2,
+                            color: "white",
+                            borderColor: "blue",
+                            "&:hover": {
+                                borderColor: "blue",
+                            },
+                        }}
+                    >
+                        Cancel
+                    </Button>
                 </Box>
             </Modal>
 
@@ -656,8 +749,6 @@ const SupplierTable = () => {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
-
-
 
         </Box>
     );

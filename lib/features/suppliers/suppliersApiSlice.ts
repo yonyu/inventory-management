@@ -51,9 +51,9 @@ export const suppliersApiSlice = createApi({
             }),
             invalidatesTags: [{ type: 'Suppliers' }],
         }),
-        updateSupplier: build.mutation<Supplier, { id: string; data: Partial<Supplier> }>({
-            query: ({ id, data }) => ({
-                url: `/${id}`,
+        updateSupplier: build.mutation<Supplier, { _id: string; data: Partial<Supplier> }>({
+            query: ({ _id, data }) => ({
+                url: `/${_id}`,
                 method: 'PUT',
                 body: data,
             }),

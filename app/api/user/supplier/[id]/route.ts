@@ -10,7 +10,23 @@ export async function PUT(req: Request, { params } : { params: {id: string}}) {
 
     try {
         const { ...updateBody } = await req.json();
+        if (!updateBody.name) {
+            return NextResponse.json({ err: "Name is required" }, { status: 400 });
+        };
+        if (!updateBody.email) {
+            return NextResponse.json({ err: "Email is required" }, { status: 400 });
+        };
+        if (!updateBody.phone) {
+            return NextResponse.json({ err: "Phone is required" }, { status: 400 });
+        };
+        if (!updateBody.address) {
+            return NextResponse.json({ err: "Address is required" }, { status: 400 });
+        };
+
         const updatingSupp = await suppplier.findByIdAndUpdate(params.id, updateBody, { new: true });
+        if (!updatingSupp) {
+            return NextResponse.json({ err: "Supplier not found" }, { status: 404 });
+        }
 
         return NextResponse.json(updatingSupp); //({ updatingSupp }, { status: 200 });
     } catch (error: any) {
@@ -24,6 +40,9 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     try {
         const deletingSupp = await suppplier.findByIdAndDelete(params.id);
+        if (!deletingSupp) {
+            return NextResponse.json({ err: "Supplier not found" }, { status: 404 });
+        }
 
         return NextResponse.json({ deletingSupp }, { status: 200 });
     } catch (error: any) {
