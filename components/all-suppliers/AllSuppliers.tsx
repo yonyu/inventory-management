@@ -29,8 +29,6 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 import { useAddSupplierMutation, useGetSuppliersQuery, useDeleteSupplierMutation, useUpdateSupplierMutation } from "@/lib/features/suppliers/suppliersApiSlice";
 
-//import { addSupplier } from "@/reduxslice/supplierSlice"; //alt
-
 
 const SupplierTable = () => {
 
@@ -74,7 +72,7 @@ const SupplierTable = () => {
 
 
 
-    const handleChangePage = (event: unknown, newPage: number) => { // 120
+    const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -100,21 +98,6 @@ const SupplierTable = () => {
     };
 
     const handleAddSupplier = () => {
-        //const newSupplier = { name: newSupplierName };
-        //console.log("AddSupplier", form);
-
-        // Alternative way (classic)
-        // dispatch(addSupplier(form))
-        //     .unwrap()
-        //     .then(()=>{
-        //         //setSnackbar({ open: true, message: "Supplier added successfully", severity: "success", });
-        //         handleCloseAddModal();
-        //     })
-        //     .catch((error: any)=>{
-        //         //setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
-        //         console.log("Error adding supplier:", error);
-        //     });
-
         const { _id, ...newSupplier } = form;
         addSupplier(newSupplier)
             .unwrap()
