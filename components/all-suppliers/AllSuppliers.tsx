@@ -32,27 +32,6 @@ import { useAddSupplierMutation, useGetSuppliersQuery, useDeleteSupplierMutation
 //import { addSupplier } from "@/reduxslice/supplierSlice"; //alt
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const SupplierTable = () => {
 
     const dispatch = useAppDispatch();
@@ -72,8 +51,6 @@ const SupplierTable = () => {
     const [selectedSupplier, setSelectedSupplier] = useState<any>(null);
     const [openEditModal, setOpenEditModal] = useState(false);
 
-    //const [newSupplierName, setNewSupplierName] = useState("");
-
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
@@ -91,11 +68,6 @@ const SupplierTable = () => {
 
     const [filter, setFilter] = useState("");
 
-    //const [editSupplierName, setEditSupplierName] = useState("");
-
-    const handleCloseEditModal = () => setOpenEditModal(false);
-
-
     const [addSupplier] = useAddSupplierMutation();
     const [deleteSupplier] = useDeleteSupplierMutation();
     const [updateSupplier] = useUpdateSupplierMutation();
@@ -112,44 +84,22 @@ const SupplierTable = () => {
         setPage(0);
     };
 
-
-    const handleCloseAddModal = () => {
-        setOpenAddModal(false);
-    };
-
-    const handleOpenAddModal=()=>{
-
-        setOpenAddModal(true);
-    };
-
     const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         setForm((prevForm) => ({ ...prevForm, [name]: value }));
 
     }
-    
-    const handleOpenEditModal = (supplier: any) => {
-        setOpenEditModal(true);
-        setSelectedSupplier(supplier);
-        setForm(supplier);
-        //setEditSupplierName(supplier.name);
+
+    const handleOpenAddModal = () => {
+
+        setOpenAddModal(true);
     };
 
-    const handleEditSupplier = () => {
-        const { _id, ...data } = form;
-        updateSupplier({ _id, data })
-            .unwrap()
-            .then(()=>{
-                setSnackbar({ open: true, message: "Supplier updated successfully", severity: "success", });
-                handleCloseEditModal();
-            })
-            .catch((error: any)=>{
-                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update supplier", severity: "error", });
-            });
+    const handleCloseAddModal = () => {
+        setOpenAddModal(false);
+    };
 
-    }
-
-    const handleAddSupplier= ()=> {
+    const handleAddSupplier = () => {
         //const newSupplier = { name: newSupplierName };
         //console.log("AddSupplier", form);
 
@@ -168,13 +118,13 @@ const SupplierTable = () => {
         const { _id, ...newSupplier } = form;
         addSupplier(newSupplier)
             .unwrap()
-            .then(()=>{
+            .then(() => {
                 setSnackbar({ open: true, message: "Supplier added successfully", severity: "success", });
 
                 handleCloseAddModal();
 
             })
-            .catch((error: any)=>{
+            .catch((error: any) => {
 
                 setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
 
@@ -193,14 +143,36 @@ const SupplierTable = () => {
 
     const handleDeleteSupplier = (/* selectedSupplier */) => {
         deleteSupplier(selectedSupplier?._id).unwrap()
-            .then(()=>{
+            .then(() => {
                 setSnackbar({ open: true, message: "Supplier deleted successfully", severity: "success", });
                 handleCloseDeleteModal();
 
             })
-            .catch((error: any)=>{
+            .catch((error: any) => {
                 setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
             });
+    }
+
+    const handleOpenEditModal = (supplier: any) => {
+        setOpenEditModal(true);
+        setSelectedSupplier(supplier);
+        setForm(supplier);
+    };
+
+    const handleCloseEditModal = () => setOpenEditModal(false);
+
+    const handleEditSupplier = () => {
+        const { _id, ...data } = form;
+        updateSupplier({ _id, data })
+            .unwrap()
+            .then(() => {
+                setSnackbar({ open: true, message: "Supplier updated successfully", severity: "success", });
+                handleCloseEditModal();
+            })
+            .catch((error: any) => {
+                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update supplier", severity: "error", });
+            });
+
     }
 
     const handleCloseSnackbar = () => {
@@ -208,18 +180,18 @@ const SupplierTable = () => {
     };
 
 
-    const filteredSuppliers = suppliers.filter((supplier : any) =>
+    const filteredSuppliers = suppliers.filter((supplier: any) =>
 
         supplier?.name?.toLowerCase().includes(filter.toLowerCase())
     )
 
 
-    const handleFilterChange = (e : any)=> {
+    const handleFilterChange = (e: any) => {
         setFilter(e.target.value);
     }
 
     return (
-        <Box sx={{ p: 2, maxWidth: "100%", width: "4096px" }} >
+        <Box sx={{ p: 2, maxWidth: "100%", width: "1024px" }} >
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{
                     fontSize: "3rem",
@@ -240,16 +212,16 @@ const SupplierTable = () => {
             <Button
                 variant="contained"
                 color="primary"
-                startIcon={ <Refresh />}
-                onClick={()=> window.location.reload()}
+                startIcon={<Refresh />}
+                onClick={() => window.location.reload()}
                 sx={{
                     backgroundColor: "blue",
                     "&:hover": {
                         backgroundColor: "blue",
                     },
                     height: "100%",
-                }}         
-    >
+                }}
+            >
                 Reload
             </Button>
 
@@ -262,7 +234,6 @@ const SupplierTable = () => {
 
                         value={filter}
                         onChange={handleFilterChange}
-
 
                         sx={{
                             input: { color: "white", },
@@ -284,7 +255,7 @@ const SupplierTable = () => {
                     <Button
                         fullWidth
                         variant="contained"
-                        startIcon={ <Add />}
+                        startIcon={<Add />}
                         onClick={handleOpenAddModal}
                         sx={{
                             backgroundColor: "blue",
@@ -299,7 +270,7 @@ const SupplierTable = () => {
                 </Grid>
             </Grid>
 
-            <TableContainer component={Paper} sx={{overflowX: 'auto'}} >
+            <TableContainer component={Paper} sx={{ overflowX: 'auto' }} >
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -316,7 +287,7 @@ const SupplierTable = () => {
                         {loading ? (
                             <TableRow>
                                 <TableCell colSpan={3}>
-                                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center"}} >
+                                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} >
                                         <CircularProgress color="inherit" />
                                         <Typography sx={{ ml: 2 }}>Loading...</Typography>
                                     </Box>
@@ -346,7 +317,6 @@ const SupplierTable = () => {
                                                         color: "darkred",
                                                     },
                                                 }}
-
                                             />
                                         </IconButton>
                                         <IconButton
@@ -370,12 +340,12 @@ const SupplierTable = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={ filteredSuppliers.length}
+                    count={filteredSuppliers.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                    sx={{ backgroundColor: "white"}}
+                    sx={{ backgroundColor: "white" }}
                 />
             </TableContainer>
 
@@ -399,10 +369,10 @@ const SupplierTable = () => {
                         value={form.name}
                         onChange={handleFormChange}
                         required
-                        slotProps={{ inputLabel: { style: { color: 'white', },  }, }}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
                             mt: 2,
-                            input: { color: "white",  },
+                            input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
                                     borderColor: "blue",
@@ -424,10 +394,10 @@ const SupplierTable = () => {
                         name="email"
                         value={form.email}
                         onChange={handleFormChange}
-                        slotProps={{ inputLabel: { style: { color: 'white', },  }, }}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
                             mt: 2,
-                            input: { color: "white",  },
+                            input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
                                     borderColor: "blue",
@@ -450,10 +420,10 @@ const SupplierTable = () => {
                         name="phone"
                         value={form.phone}
                         onChange={handleFormChange}
-                        slotProps={{ inputLabel: { style: { color: 'white', },  }, }}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
                             mt: 2,
-                            input: { color: "white",  },
+                            input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
                                     borderColor: "blue",
@@ -475,10 +445,10 @@ const SupplierTable = () => {
                         name="address"
                         value={form.address}
                         onChange={handleFormChange}
-                        slotProps={{ inputLabel: { style: { color: 'white', },  }, }}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
                             mt: 2,
-                            input: { color: "white",  },
+                            input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
                                     borderColor: "blue",
@@ -513,13 +483,12 @@ const SupplierTable = () => {
                             mt: 2,
                             ml: 2,
                             color: "white",
-                            //input: { color: "white",  },
                             borderColor: "blue",
                             "&:hover": {
                                 borderColor: "blue",
                             },
                         }}
-                    >                             
+                    >
                         Cancel
                     </Button>
                 </Box>
@@ -548,11 +517,11 @@ const SupplierTable = () => {
                         value={form.name}
                         onChange={handleFormChange}
                         slotProps={{ // InputLabelProps
-                            inputLabel: { style: { color: 'white', },  },
+                            inputLabel: { style: { color: 'white', }, },
                         }}
                         sx={{
                             mt: 2,
-                            input: { color: "white",  },
+                            input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
                                     borderColor: "blue",
@@ -575,11 +544,11 @@ const SupplierTable = () => {
                         value={form.email}
                         onChange={handleFormChange}
                         slotProps={{ // InputLabelProps
-                            inputLabel: { style: { color: 'white', },  },
+                            inputLabel: { style: { color: 'white', }, },
                         }}
                         sx={{
                             mt: 2,
-                            input: { color: "white",  },
+                            input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
                                     borderColor: "blue",
@@ -602,11 +571,11 @@ const SupplierTable = () => {
                         value={form.phone}
                         onChange={handleFormChange}
                         slotProps={{ // InputLabelProps
-                            inputLabel: { style: { color: 'white', },  },
+                            inputLabel: { style: { color: 'white', }, },
                         }}
                         sx={{
                             mt: 2,
-                            input: { color: "white",  },
+                            input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
                                     borderColor: "blue",
@@ -629,11 +598,11 @@ const SupplierTable = () => {
                         value={form.address}
                         onChange={handleFormChange}
                         slotProps={{ // InputLabelProps
-                            inputLabel: { style: { color: 'white', },  },
+                            inputLabel: { style: { color: 'white', }, },
                         }}
                         sx={{
                             mt: 2,
-                            input: { color: "white",  },
+                            input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
                                 "& fieldset": {
                                     borderColor: "blue",
@@ -661,7 +630,7 @@ const SupplierTable = () => {
                     >
                         Save
                     </Button>
-                        <Button
+                    <Button
                         variant="contained"
                         sx={{
                             mt: 2,
@@ -675,7 +644,7 @@ const SupplierTable = () => {
                         onClick={handleCloseEditModal}
                     >
                         Cancel
-                    </Button>                       
+                    </Button>
                 </Box>
             </Modal>
 
@@ -733,7 +702,6 @@ const SupplierTable = () => {
             {/* end delete supplier modal */}
 
 
-
             {/* snackbar */}
             <Snackbar
                 open={snackbar.open}
@@ -755,7 +723,7 @@ const SupplierTable = () => {
 } // end SupplierTable()
 
 
-const modalStyle = { // 334
+const modalStyle = {
     position: "absolute",
     top: "50%",
     left: "50%",
@@ -767,7 +735,7 @@ const modalStyle = { // 334
     width: "90%",
     maxWidth: "600px",
 
-    border: "2px solid #000",     
+    border: "2px solid #000",
     color: "white",
 };
 
