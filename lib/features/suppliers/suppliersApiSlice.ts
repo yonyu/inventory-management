@@ -25,12 +25,18 @@ const initialState: SuppliersSliceState = {
 };
 
 
-// Define a service using a base URL and expected endpoints
+
+// Create RTK Query API slice for supplier operations
+// RTK Query provides automatic caching, background refetching, and optimistic updates
 export const suppliersApiSlice = createApi({
+    // Base query configuration - sets the base URL for all endpoints
     baseQuery: fetchBaseQuery({ baseUrl: "/api/user/supplier" }),
+    // Unique key for this API slice in the Redux store
     reducerPath: "suppliersApi",
-    // Tag types are used for caching and invalidation.
+    // Tag types are used for caching and invalidation
+    // When a mutation invalidates a tag, all queries with that tag will refetch
     tagTypes: ["Suppliers"],
+    // Define API endpoints (queries for fetching data, mutations for modifying data)
     endpoints: (build) => ({
         // Supply generics for the return type (in this case `SuppliersApiResponse`)
         // and the expected query argument. If there is no argument, use `void`
