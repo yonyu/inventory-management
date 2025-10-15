@@ -29,6 +29,9 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 import { useAddCustomerMutation, useGetCustomersQuery, useDeleteCustomerMutation, useUpdateCustomerMutation } from "@/lib/features/customers/customersApiSlice";
 
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/upload`;
+const CLOUDINARY_UPLOAD_PRESET = "ml_default";
+
 
 const CustomerTable = () => {
 
@@ -71,6 +74,42 @@ const CustomerTable = () => {
     const [deleteCustomer] = useDeleteCustomerMutation();
     const [updateCustomer] = useUpdateCustomerMutation();
 
+    const handleImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>, setter: (callback: (prev: any) => any) => void, previewSetter: (value: string) => void) => {
+        const file = event.target.files?.[0];
+        console.log("File: ", file);
+        if (file) {
+            const fileUrl = URL.createObjectURL(file);
+            previewSetter(fileUrl);
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+            try {
+                const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+                console.log("Cloudinary response: ", data);
+                const imageUrl = data?.secure_url;
+
+                setter( (prev) => ({
+                    ...prev,
+                    image: imageUrl
+
+                }));
+
+                setSnackbar({ open: true, message: "Image uploaded successfully", severity: "success", });
+
+            } catch (error) {
+                //console.log("Error uploading image: ", error);
+                setSnackbar({ open: true, message: "Error uploading image", severity: "error", });
+
+            }
+        }
+    };
+
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -86,6 +125,8 @@ const CustomerTable = () => {
         setForm((prevForm) => ({ ...prevForm, [name]: value }));
 
     }
+
+    const [newCustomerImagePreview, setNewCustomerImagePreview] = useState<string | null>(null);
 
     const handleOpenAddModal = () => {
 
@@ -487,10 +528,19 @@ const CustomerTable = () => {
                         <input
                             type="file"
                             hidden
-                            accept="image/*"                           
+                            accept="image/*"
+                            onChange={ (e) => handleImageFileChange(e, setForm/* setNewCustomer */, setNewCustomerImagePreview) }
+                            
                         />
 
                     </Button>
+                    {newCustomerImagePreview && (
+                        <img 
+                            src={newCustomerImagePreview}
+                            alt="New Customer Image Preview"
+                            style={{width: '100px', height: '100px', marginTop: '10px'}}
+                        />
+                    )}
                     <Button
                         variant="contained"
                         sx={{
