@@ -118,6 +118,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   const [isCollapse, setIsCollapse] = React.useState(true);
   const [isCollapseUnits, setIsCollapseUnits] = React.useState(true);
   const [isCollapseSuppliers, setIsCollapseSuppliers] = React.useState(true);
+  const [isCollapseCustomers, setIsCollapseCustomers] = React.useState(true);
 
   const router = useRouter();
 
@@ -139,6 +140,10 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
 
   const handleCollapseSuppliers = () => {
     setIsCollapseSuppliers(!isCollapseSuppliers);
+  }
+
+  const handleCollapseCustomers = () => {
+    setIsCollapseCustomers(!isCollapseCustomers);
   }
 
   const handleNavigation = (path: String)=> {
@@ -475,6 +480,72 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
           }}
         />
         {/* end all suppliers */}
+
+
+
+        {/* start all customers */}
+
+        <List>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleCollapseCustomers}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon sx={{ color: "white" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Manage Customer"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+              {isCollapseCustomers ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={isCollapseCustomers} timeout="auto" unmountOnExit>
+            {["all-customers"].map((text, index) => (
+                <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+
+                    onClick={ ()=> handleNavigation(text) }
+                    sx={{ 
+                      minHeight: 48,
+                      px: 2.5,
+                      justifyContent: open ? "initial" : "center",
+                      marginLeft: "40px",
+                      color: "white",
+                      borderBottom: "2px solid white",
+                    }}
+                  >
+                    <ListItemText
+                      primary={text.replace(/-/g, " ")}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </Collapse>
+        </List>
+        <Divider
+          sx={{
+            borderColor: "white",
+            backgroundColor: "2px solid white",
+          }}
+        />
+        {/* end all customers */}
+
 
       </Drawer>
 
