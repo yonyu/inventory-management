@@ -30,7 +30,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { useAddCustomerMutation, useGetCustomersQuery, useDeleteCustomerMutation, useUpdateCustomerMutation } from "@/lib/features/customers/customersApiSlice";
 
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/upload`;
-const CLOUDINARY_UPLOAD_PRESET = "ml_default";
+const CLOUDINARY_UPLOAD_PRESET = "ml_default"; // It must be an unsigned preset for the current code to work
 
 
 const CustomerTable = () => {
@@ -41,7 +41,7 @@ const CustomerTable = () => {
 
     let customers: any;
     customers = data?.customers || [];
-    console.log("Customers", customers);
+    //console.log("Customers", customers);
 
     const [page, setPage] = React.useState(0);
 
@@ -80,27 +80,37 @@ const CustomerTable = () => {
         if (file) {
             const fileUrl = URL.createObjectURL(file);
             previewSetter(fileUrl);
+
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
             try {
+                // Upload image to an unsigned upload preset
                 const response = await fetch(CLOUDINARY_UPLOAD_URL, {
                     method: "POST",
                     body: formData,
                 });
 
-                const data = await response.json();
-                console.log("Cloudinary response: ", data);
-                const imageUrl = data?.secure_url;
-
-                setter( (prev) => ({
-                    ...prev,
-                    image: imageUrl
-
-                }));
-
-                setSnackbar({ open: true, message: "Image uploaded successfully", severity: "success", });
+                const image = await response.json();
+                //console.log("Cloudinary response: ", image);
+                
+                if (!response.ok) {
+                    //console.error("Cloudinary error:", image);
+                    setSnackbar({ open: true, message: `Upload failed: ${image?.error?.message || 'Invalid upload preset'}`, severity: "error", });
+                    return;
+                }
+                
+                const imageUrl = image?.secure_url;
+                if (imageUrl) {
+                    setter( (prev) => ({
+                        ...prev,
+                        image: imageUrl
+                    }));
+                    setSnackbar({ open: true, message: "Image uploaded successfully", severity: "success", });
+                } else {
+                    setSnackbar({ open: true, message: "No image URL returned", severity: "error", });
+                }
 
             } catch (error) {
                 //console.log("Error uploading image: ", error);
@@ -128,6 +138,11 @@ const CustomerTable = () => {
 
     const [newCustomerImagePreview, setNewCustomerImagePreview] = useState<string | null>(null);
 
+    // Debug: Monitor form changes
+    // useEffect(() => {
+    //     console.log("Form state changed:", form);
+    // }, [form]);
+
     const handleOpenAddModal = () => {
 
         setOpenAddModal(true);
@@ -149,7 +164,7 @@ const CustomerTable = () => {
             })
             .catch((error: any) => {
 
-                setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
+                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add customer", severity: "error", });
 
                 console.error("Error adding customer:", error);
             });
@@ -159,12 +174,14 @@ const CustomerTable = () => {
 
     const handleOpenDeleteModal = (customer: any) => {
         setSelectedCustomer(customer);
+        //console.log("Selecting Customer: ", customer);
         //setForm(customer);
         setOpenDeleteModal(true);
 
     }
 
     const handleDeleteCustomer = (/* selectedCustomer */) => {
+        //console.log("Deleting customer: ", selectedCustomer);
         deleteCustomer(selectedCustomer?._id).unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Customer deleted successfully", severity: "success", });
@@ -172,7 +189,8 @@ const CustomerTable = () => {
 
             })
             .catch((error: any) => {
-                setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
+                //console.log("Error deleting customer: ", selectedCustomer);
+                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete customer", severity: "error", });
             });
     }
 
@@ -329,7 +347,15 @@ const CustomerTable = () => {
                                     <TableCell>{customer.address}</TableCell>
                                     <TableCell>{customer.email}</TableCell>
                                     <TableCell>{customer.mobileNumber}</TableCell>
-                                    <TableCell>{customer.image}</TableCell>
+                                    <TableCell>
+                                        {/* <img src= {customer.image} alt="Customer image" height="40px" width="40px"/> */}
+                                        {customer.image && (<Box
+                                            component="img"
+                                            sx={{ height: 40, width: 40, borderRadius: "50%" }}
+                                            alt={customer.name}
+                                            src={customer.image}
+                                        />)}
+                                    </TableCell>
                                     <TableCell>
                                         <IconButton
                                             onClick={() => handleOpenEditModal(customer)}
@@ -491,10 +517,11 @@ const CustomerTable = () => {
                         required
                         fullWidth
                         variant="outlined"
-                        label="Image"
+                        label="Image URL"
                         name="image"
-                        value={form.image}
+                        value={form.image || ""}
                         onChange={handleFormChange}
+                        key={form.image} // Force re-render when image changes
                         slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
                             mt: 2,
@@ -530,7 +557,6 @@ const CustomerTable = () => {
                             hidden
                             accept="image/*"
                             onChange={ (e) => handleImageFileChange(e, setForm/* setNewCustomer */, setNewCustomerImagePreview) }
-                            
                         />
 
                     </Button>
@@ -774,20 +800,6 @@ const CustomerTable = () => {
                         &nbsp;&quot;{selectedCustomer?.name}&quot;?
                     </Typography>
                     <Button
-                        variant="contained"
-                        color="error"
-                        sx={{
-                            mt: 2,
-                            backgroundColor: "red",
-                            "&:hover": {
-                                backgroundColor: "darkred",
-                            },
-                        }}
-                        onClick={handleDeleteCustomer}
-                    >
-                        Delete
-                    </Button>
-                    <Button
                         onClick={handleCloseDeleteModal}
                         variant="outlined"
                         sx={{
@@ -801,6 +813,20 @@ const CustomerTable = () => {
                         }}
                     >
                         Cancel
+                    </Button>                    
+                    <Button
+                        variant="contained"
+                        color="error"
+                        sx={{
+                            mt: 2,
+                            backgroundColor: "red",
+                            "&:hover": {
+                                backgroundColor: "darkred",
+                            },
+                        }}
+                        onClick={handleDeleteCustomer}
+                    >
+                        Delete
                     </Button>
                 </Box>
             </Modal>
@@ -833,7 +859,7 @@ const modalStyle = {
     position: "absolute",
     top: "50%",
     left: "50%",
-    transform: "translate(-50%, -50%)",
+    transform: "translate(-90%, -90%)",
     backgroundcolor: "black",
     p: 4,
     borderRadius: 2,
