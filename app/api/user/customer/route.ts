@@ -30,9 +30,9 @@ export async function POST(req: Request) {
     await dbConnect();
 
     try {
-        const { name, email, phone, address, status } = await req.json();
+        const { name, email, mobileNumber, address, status, image } = await req.json();
 
-        const cust = await customer.create({ name, email, phone, address, status });
+        const cust = await customer.create({ name, email, mobileNumber, address, status, image });
 
         return NextResponse.json({ cust }, { status: 201 });
 
