@@ -4,11 +4,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 interface Customer {
     _id?: string;
     name: string;
-    mobileNumber: number;
-    image: string;
     address: string;
     status: boolean;
     email: string;
+    mobileNumber: number;
+    image: string;
 }
 
 interface CustomersApiResponse {
