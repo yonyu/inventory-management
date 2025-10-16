@@ -119,6 +119,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   const [isCollapseUnits, setIsCollapseUnits] = React.useState(true);
   const [isCollapseSuppliers, setIsCollapseSuppliers] = React.useState(true);
   const [isCollapseCustomers, setIsCollapseCustomers] = React.useState(true);
+  const [isCollapseProducts, setIsCollapseProducts] = React.useState(true);
 
   const router = useRouter();
 
@@ -144,6 +145,10 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
 
   const handleCollapseCustomers = () => {
     setIsCollapseCustomers(!isCollapseCustomers);
+  }
+
+  const handleCollapseProducts = () => {
+    setIsCollapseProducts(!isCollapseProducts);
   }
 
   const handleNavigation = (path: String)=> {
@@ -545,6 +550,70 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
           }}
         />
         {/* end all customers */}
+
+
+        {/* start all products */}
+
+        <List>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleCollapseProducts}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon sx={{ color: "white" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Manage Product"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+              {isCollapseProducts ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={isCollapseProducts} timeout="auto" unmountOnExit>
+            {["Products"].map((text, index) => (
+                <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
+                    sx={{ 
+                      minHeight: 48,
+                      px: 2.5,
+                      justifyContent: open ? "initial" : "center",
+                      marginLeft: "40px",
+                      color: "white",
+                      borderBottom: "2px solid white",
+                    }}
+                  >
+                    <ListItemText
+                      primary={text.replace(/-/g, " ")}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </Collapse>
+        </List>
+        <Divider
+          sx={{
+            borderColor: "white",
+            backgroundColor: "2px solid white",
+          }}
+        />
+        {/* end all products */}
 
 
       </Drawer>
