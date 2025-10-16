@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import dbConnect from "@/utils/dbConnect";
 
-import suppplier from "@/models/suppplier";
+import supplier from "@/models/supplier";
 
 
 export async function GET(req: Request) {
@@ -12,14 +12,14 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const name = searchParams.get('name');
 
-        let supppliers;
+        let suppliers;
         if (name) {
-            supppliers = await suppplier.find({ name: { $regex: name, $options: 'i' } }).sort({ createdAt: -1 });
+            suppliers = await supplier.find({ name: { $regex: name, $options: 'i' } }).sort({ createdAt: -1 });
         } else {
-            supppliers = await suppplier.find({}).sort({ createdAt: -1 });
+            suppliers = await supplier.find({}).sort({ createdAt: -1 });
         }
 
-        return NextResponse.json({ suppliers: supppliers }, { status: 200 });
+        return NextResponse.json({ suppliers: suppliers }, { status: 200 });
 
     } catch (error: any) {
         return NextResponse.json({ err: error.message }, { status: 500 });
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     try {
         const { name, email, phone, address, status } = await req.json();
 
-        const supp = await suppplier.create({ name, email, phone, address, status });
+        const supp = await supplier.create({ name, email, phone, address, status });
 
         return NextResponse.json({ supp }, { status: 201 });
 

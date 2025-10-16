@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import suppplier from "@/models/suppplier";
+import supplier from "@/models/supplier";
 
 import dbConnect from "@/utils/dbConnect";
 
@@ -23,7 +23,7 @@ export async function PUT(req: Request, { params } : { params: {id: string}}) {
             return NextResponse.json({ err: "Address is required" }, { status: 400 });
         };
 
-        const updatingSupp = await suppplier.findByIdAndUpdate(params.id, updateBody, { new: true });
+        const updatingSupp = await supplier.findByIdAndUpdate(params.id, updateBody, { new: true });
         if (!updatingSupp) {
             return NextResponse.json({ err: "Supplier not found" }, { status: 404 });
         }
@@ -39,7 +39,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     await dbConnect();
 
     try {
-        const deletingSupp = await suppplier.findByIdAndDelete(params.id);
+        const deletingSupp = await supplier.findByIdAndDelete(params.id);
         if (!deletingSupp) {
             return NextResponse.json({ err: "Supplier not found" }, { status: 404 });
         }
