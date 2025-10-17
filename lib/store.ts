@@ -8,6 +8,7 @@ import { categoriesApiSlice } from "./features/categories/categoriesApiSlice";
 import { unitsApiSlice } from "./features/units/unitsApiSlice";
 import { suppliersApiSlice } from "./features/suppliers/suppliersApiSlice";
 import { customersApiSlice } from "./features/customers/customersApiSlice";
+import { productsApiSlice } from "./features/products/productsApiSlice";
 
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
@@ -18,6 +19,7 @@ const rootReducer = combineSlices(
   unitsApiSlice,
   suppliersApiSlice,
   customersApiSlice,
+  productsApiSlice,
 );
 
 // Infer the `RootState` type from the root reducer
@@ -39,6 +41,7 @@ export const makeStore = () => {
         unitsApiSlice.middleware,
         suppliersApiSlice.middleware,
         customersApiSlice.middleware,
+        productsApiSlice.middleware,
       );
     },
   });

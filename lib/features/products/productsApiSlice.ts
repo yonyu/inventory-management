@@ -5,9 +5,10 @@ interface Product {
     _id?: string;
     name: string;
     quantity: number;
-    unit: string;
-    category: string;
-    supplier: string;
+    unit: string | { _id: string; name: string };
+    category: string | { _id: string; name: string };
+    supplier: string | { _id: string; name: string };
+    status: boolean;
 }
 
 interface ProductsApiResponse {
