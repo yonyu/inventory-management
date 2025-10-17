@@ -32,10 +32,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 import { useAddProductMutation, useGetProductsQuery, useDeleteProductMutation, useUpdateProductMutation } from "@/lib/features/products/productsApiSlice";
-import { useAddUnitMutation, useGetUnitsQuery, useDeleteUnitMutation, useUpdateUnitMutation } from "@/lib/features/units/unitsApiSlice";
-import { useAddSupplierMutation, useGetSuppliersQuery, useDeleteSupplierMutation, useUpdateSupplierMutation } from "@/lib/features/suppliers/suppliersApiSlice";
-import { useAddCategoryMutation, useGetCategoriesQuery, useDeleteCategoryMutation, useUpdateCategoryMutation } from "@/lib/features/categories/categoriesApiSlice";
-import { borderColor } from "@mui/system";
+import { useGetUnitsQuery } from "@/lib/features/units/unitsApiSlice";
+import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
+import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
 
 
 const ProductTable = () => {
@@ -95,15 +94,15 @@ const ProductTable = () => {
         severity: "success",
     });
 
-    const [form, setForm] = React.useState({
-        _id: "",
-        name: "",
-        supplier: "",
-        category: "",
-        unit: "",
-        status: true,
-        quantity: 0,
-    });
+    // const [form, setForm] = React.useState({
+    //     _id: "",
+    //     name: "",
+    //     supplier: "",
+    //     category: "",
+    //     unit: "",
+    //     status: true,
+    //     quantity: 0,
+    // });
 
     const [filter, setFilter] = useState("");
 
@@ -129,7 +128,7 @@ const ProductTable = () => {
 
     }
 
-    const [newProductImagePreview, setNewProductImagePreview] = useState<string | null>(null);
+    //const [newProductImagePreview, setNewProductImagePreview] = useState<string | null>(null);
 
     // Debug: Monitor form changes
     // useEffect(() => {
@@ -445,7 +444,7 @@ const ProductTable = () => {
                                 "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: 'blue',
                                 },
-                                "&MuiSvgIcon-root": {
+                                "& .MuiSvgIcon-root": {
                                     fill: 'white !important',
                                 },
                                 
@@ -483,7 +482,7 @@ const ProductTable = () => {
                                 "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: 'blue',
                                 },
-                                "&MuiSvgIcon-root": {
+                                "& .MuiSvgIcon-root": {
                                     fill: 'white !important',
                                 },
                                 
@@ -521,7 +520,7 @@ const ProductTable = () => {
                                 "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: 'blue',
                                 },
-                                "&MuiSvgIcon-root": {
+                                "& .MuiSvgIcon-root": {
                                     fill: 'white !important',
                                 },
                                 
@@ -645,7 +644,7 @@ const ProductTable = () => {
                     <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Supplier Name</InputLabel>
                         <Select
-                            value={editProduct.supplier}
+                            value={editProduct.supplier} // _id
                             onChange={(e) => setEditProduct({...editProduct, supplier: e.target.value})}
                             sx={{
                                 mt: 3,
@@ -659,13 +658,24 @@ const ProductTable = () => {
                                 "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: 'blue',
                                 },
-                                "&MuiSvgIcon-root": {
+                                "& .MuiSvgIcon-root": {
                                     fill: 'white !important',
+                                    color: 'white !important',
                                 },
                                 "& .MuiSelect-select": {
                                     color: 'white',
                                 },
                                 
+                            }}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        bgcolor: 'white',
+                                        "&MuiMenuItem-root": {
+                                            color: 'white',
+                                        }
+                                    }
+                                }
                             }}
                         >
                             {
@@ -687,7 +697,11 @@ const ProductTable = () => {
                         <InputLabel>Unit Name</InputLabel>
                         <Select
                             value={editProduct.unit}
-                            onChange={(e) => setEditProduct({...editProduct, unit: e.target.value})}
+                            onChange={(e) => {
+                                // const selectedUnit = units.find((unit:any) => unit._id === e.target.value);
+                                // setEditProduct({...editProduct, unit: selectedUnit});
+                                setEditProduct({...editProduct, unit: e.target.value});
+                            }}
                             sx={{
                                 mt: 3,
                                 color: "white",
@@ -700,13 +714,23 @@ const ProductTable = () => {
                                 "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: 'blue',
                                 },
-                                "&MuiSvgIcon-root": {
+                                "& .MuiSvgIcon-root": {
                                     fill: 'white !important',
                                 },
                                 "& .MuiSelect-select": {
                                     color: 'white',
                                 },
                                 
+                            }}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        bgcolor: 'white',
+                                        "&MuiMenuItem-root": {
+                                            color: 'white',
+                                        }
+                                    }
+                                }
                             }}
                         >
                             {
@@ -741,7 +765,7 @@ const ProductTable = () => {
                                 "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: 'blue',
                                 },
-                                "&MuiSvgIcon-root": {
+                                "& .MuiSvgIcon-root": {
                                     fill: 'white !important',
                                 },
                                 "& .MuiSelect-select": {
@@ -752,7 +776,7 @@ const ProductTable = () => {
                             MenuProps={{
                                 PaperProps: {
                                     sx: {
-                                        bgcolor: 'black',
+                                        bgcolor: 'white',
                                         "&MuiMenuItem-root": {
                                             color: 'white',
                                         }

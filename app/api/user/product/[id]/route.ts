@@ -5,17 +5,18 @@ import Product from "@/models/product";
 import dbConnect from "@/utils/dbConnect";
 
 
-export async function PUT(req: Request, { params }: { params: { id: string } })
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> })
  {
     await dbConnect();
 
     try {
+        const { id } = await params;
         const { ...updateBody } = await req.json();
         if (!updateBody.name) {
             return NextResponse.json({ err: "Name is required" }, { status: 400 });
         };
 
-        const updatingProduct = await Product.findByIdAndUpdate(params.id, updateBody, { new: true });
+        const updatingProduct = await Product.findByIdAndUpdate(id, updateBody, { new: true });
         if (!updatingProduct) {
             return NextResponse.json({ err: "Product not found" }, { status: 404 });
         }
@@ -27,11 +28,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } })
     }   
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect();
 
     try {
-        const deletingProduct = await Product.findByIdAndDelete(params.id);
+        const { id } = await params;
+        const deletingProduct = await Product.findByIdAndDelete(id);
         if (!deletingProduct) {
             return NextResponse.json({ err: "Product not found" }, { status: 404 });
         }
