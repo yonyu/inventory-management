@@ -8,11 +8,11 @@ export async function GET(req: Request) {
 
     try {
         const { searchParams } = new URL(req.url);
-        const name = searchParams.get('name');
+        const order_number = searchParams.get('order_number');
 
         let orders;
-        if (name) {
-            orders = await Order.find({ name: { $regex: name, $options: 'i' } })
+        if (order_number) {
+            orders = await Order.find({ order_number: { $regex: order_number, $options: 'i' } })
                 .populate('product')
                 .populate('category')
                 .populate('supplier');
@@ -56,9 +56,9 @@ export async function POST(req: Request) {
         // return NextResponse.json({ order: savedOrder }, { status: 201 });
 
 
-        const { product, supplier, category, date, order_number, decription, quantity, unit_price, total_cost, status, deletedAt, deleted } = await req.json();
+        const { product, supplier, category, date, order_number, description, quantity, unit_price, total_cost, status, deletedAt, deleted } = await req.json();
 
-        const order = await Order.create({ product, supplier, category, date, order_number, decription, quantity, unit_price, total_cost, status, deletedAt, deleted });
+        const order = await Order.create({ product, supplier, category, date, order_number, description, quantity, unit_price, total_cost, status, deletedAt, deleted });
 
         return NextResponse.json({ order: order }, { status: 201 });
 

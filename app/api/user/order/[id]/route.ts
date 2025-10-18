@@ -10,9 +10,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     try {
         const { id } = await params;
         const { ...updateBody } = await req.json();
-        if (!updateBody.name) {
-            return NextResponse.json({ err: "Name is required" }, { status: 400 });
-        };
+        // if (!updateBody.name) {
+        //     return NextResponse.json({ err: "Name is required" }, { status: 400 });
+        // };
 
         const order = await Order.findById(id);
         if (!order) {

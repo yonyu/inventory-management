@@ -42,14 +42,14 @@ const OrderTable = () => {
     const dispatch = useAppDispatch();
 
     const { data: orderData, error, isLoading: loading } = useGetOrdersQuery();
-
     const { data: productData} = useGetProductsQuery();
     const { data: supplierData } = useGetSuppliersQuery();
     const { data: categoryData } = useGetCategoriesQuery();
 
     let orders: any;
     orders = orderData?.orders || [];
-    //console.log("Orders", orders);
+    console.log("Orders", orders);
+
     let products: any;
     products = productData?.products || [];
     let suppliers: any;
@@ -142,71 +142,65 @@ const OrderTable = () => {
     };
 
     const handleAddOrder = () => {
-        //const { _id, ...newProduct } = form;
         addOrder(newOrder)
             .unwrap()
             .then(() => {
-                setSnackbar({ open: true, message: "Product added successfully", severity: "success", });
+                setSnackbar({ open: true, message: "Order added successfully", severity: "success", });
 
                 handleCloseAddModal();
 
             })
             .catch((error: any) => {
 
-                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add product", severity: "error", });
+                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add order", severity: "error", });
 
-                console.error("Error adding product:", error);
+                console.error("Error adding order:", error);
             });
     }
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
-    const handleOpenDeleteModal = (product: any) => {
-        setSelectedOrder(product);
-        //console.log("Selecting Product: ", product);
-        //setForm(product);
+    const handleOpenDeleteModal = (order: any) => {
+        setSelectedOrder(order);
         setOpenDeleteModal(true);
 
     }
 
-    const handleDeleteProduct = (/* selectedProduct */) => {
-        //console.log("Deleting product: ", selectedProduct);
+    const handleDeleteOrder = () => {
         deleteOrder(selectedOrder?._id).unwrap()
             .then(() => {
-                setSnackbar({ open: true, message: "Product deleted successfully", severity: "success", });
+                setSnackbar({ open: true, message: "Order deleted successfully", severity: "success", });
                 handleCloseDeleteModal();
 
             })
             .catch((error: any) => {
-                //console.log("Error deleting product: ", selectedProduct);
-                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete product", severity: "error", });
+                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete order", severity: "error", });
             });
     }
 
-    const handleOpenEditModal = (product: any) => {
+    const handleOpenEditModal = (order: any) => {
         setOpenEditModal(true);
-        setSelectedOrder(product);
+        setSelectedOrder(order);
         setEditOrder({ 
-            ...product,
-            category: typeof product.category === 'object' ? product.category._id : product.category,
-            unit: typeof product.unit === 'object' ? product.unit._id : product.unit,
-            supplier: typeof product.supplier === 'object' ? product.supplier._id : product.supplier
+            ...order,
+            product: typeof order.product === 'object' ? order.product._id : order.product,
+            category: typeof order.category === 'object' ? order.category._id : order.category,
+            supplier: typeof order.supplier === 'object' ? order.supplier._id : order.supplier
         });
-        //setForm(product);
     };
 
     const handleCloseEditModal = () => setOpenEditModal(false);
 
-    const handleEditProduct = () => {
+    const handleEditOrder = () => {
         const { _id, ...data } = editOrder;
         updateOrder({ _id, data })
             .unwrap()
             .then(() => {
-                setSnackbar({ open: true, message: "Product updated successfully", severity: "success", });
+                setSnackbar({ open: true, message: "Order updated successfully", severity: "success", });
                 handleCloseEditModal();
             })
             .catch((error: any) => {
-                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update product", severity: "error", });
+                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update order", severity: "error", });
             });
 
     }
@@ -216,10 +210,11 @@ const OrderTable = () => {
     };
 
 
-    const filteredOrders = orders.filter((order: any) =>
-
-        order?.name?.toLowerCase().includes(filter.toLowerCase())
-    )
+    const filteredOrders = orders.filter((order: any) => {
+        //order?.name?.toLowerCase().includes(filter.toLowerCase());
+        return order?.product?.name.toLowerCase().includes(filter.toLowerCase()) ||
+               order?.supplier?.name.toLowerCase().includes(filter.toLowerCase());
+    });
 
 
     const handleFilterChange = (e: any) => {
@@ -341,15 +336,18 @@ const OrderTable = () => {
                                 <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
                             </TableRow>
                         ) : (
+                            
+                            
                             filteredOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order: any, index: number) => (
                                 <TableRow key={order._id}>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
 
                                     <TableCell>{order?.order_number}</TableCell>
 
-                                    <TableCell>{order?.product.name}</TableCell>
+                                    <TableCell>{order?.product?.name}</TableCell>
                                     <TableCell>{order?.supplier?.name}</TableCell>
                                     <TableCell>{order?.category?.name}</TableCell>
+
                                     <TableCell>{order?.description}</TableCell>
                                     <TableCell>{order?.quantity}</TableCell>
                                     <TableCell>{order?.unit_price}</TableCell>
@@ -398,17 +396,17 @@ const OrderTable = () => {
                 />
             </TableContainer>
 
-            {/* start add product modal */}
-            {/* <Modal
+            {/* start add order modal */}
+            <Modal
                 open={openAddModal}
                 onClose={handleCloseAddModal}
-                aria-labelledby="add-product-modal"
-                aria-describedby="add-product-modal-description"
+                aria-labelledby="add-order-modal"
+                aria-describedby="add-order-modal-description"
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="add-product-modal" variant="h6" component="h2">
-                        Add Product
+                    <Typography id="add-order-modal" variant="h6" component="h2">
+                        Add Order
                     </Typography>
                     <TextField
                         fullWidth
@@ -550,6 +548,33 @@ const OrderTable = () => {
                         </Select>
                     </FormControl>
 
+
+                    <TextField
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Description"
+                        name="description"
+                        value={newOrder.description || ""}
+                        onChange={(e) => setNewOrder({ ...newOrder, description: e.target.value })}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white", },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />
+
                     <TextField
                         type="number"
                         required
@@ -576,15 +601,42 @@ const OrderTable = () => {
                             },
                         }}
                     />
-
                     <TextField
+                        type="number"
                         required
                         fullWidth
                         variant="outlined"
-                        label="Description"
-                        name="description"
-                        value={newOrder.quantity || ""}
-                        onChange={(e) => setNewOrder({ ...newOrder, description: e.target.value })}
+                        label="Unit Price"
+                        name="unit_price"
+                        value={newOrder.unit_price || ""}
+                        onChange={(e) => setNewOrder({ ...newOrder, unit_price: parseInt(e.target.value) })}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white", },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />
+
+                    <TextField
+                        type="number"
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Total Cost"
+                        name="total_cost"
+                        value={newOrder.total_cost || ""}
+                        onChange={(e) => setNewOrder({ ...newOrder, total_cost: parseInt(e.target.value) })}
                         slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
                             mt: 2,
@@ -633,31 +685,31 @@ const OrderTable = () => {
                         Cancel
                     </Button>
                 </Box>
-            </Modal> */}
+            </Modal>
 
-            {/* end add product modal */}
+            {/* end add order modal */}
 
 
-            {/* start edit product modal */}
-            {/* <Modal
+            {/* start edit order modal */}
+            <Modal
                 open={openEditModal}
                 onClose={handleCloseEditModal}
-                aria-labelledby="edit-product-modal"
-                aria-describedby="edit-product-modal-description"
+                aria-labelledby="edit-order-modal"
+                aria-describedby="edit-order-modal-description"
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="edit-product-modal" variant="h6" component="h2">
-                        Edit Product
+                    <Typography id="edit-order-modal" variant="h6" component="h2">
+                        Edit Order
                     </Typography>
 
                     <TextField
                         fullWidth
                         variant="outlined"
-                        label="Name"
-                        name="name"
-                        value={editOrder.name}
-                        onChange={(e) => setEditOrder({...editOrder, name: e.target.value})}
+                        label="Order #"
+                        name="order_number"
+                        value={editOrder.order_number}
+                        onChange={(e) => setEditOrder({...editOrder, order_number: e.target.value})}
                         required
                         slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
@@ -676,6 +728,62 @@ const OrderTable = () => {
                             },
                         }}
                     />
+
+                   <FormControl fullWidth sx={{ mb: 2}}>
+                        <InputLabel>Product Name</InputLabel>
+                        <Select
+                            value={editOrder.product}
+                            onChange={(e) => {
+                                // const selectedUnit = units.find((unit:any) => unit._id === e.target.value);
+                                // setEditOrder({...editOrder, unit: selectedUnit});
+                                setEditOrder({...editOrder, product: e.target.value});
+                            }}
+                            sx={{
+                                mt: 3,
+                                color: "white",
+                                ".MuiOutlinedInput-notchedOutline": {
+                                    borderColor: 'blue',
+                                },
+                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: 'blue',
+                                },
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: 'blue',
+                                },
+                                "& .MuiSvgIcon-root": {
+                                    fill: 'white !important',
+                                },
+                                "& .MuiSelect-select": {
+                                    color: 'white',
+                                },
+                                
+                            }}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        bgcolor: 'white',
+                                        "&MuiMenuItem-root": {
+                                            color: 'white',
+                                        }
+                                    }
+                                }
+                            }}
+                        >
+                            {
+                                products && products?.map((u: any, index: number) => (
+                                    <MenuItem
+                                        key={index}
+                                        value={u._id}
+                                    >
+                                        {u.name}
+                                    </MenuItem>
+
+                                  ))
+                            }
+
+                        </Select>
+                    </FormControl>
+
                     <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Supplier Name</InputLabel>
                         <Select
@@ -728,62 +836,7 @@ const OrderTable = () => {
                         </Select>
                     </FormControl>
 
-                    <FormControl fullWidth sx={{ mb: 2}}>
-                        <InputLabel>Unit Name</InputLabel>
-                        <Select
-                            value={editOrder.unit}
-                            onChange={(e) => {
-                                // const selectedUnit = units.find((unit:any) => unit._id === e.target.value);
-                                // setEditProduct({...editProduct, unit: selectedUnit});
-                                setEditOrder({...editOrder, unit: e.target.value});
-                            }}
-                            sx={{
-                                mt: 3,
-                                color: "white",
-                                ".MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
-                                },
-                                "& .MuiSelect-select": {
-                                    color: 'white',
-                                },
-                                
-                            }}
-                            MenuProps={{
-                                PaperProps: {
-                                    sx: {
-                                        bgcolor: 'white',
-                                        "&MuiMenuItem-root": {
-                                            color: 'white',
-                                        }
-                                    }
-                                }
-                            }}
-                        >
-                            {
-                                units && units?.map((u: any, index: number) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={u._id}
-                                    >
-                                        {u.name}
-                                    </MenuItem>
-
-                                  ))
-                            }
-
-                        </Select>
-                    </FormControl>
-
-                    <FormControl fullWidth sx={{ mb: 2}}>
+                     <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Category Name</InputLabel>
                         <Select
                             value={editOrder.category}
@@ -835,6 +888,32 @@ const OrderTable = () => {
                     </FormControl>
 
                     <TextField
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Description"
+                        name="description"
+                        value={editOrder.description || ""}
+                        onChange={(e) => setEditOrder({...editOrder, description: e.target.value})}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white", },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />                    
+
+                    <TextField
                         type="number"
                         required
                         fullWidth
@@ -860,9 +939,65 @@ const OrderTable = () => {
                             },
                         }}
                     />
+
+  
+                    <TextField
+                        type="number"
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Unit Price"
+                        name="unit_price"
+                        value={editOrder.unit_price || ""}
+                        onChange={(e) => setEditOrder({...editOrder, unit_price: parseInt(e.target.value)})}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white", },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />
+
+                    
+                    <TextField
+                        type="number"
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Total Cost"
+                        name="total_cost"
+                        value={editOrder.total_cost || ""}
+                        onChange={(e) => setEditOrder({...editOrder, total_cost: parseInt(e.target.value)})}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white", },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />                  
                     <Button
                         variant="contained"
-                        onClick={handleEditProduct}
+                        onClick={handleEditOrder}
                         sx={{
                             mt: 2,
                             backgroundColor: "blue",
@@ -889,26 +1024,26 @@ const OrderTable = () => {
                         Cancel
                     </Button>
                 </Box>
-            </Modal> */}
+            </Modal>
 
-            {/* end edit product modal */}
+            {/* end edit order modal */}
 
 
-            {/* start delete product modal */}
-            {/* <Modal
+            {/* start delete order modal */}
+            <Modal
                 open={openDeleteModal}
                 onClose={handleCloseDeleteModal}
-                aria-labelledby="delete-product-modal"
-                aria-describedby="delet-product-modal-description"
+                aria-labelledby="delete-order-modal"
+                aria-describedby="delet-order-modal-description"
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="delete-product-modal" variant="h6" component="h2">
-                        Delete Product
+                    <Typography id="delete-order-modal" variant="h6" component="h2">
+                        Delete Order
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
-                        Are you sure you want to delete
-                        &nbsp;&quot;{selectedOrder?.name}&quot;?
+                        Are you sure you want to delete order
+                        &nbsp;&quot;{selectedOrder?.order_number}&quot;?
                     </Typography>
                     <Button
                         onClick={handleCloseDeleteModal}
@@ -935,14 +1070,14 @@ const OrderTable = () => {
                                 backgroundColor: "darkred",
                             },
                         }}
-                        onClick={handleDeleteProduct}
+                        onClick={handleDeleteOrder}
                     >
                         Delete
                     </Button>
                 </Box>
-            </Modal> */}
+            </Modal>
 
-            {/* end delete product modal */}
+            {/* end delete order modal */}
 
 
             {/* snackbar */}
@@ -963,7 +1098,7 @@ const OrderTable = () => {
 
         </Box>
     );
-} // end ProductTable()
+} // end OrderTable()
 
 
 const modalStyle = {

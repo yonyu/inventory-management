@@ -8,11 +8,14 @@ interface Order {
     supplier: string | { _id: string; name: string };
     category: string | { _id: string; name: string };
     date: string; 
+
     order_number: string; 
-    decription: string; 
+
+    description: string; 
     quantity: number; 
     unit_price: number; 
     total_cost: number; 
+
     status: boolean; 
     deletedAt: string; 
     deleted: boolean;
