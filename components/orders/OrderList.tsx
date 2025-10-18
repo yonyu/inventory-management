@@ -26,13 +26,13 @@ import {
 } from "@mui/material";
 
 import Grid from '@mui/material/Grid';
-import { Edit, Delete, Add, Refresh } from "@mui/icons-material";
+import { Edit, Delete, Add, Refresh, Description } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
-import { useAddProductMutation, useGetProductsQuery, useDeleteProductMutation, useUpdateProductMutation } from "@/lib/features/products/productsApiSlice";
-import { useGetUnitsQuery } from "@/lib/features/units/unitsApiSlice";
+import { useAddOrderMutation, useGetOrdersQuery, useDeleteOrderMutation, useUpdateOrderMutation } from "@/lib/features/orders/ordersApiSlice";
+import { useGetProductsQuery } from "@/lib/features/products/productsApiSlice";
 import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
 
@@ -41,17 +41,17 @@ const OrderTable = () => {
 
     const dispatch = useAppDispatch();
 
-    const { data: productData, error, isLoading: loading } = useGetProductsQuery();
-    const { data: unitData } = useGetUnitsQuery();
+    const { data: orderData, error, isLoading: loading } = useGetOrdersQuery();
+
+    const { data: productData} = useGetProductsQuery();
     const { data: supplierData } = useGetSuppliersQuery();
     const { data: categoryData } = useGetCategoriesQuery();
 
+    let orders: any;
+    orders = orderData?.orders || [];
+    //console.log("Orders", orders);
     let products: any;
     products = productData?.products || [];
-    //console.log("Products", products);
-    let units: any;
-    units = unitData?.units || [];
-    console.log("Units", units);
     let suppliers: any;
     suppliers = supplierData?.suppliers || [];
     console.log("Suppliers", suppliers);
@@ -64,28 +64,44 @@ const OrderTable = () => {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const [openAddModal, setOpenAddModal] = React.useState(false);
-    const [newProduct, setNewProduct] = useState({
+    const [newOrder, setNewOrder] = useState({
         _id: "",
-        name: "",
+        product: "",
         supplier: "",
         category: "",
-        unit: "",
-        status: true,
+        date: "",
+        order_number: "",
+        description: "",
+
         quantity: 0,
+        unit_price: 0,
+        total_cost: 0,
+
+        status: false, // true when it is fulfilled
+        deletedAt: "",
+        deleted: false,
     });
 
-    const [editProduct, setEditProduct] = useState({
+    const [editOrder, setEditOrder] = useState({
         _id: "",
-        name: "",
+        product: "",
         supplier: "",
         category: "",
-        unit: "",
-        status: true,
+        date: "",
+        order_number: "",
+        description: "",
+
         quantity: 0,
+        unit_price: 0,
+        total_cost: 0,
+
+        status: false, // true when it is fulfilled
+        deletedAt: "",
+        deleted: false,
     });
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<any>(null);
+    const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [openEditModal, setOpenEditModal] = useState(false);
 
     const [snackbar, setSnackbar] = useState({
@@ -94,21 +110,11 @@ const OrderTable = () => {
         severity: "success",
     });
 
-    // const [form, setForm] = React.useState({
-    //     _id: "",
-    //     name: "",
-    //     supplier: "",
-    //     category: "",
-    //     unit: "",
-    //     status: true,
-    //     quantity: 0,
-    // });
-
     const [filter, setFilter] = useState("");
 
-    const [addProduct] = useAddProductMutation();
-    const [deleteProduct] = useDeleteProductMutation();
-    const [updateProduct] = useUpdateProductMutation();
+    const [addOrder] = useAddOrderMutation();
+    const [deleteOrder] = useDeleteOrderMutation();
+    const [updateOrder] = useUpdateOrderMutation();
 
     
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -120,15 +126,6 @@ const OrderTable = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-
-    const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        //setForm((prevForm) => ({ ...prevForm, [name]: value }));
-        setNewProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
-
-    }
-
-    //const [newProductImagePreview, setNewProductImagePreview] = useState<string | null>(null);
 
     // Debug: Monitor form changes
     // useEffect(() => {
@@ -144,9 +141,9 @@ const OrderTable = () => {
         setOpenAddModal(false);
     };
 
-    const handleAddProduct = () => {
+    const handleAddOrder = () => {
         //const { _id, ...newProduct } = form;
-        addProduct(newProduct)
+        addOrder(newOrder)
             .unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Product added successfully", severity: "success", });
@@ -165,7 +162,7 @@ const OrderTable = () => {
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
     const handleOpenDeleteModal = (product: any) => {
-        setSelectedProduct(product);
+        setSelectedOrder(product);
         //console.log("Selecting Product: ", product);
         //setForm(product);
         setOpenDeleteModal(true);
@@ -174,7 +171,7 @@ const OrderTable = () => {
 
     const handleDeleteProduct = (/* selectedProduct */) => {
         //console.log("Deleting product: ", selectedProduct);
-        deleteProduct(selectedProduct?._id).unwrap()
+        deleteOrder(selectedOrder?._id).unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Product deleted successfully", severity: "success", });
                 handleCloseDeleteModal();
@@ -188,8 +185,8 @@ const OrderTable = () => {
 
     const handleOpenEditModal = (product: any) => {
         setOpenEditModal(true);
-        setSelectedProduct(product);
-        setEditProduct({ 
+        setSelectedOrder(product);
+        setEditOrder({ 
             ...product,
             category: typeof product.category === 'object' ? product.category._id : product.category,
             unit: typeof product.unit === 'object' ? product.unit._id : product.unit,
@@ -201,8 +198,8 @@ const OrderTable = () => {
     const handleCloseEditModal = () => setOpenEditModal(false);
 
     const handleEditProduct = () => {
-        const { _id, ...data } = editProduct;
-        updateProduct({ _id, data })
+        const { _id, ...data } = editOrder;
+        updateOrder({ _id, data })
             .unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Product updated successfully", severity: "success", });
@@ -219,9 +216,9 @@ const OrderTable = () => {
     };
 
 
-    const filteredProducts = products.filter((product: any) =>
+    const filteredOrders = orders.filter((order: any) =>
 
-        product?.name?.toLowerCase().includes(filter.toLowerCase())
+        order?.name?.toLowerCase().includes(filter.toLowerCase())
     )
 
 
@@ -245,7 +242,7 @@ const OrderTable = () => {
                 }}
 
             >
-                Products
+                Purchase Orders
             </Typography>
 
             <Button
@@ -290,7 +287,7 @@ const OrderTable = () => {
                         }}
                     />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 4 }}>     {/* <Grid item xs={12} sm={4}> */}
+                <Grid size={{ xs: 12, sm: 4 }}>
                     <Button
                         fullWidth
                         variant="contained"
@@ -304,7 +301,7 @@ const OrderTable = () => {
                             height: "100%",
                         }}
                     >
-                        Add Product
+                        Add Order
                     </Button>
                 </Grid>
             </Grid>
@@ -314,11 +311,17 @@ const OrderTable = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>S.No</TableCell>
+                            <TableCell>Order Number</TableCell>
+
                             <TableCell>Product Name</TableCell>
                             <TableCell>Supplier Name</TableCell>
-                            <TableCell>Unit Name</TableCell>
                             <TableCell>Category Name</TableCell>
+
+                            <TableCell>Description</TableCell>
                             <TableCell>Quantity</TableCell>
+                            <TableCell>Unit Price</TableCell>
+                            <TableCell>Total Cost</TableCell>
+
                             <TableCell>Actions</TableCell>                           
                         </TableRow>
                     </TableHead>
@@ -338,17 +341,22 @@ const OrderTable = () => {
                                 <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
                             </TableRow>
                         ) : (
-                            filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((product: any, index: number) => (
-                                <TableRow key={product._id}>
+                            filteredOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order: any, index: number) => (
+                                <TableRow key={order._id}>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                    <TableCell>{product?.name}</TableCell>
-                                    <TableCell>{product?.supplier?.name}</TableCell>
-                                    <TableCell>{product?.unit?.name}</TableCell>
-                                    <TableCell>{product?.category?.name}</TableCell>
-                                    <TableCell>{product?.quantity}</TableCell>
+
+                                    <TableCell>{order?.order_number}</TableCell>
+
+                                    <TableCell>{order?.product.name}</TableCell>
+                                    <TableCell>{order?.supplier?.name}</TableCell>
+                                    <TableCell>{order?.category?.name}</TableCell>
+                                    <TableCell>{order?.description}</TableCell>
+                                    <TableCell>{order?.quantity}</TableCell>
+                                    <TableCell>{order?.unit_price}</TableCell>
+                                    <TableCell>{order?.total_cost}</TableCell>
                                     <TableCell>
                                         <IconButton
-                                            onClick={() => handleOpenEditModal(product)}
+                                            onClick={() => handleOpenEditModal(order)}
                                             sx={{ color: "blue" }}
                                         >
                                             <Edit
@@ -361,7 +369,7 @@ const OrderTable = () => {
                                             />
                                         </IconButton>
                                         <IconButton
-                                            onClick={() => handleOpenDeleteModal(product)}
+                                            onClick={() => handleOpenDeleteModal(order)}
                                         >
                                             <Delete
                                                 sx={{
@@ -381,7 +389,7 @@ const OrderTable = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={filteredProducts.length}
+                    count={filteredOrders.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
@@ -391,7 +399,7 @@ const OrderTable = () => {
             </TableContainer>
 
             {/* start add product modal */}
-            <Modal
+            {/* <Modal
                 open={openAddModal}
                 onClose={handleCloseAddModal}
                 aria-labelledby="add-product-modal"
@@ -405,10 +413,10 @@ const OrderTable = () => {
                     <TextField
                         fullWidth
                         variant="outlined"
-                        label="Name"
-                        name="name"
-                        value={newProduct.name}
-                        onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                        label="Order #"
+                        name="order_number"
+                        value={newOrder.order_number}
+                        onChange={(e) => setNewOrder({ ...newOrder, order_number: e.target.value })}
                         required
                         slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
@@ -427,11 +435,50 @@ const OrderTable = () => {
                             },
                         }}
                     />
+
+                    <FormControl fullWidth sx={{ mb: 2}}>
+                        <InputLabel>Product Name</InputLabel>
+                        <Select
+                            value={newOrder.product}
+                            onChange={(e) => setNewOrder({...newOrder, product: e.target.value})}
+                            sx={{
+                                mt: 3,
+                                color: "white",
+                                ".MuiOutlinedInput-notchedOutline": {
+                                    borderColor: 'blue',
+                                },
+                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: 'blue',
+                                },
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                    borderColor: 'blue',
+                                },
+                                "& .MuiSvgIcon-root": {
+                                    fill: 'white !important',
+                                },
+                                
+                            }}
+                        >
+                            {
+                                products && products?.map((p: any, index: number) => (
+                                    <MenuItem
+                                        key={index}
+                                        value={p._id}
+                                    >
+                                        {p.name}
+                                    </MenuItem>
+
+                                  ))
+                            }
+
+                        </Select>
+                    </FormControl>
+
                     <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Supplier Name</InputLabel>
                         <Select
-                            value={newProduct.supplier}
-                            onChange={(e) => setNewProduct({...newProduct, supplier: e.target.value})}
+                            value={newOrder.supplier}
+                            onChange={(e) => setNewOrder({...newOrder, supplier: e.target.value})}
                             sx={{
                                 mt: 3,
                                 color: "white",
@@ -466,48 +513,10 @@ const OrderTable = () => {
                     </FormControl>
 
                     <FormControl fullWidth sx={{ mb: 2}}>
-                        <InputLabel>Unit Name</InputLabel>
-                        <Select
-                            value={newProduct.unit}
-                            onChange={(e) => setNewProduct({...newProduct, unit: e.target.value})}
-                            sx={{
-                                mt: 3,
-                                color: "white",
-                                ".MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
-                                },
-                                
-                            }}
-                        >
-                            {
-                                units && units?.map((u: any, index: number) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={u._id}
-                                    >
-                                        {u.name}
-                                    </MenuItem>
-
-                                  ))
-                            }
-
-                        </Select>
-                    </FormControl>
-
-                    <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Category Name</InputLabel>
                         <Select
-                            value={newProduct.category}
-                            onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                            value={newOrder.category}
+                            onChange={(e) => setNewOrder({...newOrder, category: e.target.value})}
                             sx={{
                                 mt: 3,
                                 color: "white",
@@ -548,8 +557,34 @@ const OrderTable = () => {
                         variant="outlined"
                         label="Quantity"
                         name="quantity"
-                        value={newProduct.quantity || ""}
-                        onChange={handleFormChange}
+                        value={newOrder.quantity || ""}
+                        onChange={(e) => setNewOrder({ ...newOrder, quantity: parseInt(e.target.value) })}
+                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
+                        sx={{
+                            mt: 2,
+                            input: { color: "white", },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "blue",
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "blue",
+                                },
+                            },
+                        }}
+                    />
+
+                    <TextField
+                        required
+                        fullWidth
+                        variant="outlined"
+                        label="Description"
+                        name="description"
+                        value={newOrder.quantity || ""}
+                        onChange={(e) => setNewOrder({ ...newOrder, description: e.target.value })}
                         slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
                             mt: 2,
@@ -578,7 +613,7 @@ const OrderTable = () => {
                                 backgroundColor: "blue",
                             },
                         }}
-                        onClick={handleAddProduct}
+                        onClick={handleAddOrder}
                     >
                         Add
                     </Button>
@@ -598,13 +633,13 @@ const OrderTable = () => {
                         Cancel
                     </Button>
                 </Box>
-            </Modal>
+            </Modal> */}
 
             {/* end add product modal */}
 
 
             {/* start edit product modal */}
-            <Modal
+            {/* <Modal
                 open={openEditModal}
                 onClose={handleCloseEditModal}
                 aria-labelledby="edit-product-modal"
@@ -621,8 +656,8 @@ const OrderTable = () => {
                         variant="outlined"
                         label="Name"
                         name="name"
-                        value={editProduct.name}
-                        onChange={(e) => setEditProduct({...editProduct, name: e.target.value})}
+                        value={editOrder.name}
+                        onChange={(e) => setEditOrder({...editOrder, name: e.target.value})}
                         required
                         slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
@@ -644,8 +679,8 @@ const OrderTable = () => {
                     <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Supplier Name</InputLabel>
                         <Select
-                            value={editProduct.supplier} // _id
-                            onChange={(e) => setEditProduct({...editProduct, supplier: e.target.value})}
+                            value={editOrder.supplier} // _id
+                            onChange={(e) => setEditOrder({...editOrder, supplier: e.target.value})}
                             sx={{
                                 mt: 3,
                                 color: "white",
@@ -696,11 +731,11 @@ const OrderTable = () => {
                     <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Unit Name</InputLabel>
                         <Select
-                            value={editProduct.unit}
+                            value={editOrder.unit}
                             onChange={(e) => {
                                 // const selectedUnit = units.find((unit:any) => unit._id === e.target.value);
                                 // setEditProduct({...editProduct, unit: selectedUnit});
-                                setEditProduct({...editProduct, unit: e.target.value});
+                                setEditOrder({...editOrder, unit: e.target.value});
                             }}
                             sx={{
                                 mt: 3,
@@ -751,8 +786,8 @@ const OrderTable = () => {
                     <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Category Name</InputLabel>
                         <Select
-                            value={editProduct.category}
-                            onChange={(e) => setEditProduct({...editProduct, category: e.target.value})}
+                            value={editOrder.category}
+                            onChange={(e) => setEditOrder({...editOrder, category: e.target.value})}
                             sx={{
                                 mt: 3,
                                 color: "white",
@@ -806,8 +841,8 @@ const OrderTable = () => {
                         variant="outlined"
                         label="Quantity"
                         name="quantity"
-                        value={editProduct.quantity || ""}
-                        onChange={(e) => setEditProduct({...editProduct, quantity: parseInt(e.target.value)})}
+                        value={editOrder.quantity || ""}
+                        onChange={(e) => setEditOrder({...editOrder, quantity: parseInt(e.target.value)})}
                         slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                         sx={{
                             mt: 2,
@@ -854,13 +889,13 @@ const OrderTable = () => {
                         Cancel
                     </Button>
                 </Box>
-            </Modal>
+            </Modal> */}
 
             {/* end edit product modal */}
 
 
             {/* start delete product modal */}
-            <Modal
+            {/* <Modal
                 open={openDeleteModal}
                 onClose={handleCloseDeleteModal}
                 aria-labelledby="delete-product-modal"
@@ -873,7 +908,7 @@ const OrderTable = () => {
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
                         Are you sure you want to delete
-                        &nbsp;&quot;{selectedProduct?.name}&quot;?
+                        &nbsp;&quot;{selectedOrder?.name}&quot;?
                     </Typography>
                     <Button
                         onClick={handleCloseDeleteModal}
@@ -905,7 +940,7 @@ const OrderTable = () => {
                         Delete
                     </Button>
                 </Box>
-            </Modal>
+            </Modal> */}
 
             {/* end delete product modal */}
 
