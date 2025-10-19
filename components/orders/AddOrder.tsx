@@ -23,11 +23,17 @@ import {
     InputLabel,
     Select,
     MenuItem,
+    SelectChangeEvent,
 } from "@mui/material";
 
 import Grid from '@mui/material/Grid';
 import { Edit, Delete, Add, Refresh, Description, BorderStyle } from "@mui/icons-material";
+
+import dayjs, { Dayjs } from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -38,9 +44,12 @@ import { useGetProductsQuery } from "@/lib/features/products/productsApiSlice";
 import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
 import { bgcolor, borderColor, height, minWidth } from "@mui/system";
+//import { useStaticPicker } from "@mui/x-date-pickers/internals";
 
 
 const AddOrder = () => {
+
+    const [openAddMoreModal, setOpenAddMoreModal] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -49,28 +58,28 @@ const AddOrder = () => {
     const { data: supplierData } = useGetSuppliersQuery();
     const { data: categoryData } = useGetCategoriesQuery();
 
-    let orders: any;
-    orders = orderData?.orders || [];
+
+    let orders: any = orderData?.orders || [];
     console.log("Orders", orders);
 
-    let suppliers: any;
-    suppliers = supplierData?.suppliers || [];
+    let suppliers: any = supplierData?.suppliers || [];
     console.log("Suppliers", suppliers);
 
-    let categories: any;
-    categories = categoryData?.categories || [];
+    let categories: any = categoryData?.categories || [];
     console.log("Categories", categories);
 
     let products: any;
     products = productData?.products || [];
     console.log("Pproducts", products);
+    
+    const [date, setDate] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
 
+    const t = new Date().toLocaleDateString();
     
     const [page, setPage] = React.useState(0);
-
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    const [openAddModal, setOpenAddModal] = React.useState(false);
+    //const [openAddModal, setOpenAddModal] = React.useState(false);
     const [newOrder, setNewOrder] = useState({
         _id: "",
         product: "",
@@ -88,6 +97,9 @@ const AddOrder = () => {
         deletedAt: "",
         deleted: false,
     });
+
+    //const [supplierName, setSupplierName] = useState("");
+
 
     const [editOrder, setEditOrder] = useState({
         _id: "",
@@ -139,22 +151,38 @@ const AddOrder = () => {
     //     console.log("Form state changed:", form);
     // }, [form]);
 
-    const handleOpenAddModal = () => {
+    // const handleOpenAddModal = () => {
 
-        setOpenAddModal(true);
+    //     setOpenAddModal(true);
+    // };
+
+    // const handleCloseAddModal = () => {
+    //     setOpenAddModal(false);
+    // };
+
+    // const handleOpenAddMoreModal = () => {
+
+    //     setOpenAddMoreModal(true);
+    // };
+
+    const handleCloseAddMoreModal = () => {
+        setOpenAddMoreModal(false);
     };
 
-    const handleCloseAddModal = () => {
-        setOpenAddModal(false);
-    };
+    const handleSelectionChange = (e: SelectChangeEvent) => {
+        const { name, value } = e.target;
+        setNewOrder({...newOrder, [name]: value});
 
-    const handleAddOrder = () => {
-        addOrder(newOrder)
+        console.log(`targetName: ${e.target.name} targetValue: ${e.target.value}`); 
+    }
+
+    const handleAddMoreModal = () => {
+          addOrder(newOrder)
             .unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Order added successfully", severity: "success", });
 
-                handleCloseAddModal();
+                handleCloseAddMoreModal();
 
             })
             .catch((error: any) => {
@@ -162,8 +190,25 @@ const AddOrder = () => {
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add order", severity: "error", });
 
                 console.error("Error adding order:", error);
-            });
+            });      
     }
+
+    // const handleAddOrder = () => {
+    //     addOrder(newOrder)
+    //         .unwrap()
+    //         .then(() => {
+    //             setSnackbar({ open: true, message: "Order added successfully", severity: "success", });
+
+    //             handleCloseAddModal();
+
+    //         })
+    //         .catch((error: any) => {
+
+    //             setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add order", severity: "error", });
+
+    //             console.error("Error adding order:", error);
+    //         });
+    // }
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
@@ -264,7 +309,22 @@ const AddOrder = () => {
                         variant="contained"
                         color="primary"
                         startIcon={<Add />}
-                        //onClick={() => window.location.reload()}
+                        onClick={() => {
+                            setOpenAddMoreModal(true);
+                            setNewOrder({
+                                ...newOrder,
+                                product: "",
+                                supplier: "",
+                                category: "",
+                                date: "",
+                                order_number: "",
+                                description: "",
+
+                                quantity: 0,
+                                unit_price: 0,
+                                total_cost: 0,
+                            });
+                        }}
                         sx={{
                             backgroundColor: "blue",
                             "&:hover": {
@@ -278,83 +338,26 @@ const AddOrder = () => {
                 </Grid>
             </Grid>
 
-            {/* <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Refresh />}
-                onClick={() => window.location.reload()}
-                sx={{
-                    backgroundColor: "blue",
-                    "&:hover": {
-                        backgroundColor: "blue",
-                    },
-                    height: "100%",
-                }}
-            >
-                Reload
-            </Button>
-
-            <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        placeholder="Search......"
-
-                        value={filter}
-                        onChange={handleFilterChange}
-
-                        sx={{
-                            input: { color: "white", },
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "blue",
-                                },
-                            },
-                        }}
-                    />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 4 }}>
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        startIcon={<Add />}
-                        onClick={handleOpenAddModal}
-                        sx={{
-                            backgroundColor: "blue",
-                            "&:hover": {
-                                backgroundColor: "blue",
-                            },
-                            height: "100%",
-                        }}
-                    >
-                        Add Order
-                    </Button>
-                </Grid>
-            </Grid> */}
-
             <TableContainer component={Paper} sx={{ overflowX: 'auto' }} >
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>SN #</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Supplier Name</TableCell>
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Category</TableCell>
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Product Name</TableCell>
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>PSC/KG</TableCell>
+
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Unit Price</TableCell>
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Description</TableCell>
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Total Cost</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Date</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Order #</TableCell>
 
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Actions</TableCell>                           
                         </TableRow>
                     </TableHead>
 
-                    {/* <TableBody>
+                    <TableBody>
                         {loading ? (
                             <TableRow>
                                 <TableCell colSpan={3}>
@@ -415,7 +418,7 @@ const AddOrder = () => {
                                 </TableRow>
                             ))
                         )}
-                    </TableBody> */}
+                    </TableBody>
                 </Table>
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
@@ -433,7 +436,7 @@ const AddOrder = () => {
                 fullWidth
                 variant="contained"
                 startIcon={<Add />}
-                onClick={handleOpenAddModal}
+                //onClick={handleOpenAddModal}
                 sx={{
                     p: 1,
                     backgroundColor: "blue",
@@ -445,26 +448,30 @@ const AddOrder = () => {
                 Purchase Order Store
             </Button>
 
+
+            {/* <OrderList /> */}
+
+
             {/* start add new row modal */}
             <Modal
-                open={false}
-                onClose={ ()=> {}}
+                open={openAddMoreModal}
+                onClose={ handleCloseAddMoreModal }
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="add-order-modal" variant="h6" component="h2">
+                    <Typography variant="h6" sx={{ mb: 2 }}>
                         Add New Row
                     </Typography>
 
                     <Grid container spacing={2}>
-                        <Grid sx={{ xs: 12, sm: 6 }}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <FormControl fullWidth variant="outlined">
                                 <InputLabel>Supplier Name</InputLabel>
                                 <Select
-                                    name="supplierName"
+                                    name="supplier"
                                     label="Supplier Name"
-                                    // value={newOrder.supplier}
-                                    // onChange={(e) => setNewOrder({...newOrder, supplier: e.target.value})}
+                                    value={newOrder.supplier}
+                                    onChange={handleSelectionChange}
                                     sx={{
                                         mt: 3,
                                         color: "white",
@@ -483,30 +490,30 @@ const AddOrder = () => {
                                         
                                     }}
                                 >
-                                    {/* {
+                                    {
                                         suppliers && suppliers?.map((s: any, index: number) => (
                                             <MenuItem
-                                                key={index}
+                                                key={s._id}
                                                 value={s._id}
                                             >
                                                 {s.name}
                                             </MenuItem>
 
                                         ))
-                                    } */}
-
+                                    }
                                 </Select>
-                            </FormControl>                            
+                            </FormControl>           
+                     
                         </Grid>
 
-                        <Grid sx={{ xs: 12, sm: 6 }}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <FormControl fullWidth variant="outlined">
                                 <InputLabel>Category</InputLabel>
                                 <Select
                                     name="category"
                                     label="Category"
-                                    // value={newOrder.supplier}
-                                    // onChange={(e) => setNewOrder({...newOrder, supplier: e.target.value})}
+                                    value={newOrder.category}
+                                    onChange={handleSelectionChange}
                                     sx={{
                                         mt: 3,
                                         color: "white",
@@ -525,18 +532,29 @@ const AddOrder = () => {
                                         
                                     }}
                                 >
+                                    {
+                                        categories && categories?.map((s: any, index: number) => (
+                                            <MenuItem
+                                                key={s._id}
+                                                value={s._id}
+                                            >
+                                                {s.name}
+                                            </MenuItem>
+
+                                        ))
+                                    }                                    
                                 </Select>
-                            </FormControl>                              
+                            </FormControl>                          
                         </Grid>
 
-                        <Grid sx={{ xs: 12, sm: 6 }}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <FormControl fullWidth variant="outlined">
                                 <InputLabel>Product Name</InputLabel>
                                 <Select
-                                    name="productName"
+                                    name="product"
                                     label="Product Name"
-                                    // value={newOrder.supplier}
-                                    // onChange={(e) => setNewOrder({...newOrder, supplier: e.target.value})}
+                                    value={newOrder.product}
+                                    onChange={handleSelectionChange}
                                     sx={{
                                         mt: 3,
                                         color: "white",
@@ -556,47 +574,30 @@ const AddOrder = () => {
                                     }}
                                 >
 
+                                    {
+                                        products && products?.map((s: any, index: number) => (
+                                            <MenuItem
+                                                key={s._id}
+                                                value={s._id}
+                                            >
+                                                {s.name}
+                                            </MenuItem>
 
+                                        ))
+                                    }   
                                 </Select>
                             </FormControl>                              
                         </Grid>
 
-                         <Grid sx={{ xs: 12, sm: 6 }}>                                        
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                label="Order #"
-                                name="order_number"
-                                value={newOrder.order_number}
-                                onChange={(e) => setNewOrder({ ...newOrder, order_number: e.target.value })}
-                                required
-                                slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
-                                sx={{
-                                    mt: 2,
-                                    input: { color: "white", },
-                                    "& .MuiOutlinedInput-root": {
-                                        "& fieldset": {
-                                            borderColor: "blue",
-                                        },
-                                        "&:hover fieldset": {
-                                            borderColor: "blue",
-                                        },
-                                        "&.Mui-focused fieldset": {
-                                            borderColor: "blue",
-                                        },
-                                    },
-                                }}
-                            />                            
-                        </Grid> 
 
-                         <Grid sx={{ xs: 12, sm: 6 }}>
+                         <Grid size={{ xs: 12, sm: 6 }}>
                             <TextField
                                 type="number"
-                                required
                                 fullWidth
                                 variant="outlined"
-                                label="Quantity"
+                                label="PSC/KG"
                                 name="quantity"
+
                                 value={newOrder.quantity || ""}
                                 onChange={(e) => setNewOrder({ ...newOrder, quantity: parseInt(e.target.value) })}
                                 slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
@@ -618,7 +619,7 @@ const AddOrder = () => {
                             />                            
                         </Grid>
 
-                         {/* <Grid sx={{ xs: 12, sm: 6 }}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
                             <TextField
                                 type="number"
                                 required
@@ -645,9 +646,9 @@ const AddOrder = () => {
                                     },
                                 }}
                             />                            
-                        </Grid> */}
+                        </Grid>
 
-                         {/* <Grid sx={{ xs: 12, sm: 6 }}>
+                         <Grid size={{ xs: 12, sm: 6 }}>
                             <TextField
                                 required
                                 fullWidth
@@ -673,27 +674,39 @@ const AddOrder = () => {
                                     },
                                 }}
                             />                            
-                        </Grid> */}
-
-
-
-                         <Grid sx={{ xs: 12, sm: 6 }}>
-                            <label>Select Date:</label>
-
-                            <DatePicker 
-                                dateFormat="MMMM d, yyyy"
-                                customInput={ <input style={customInputStyle} /> }
-                            />
                         </Grid>
 
-                         <Grid sx={{ xs: 12, sm: 6 }}>
+                         <Grid size={{ xs: 12, sm: 6 }}>
+                            <label>Select Date:</label>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                label="Controlled picker"
+                                value={date}
+                                onChange={(newValue) => setDate(newValue)}
+                                      sx={{ color: "white", backgroundColor: "blue",}}                  
+                                />
+                            </LocalizationProvider>
+                            {/* <DatePicker 
+                                //dateFormat="MMMM d, yyyy"
+                                slotProps={{
+                                    textField: {
+                                    helperText: 'MMMM d, yyyy',
+                                    },
+                                    
+                                }}
+
+                                //customInput={ <input style={customInputStyle} /> }
+                            /> */}
+                        </Grid>
+
+                         <Grid size={{ xs: 12, sm: 6 }}>
                             <TextField
                                 fullWidth
                                 variant="outlined"
                                 label="Order Number"
                                 name="order_number"
-                                //value={newOrder.order_number || ""}
-                                //onChange={(e) => setNewOrder({ ...newOrder, order_number: parseInt(e.target.value) })}
+                                value={newOrder.order_number || ""}
+                                onChange={(e) => setNewOrder({ ...newOrder, order_number: e.target.value })}
                                 slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                                 sx={{
                                     mt: 2,
@@ -711,40 +724,41 @@ const AddOrder = () => {
                                     },
                                 }}
                             />                            
-                        </Grid>
-                                                     
+                        </Grid>                              
                     </Grid>
 
-                    <Button
-                        //onClick={handleCloseAddModal}
-                        variant="outlined"
-                        sx={{
-                            mr: 2,
-                            // ml: 2,
-                            // color: "white",
-                            // borderColor: "blue",
-                            // "&:hover": {
-                            //     borderColor: "blue",
-                            // },
-                        }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button           
-                        variant="contained"
-                        sx={{
-                            // mt: 2,
-                            // ml: 2,
-                            backgroundColor: "blue",
-                            "&:hover": {
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                        <Button
+                            onClick={ handleCloseAddMoreModal }
+                            variant="outlined"
+                            sx={{
+                                mr: 2,
+                                // ml: 2,
+                                // color: "white",
+                                // borderColor: "blue",
+                                // "&:hover": {
+                                //     borderColor: "blue",
+                                // },
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button           
+                            variant="contained"
+                            sx={{
+                                // mt: 2,
+                                // ml: 2,
                                 backgroundColor: "blue",
-                            },
-                        }}
-                        //onClick={handleAddOrder}
-                    >
-                        Add Row
-                    </Button>
+                                "&:hover": {
+                                    backgroundColor: "blue",
+                                },
+                            }}
+                            onClick={handleAddMoreModal}
 
+                        >
+                            Add Row
+                        </Button>
+                    </Box>
                 </Box>
             </Modal>
 

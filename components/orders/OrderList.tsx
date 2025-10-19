@@ -50,15 +50,19 @@ const OrderTable = () => {
     orders = orderData?.orders || [];
     console.log("Orders", orders);
 
-    let products: any;
-    products = productData?.products || [];
     let suppliers: any;
     suppliers = supplierData?.suppliers || [];
     console.log("Suppliers", suppliers);
+
     let categories: any;
     categories = categoryData?.categories || [];
     console.log("Categories", categories);
 
+    let products: any;
+    products = productData?.products || [];
+    console.log("Pproducts", products);
+
+    
     const [page, setPage] = React.useState(0);
 
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -219,7 +223,17 @@ const OrderTable = () => {
 
     const handleFilterChange = (e: any) => {
         setFilter(e.target.value);
-    }
+    };
+
+
+    useEffect(() => {
+        if (error) {
+            setSnackbar({ open: true, message: "Failed to fetch orders", severity: "error", });
+        }
+    }, [error]);
+
+
+
 
     return (
         <Box sx={{ p: 2, maxWidth: "100%", width: "1024px" }} >
