@@ -50,13 +50,18 @@ import { bgcolor, borderColor, height, minWidth } from "@mui/system";
 const AddOrder = () => {
 
     const [openAddMoreModal, setOpenAddMoreModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
 
     const dispatch = useAppDispatch();
 
     const { data: orderData, error, isLoading: loading } = useGetOrdersQuery();
-    const { data: productData} = useGetProductsQuery();
-    const { data: supplierData } = useGetSuppliersQuery();
-    const { data: categoryData } = useGetCategoriesQuery();
+    
+    // Only load reference data when modals are open
+    const needsReferenceData = openAddMoreModal || openEditModal;
+    const { data: productData} = useGetProductsQuery(undefined, { skip: !needsReferenceData });
+    const { data: supplierData } = useGetSuppliersQuery(undefined, { skip: !needsReferenceData });
+    const { data: categoryData } = useGetCategoriesQuery(undefined, { skip: !needsReferenceData });
 
 
     let orders: any = orderData?.orders || [];
@@ -99,7 +104,7 @@ const AddOrder = () => {
     });
 
     //const [supplierName, setSupplierName] = useState("");
-
+    const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
     const [editOrder, setEditOrder] = useState({
         _id: "",
@@ -119,9 +124,7 @@ const AddOrder = () => {
         deleted: false,
     });
 
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [selectedOrder, setSelectedOrder] = useState<any>(null);
-    const [openEditModal, setOpenEditModal] = useState(false);
+
 
     const [snackbar, setSnackbar] = useState({
         open: false,
@@ -342,16 +345,13 @@ const AddOrder = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>SN #</TableCell>
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Supplier Name</TableCell>
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Category</TableCell>
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Product Name</TableCell>
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>PSC/KG</TableCell>
 
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Unit Price</TableCell>
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Description</TableCell>
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Date</TableCell>
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Order #</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Total Cost</TableCell>
 
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Actions</TableCell>                           
                         </TableRow>
@@ -376,17 +376,12 @@ const AddOrder = () => {
                             
                             filteredOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order: any, index: number) => (
                                 <TableRow key={order._id}>
-                                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-
-                                    <TableCell>{order?.order_number}</TableCell>
-
-                                    <TableCell>{order?.product?.name}</TableCell>
-                                    <TableCell>{order?.supplier?.name}</TableCell>
                                     <TableCell>{order?.category?.name}</TableCell>
+                                    <TableCell>{order?.product?.name}</TableCell>                                
 
-                                    <TableCell>{order?.description}</TableCell>
                                     <TableCell>{order?.quantity}</TableCell>
                                     <TableCell>{order?.unit_price}</TableCell>
+                                    <TableCell>{order?.description}</TableCell>
                                     <TableCell>{order?.total_cost}</TableCell>
                                     <TableCell>
                                         <IconButton

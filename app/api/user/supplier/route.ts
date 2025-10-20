@@ -11,10 +11,13 @@ export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const name = searchParams.get('name');
+        const categoryId = searchParams.get('categoryId');
 
         let suppliers;
         if (name) {
             suppliers = await supplier.find({ name: { $regex: name, $options: 'i' } }).sort({ createdAt: -1 });
+        } else if (categoryId) {
+            suppliers = await supplier.find({ category: categoryId }).sort({ createdAt: -1 });
         } else {
             suppliers = await supplier.find({}).sort({ createdAt: -1 });
         }

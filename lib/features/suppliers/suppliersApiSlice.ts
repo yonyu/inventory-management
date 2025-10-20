@@ -72,6 +72,10 @@ export const suppliersApiSlice = createApi({
             }),
             invalidatesTags: [{ type: 'Suppliers' }],
         }),
+        getSupplierFilteredByCategoryId: build.query<SuppliersApiResponse, string>({
+            query: (categoryId) => `?categoryId=${categoryId}`,
+            providesTags: ['Suppliers'],
+        }),
     }),
 });
 
@@ -81,4 +85,4 @@ export const suppliersApiSlice = createApi({
 // Same as `suppliersApiSlice.endpoints.addSupplier.useMutation`
 // Same as `suppliersApiSlice.endpoints.updateSupplier.useMutation`
 // Same as `suppliersApiSlice.endpoints.deleteSupplier.useMutation`
-export const { useGetSuppliersQuery, useGetSupplierQuery, useAddSupplierMutation, useUpdateSupplierMutation, useDeleteSupplierMutation } = suppliersApiSlice;
+export const { useGetSuppliersQuery, useGetSupplierQuery, useAddSupplierMutation, useUpdateSupplierMutation, useDeleteSupplierMutation, useGetSupplierFilteredByCategoryIdQuery } = suppliersApiSlice;
