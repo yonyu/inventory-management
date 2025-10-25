@@ -29,10 +29,10 @@ import {
 import Grid from '@mui/material/Grid';
 import { Edit, Delete, Add, Refresh, Description, BorderStyle } from "@mui/icons-material";
 
-import dayjs, { Dayjs } from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+
 
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -71,7 +71,7 @@ const AddOrder = () => {
     let categories: any = categoryData?.categories || [];
     let products: any = productData?.products || [];
     
-    const [date, setDate] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
+    const [startDate, setStartDate] = useState<Date | null>(new Date());
 
     const t = new Date().toLocaleDateString();
     
@@ -105,7 +105,7 @@ const AddOrder = () => {
         product: "",
         supplier: "",
         category: "",
-        date: "",
+        date: new Date().toISOString(),
         order_number: "",
         description: "",
 
@@ -191,20 +191,30 @@ const AddOrder = () => {
     }
 
     const handleAddMoreModal = () => {
-          addOrder(newOrder)
-            .unwrap()
-            .then(() => {
-                setSnackbar({ open: true, message: "Order added successfully", severity: "success", });
+        const orderToAdd = {
+            ...newOrder,
+            total_cost: newOrder.quantity * newOrder.unit_price
+        };
 
-                handleCloseAddMoreModal();
+        addOrder(orderToAdd)
+        .unwrap()
+        .then(() => {
+            setSnackbar({ open: true, message: "Order added successfully", severity: "success", });
+            handleCloseAddMoreModal();
+        })
+        .catch((error: any) => {
+            setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add order", severity: "error", });
+            console.error("Error adding order:", error);
+        });      
+    }
 
-            })
-            .catch((error: any) => {
 
-                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add order", severity: "error", });
+    const handleAddMoreFormSubmit = () => {
+        // Handle form submission logic here
+        // implement submit logic to save added row to database
+        // close modal after submission
+        handleCloseAddMoreModal();
 
-                console.error("Error adding order:", error);
-            });      
     }
 
     // const handleAddOrder = () => {
@@ -294,7 +304,13 @@ const AddOrder = () => {
         }
     }, [error]);
 
+    const handleModalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewOrder({...newOrder, [event.target.name]: event.target.value});
+    }
 
+    const handlePurchaseOrderNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewOrder({...newOrder, order_number: event.target.value});
+    }
 
 
     return (
@@ -442,7 +458,7 @@ const AddOrder = () => {
                 fullWidth
                 variant="contained"
                 startIcon={<Add />}
-                //onClick={handleOpenAddModal}
+                onClick={handleAddMoreFormSubmit}
                 sx={{
                     p: 1,
                     backgroundColor: "blue",
@@ -451,7 +467,7 @@ const AddOrder = () => {
                     },
                 }}
             >
-                Purchase Order Store
+                Purchase Order Store (Save added orders to database)
             </Button>
 
 
@@ -607,7 +623,7 @@ const AddOrder = () => {
                                 name="quantity"
 
                                 value={newOrder.quantity || ""}
-                                onChange={(e) => setNewOrder({ ...newOrder, quantity: parseInt(e.target.value) })}
+                                onChange={(e) => setNewOrder({ ...newOrder, quantity: e.target.value ? parseFloat(e.target.value) : 0 })}
                                 slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                                 sx={{
                                     mt: 2,
@@ -627,16 +643,16 @@ const AddOrder = () => {
                             />                            
                         </Grid>
 
-                        <Grid size={{ xs: 12, sm: 6 }}>
+                        <Grid size={{ xs: 12 }}>
                             <TextField
                                 type="number"
-                                required
+                                //required
                                 fullWidth
                                 variant="outlined"
                                 label="Unit Price"
                                 name="unit_price"
                                 value={newOrder.unit_price || ""}
-                                onChange={(e) => setNewOrder({ ...newOrder, unit_price: parseInt(e.target.value) })}
+                                onChange={(e) => setNewOrder({ ...newOrder, unit_price: e.target.value ? parseFloat(e.target.value) : 0 })}
                                 slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                                 sx={{
                                     mt: 2,
@@ -656,9 +672,9 @@ const AddOrder = () => {
                             />                            
                         </Grid>
 
-                         <Grid size={{ xs: 12, sm: 6 }}>
+                         <Grid size={{ xs: 12 }}>
                             <TextField
-                                required
+                                //required
                                 fullWidth
                                 variant="outlined"
                                 label="Description"
@@ -684,37 +700,31 @@ const AddOrder = () => {
                             />                            
                         </Grid>
 
-                         <Grid size={{ xs: 12, sm: 6 }}>
+                         <Grid size={{ xs: 12 }}>
                             <label>Select Date:</label>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                label="Controlled picker"
-                                value={date}
-                                onChange={(newValue) => setDate(newValue)}
-                                      sx={{ color: "white", backgroundColor: "blue",}}                  
-                                />
-                            </LocalizationProvider>
-                            {/* <DatePicker 
-                                //dateFormat="MMMM d, yyyy"
-                                slotProps={{
-                                    textField: {
-                                    helperText: 'MMMM d, yyyy',
-                                    },
-                                    
-                                }}
 
-                                //customInput={ <input style={customInputStyle} /> }
-                            /> */}
+                            <DatePicker 
+                                dateFormat="MMMM d, yyyy"
+                                //value={newOrder.date}
+                                selected={startDate}
+                                customInput={ <input style={customInputStyle} /> }
+                                onChange={(date: Date | null) => {
+                                    if (date) {
+                                        setStartDate(date);
+                                        setNewOrder({ ...newOrder, date: date.toISOString() });
+                                    }
+                                }}
+                            />
                         </Grid>
 
-                         <Grid size={{ xs: 12, sm: 6 }}>
+                         <Grid size={{ xs: 12 }}>
                             <TextField
                                 fullWidth
                                 variant="outlined"
                                 label="Order Number"
                                 name="order_number"
                                 value={newOrder.order_number || ""}
-                                onChange={(e) => setNewOrder({ ...newOrder, order_number: e.target.value })}
+                                onChange={ handlePurchaseOrderNumberChange /* (e) => setNewOrder({ ...newOrder, order_number: e.target.value }) */ }
                                 slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
                                 sx={{
                                     mt: 2,
