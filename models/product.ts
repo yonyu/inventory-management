@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import Unit from "./units";
+import Unit from "./unit";
 import Supplier from "./supplier";
 import Category from "./category";
 
