@@ -52,6 +52,7 @@ const AddOrder = () => {
     const [openAddMoreModal, setOpenAddMoreModal] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
+    const [pendingOrders, setPendingOrders] = useState<any[]>([]);
 
     const dispatch = useAppDispatch();
 
@@ -193,28 +194,45 @@ const AddOrder = () => {
     const handleAddMoreModal = () => {
         const orderToAdd = {
             ...newOrder,
-            total_cost: newOrder.quantity * newOrder.unit_price
+            total_cost: newOrder.quantity * newOrder.unit_price,
+            tempId: Date.now()
         };
-
-        addOrder(orderToAdd)
-        .unwrap()
-        .then(() => {
-            setSnackbar({ open: true, message: "Order added successfully", severity: "success", });
-            handleCloseAddMoreModal();
-        })
-        .catch((error: any) => {
-            setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add order", severity: "error", });
-            console.error("Error adding order:", error);
-        });      
+        setPendingOrders([...pendingOrders, orderToAdd]);
+        setSnackbar({ open: true, message: "Row added to list", severity: "success" });
+        setNewOrder({
+            _id: "",
+            product: "",
+            supplier: "",
+            category: "",
+            date: "",
+            order_number: "",
+            description: "",
+            quantity: 0,
+            unit_price: 0,
+            total_cost: 0,
+            status: false,
+            deletedAt: "",
+            deleted: false,
+        });
     }
 
 
-    const handleAddMoreFormSubmit = () => {
-        // Handle form submission logic here
-        // implement submit logic to save added row to database
-        // close modal after submission
-        handleCloseAddMoreModal();
+    const handleAddMoreFormSubmit = async () => {
+        if (pendingOrders.length === 0) {
+            setSnackbar({ open: true, message: "No orders to save", severity: "warning" });
+            return;
+        }
 
+        try {
+            for (const order of pendingOrders) {
+                const { tempId, ...orderData } = order;
+                await addOrder(orderData).unwrap();
+            }
+            setSnackbar({ open: true, message: `${pendingOrders.length} order(s) saved successfully`, severity: "success" });
+            setPendingOrders([]);
+        } catch (error: any) {
+            setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to save orders", severity: "error" });
+        }
     }
 
     // const handleAddOrder = () => {
@@ -385,9 +403,28 @@ const AddOrder = () => {
                     </TableHead>
 
                     <TableBody>
+                        {pendingOrders.map((order: any) => {
+                            const cat = categories.find((c: any) => c._id === order.category);
+                            const prod = products.find((p: any) => p._id === order.product);
+                            return (
+                                <TableRow key={order.tempId} sx={{ bgcolor: "#fffacd" }}>
+                                    <TableCell>{cat?.name || order.category}</TableCell>
+                                    <TableCell>{prod?.name || order.product}</TableCell>
+                                    <TableCell>{order.quantity}</TableCell>
+                                    <TableCell>{order.unit_price}</TableCell>
+                                    <TableCell>{order.description}</TableCell>
+                                    <TableCell>{order.total_cost}</TableCell>
+                                    <TableCell>
+                                        <IconButton onClick={() => setPendingOrders(pendingOrders.filter(o => o.tempId !== order.tempId))}>
+                                            <Delete sx={{ color: "red" }} />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
                         {loading ? (
                             <TableRow>
-                                <TableCell colSpan={3}>
+                                <TableCell colSpan={7}>
                                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }} >
                                         <CircularProgress color="inherit" />
                                         <Typography sx={{ ml: 2 }}>Loading...</Typography>
@@ -396,45 +433,23 @@ const AddOrder = () => {
                             </TableRow>
                         ) : error ? (
                             <TableRow>
-                                <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
+                                <TableCell colSpan={7}>Error: {JSON.stringify(error)}</TableCell>
                             </TableRow>
                         ) : (
-                            
-                            
-                            filteredOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order: any, index: number) => (
+                            filteredOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order: any) => (
                                 <TableRow key={order._id}>
                                     <TableCell>{order?.category?.name}</TableCell>
-                                    <TableCell>{order?.product?.name}</TableCell>                                
-
+                                    <TableCell>{order?.product?.name}</TableCell>
                                     <TableCell>{order?.quantity}</TableCell>
                                     <TableCell>{order?.unit_price}</TableCell>
                                     <TableCell>{order?.description}</TableCell>
                                     <TableCell>{order?.total_cost}</TableCell>
                                     <TableCell>
-                                        <IconButton
-                                            onClick={() => handleOpenEditModal(order)}
-                                            sx={{ color: "blue" }}
-                                        >
-                                            <Edit
-                                                sx={{
-                                                    color: "blue",
-                                                    "&:hover": {
-                                                        color: "darkred",
-                                                    },
-                                                }}
-                                            />
+                                        <IconButton onClick={() => handleOpenEditModal(order)} sx={{ color: "blue" }}>
+                                            <Edit sx={{ color: "blue", "&:hover": { color: "darkred" } }} />
                                         </IconButton>
-                                        <IconButton
-                                            onClick={() => handleOpenDeleteModal(order)}
-                                        >
-                                            <Delete
-                                                sx={{
-                                                    color: "red",
-                                                    "&:hover": {
-                                                        color: "darkred",
-                                                    },
-                                                }}
-                                            />
+                                        <IconButton onClick={() => handleOpenDeleteModal(order)}>
+                                            <Delete sx={{ color: "red", "&:hover": { color: "darkred" } }} />
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
