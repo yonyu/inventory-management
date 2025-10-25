@@ -21,17 +21,17 @@ const ProductSchema = new mongoose.Schema({
     },
     unit: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: Unit,
+        ref: "Unit",
         //required: true,
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: Category,
+        ref: "Category",
         //required: true,
     },
     supplier: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: Supplier,
+        ref: "Supplier",
         //required: true,
     },
     createdAt: {

@@ -5,6 +5,13 @@ import Order from "@/models/order";
 import Product from "@/models/product";
 import Supplier from "@/models/supplier";
 import Category from "@/models/category";
+//import Unit from "@/models/units";
+
+// Ensure models are registered
+// Product;
+// Supplier;
+// Category;
+// Unit;
 
 export async function GET(req: Request) {
     await dbConnect();
