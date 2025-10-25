@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import dbConnect from "@/utils/dbConnect";
 
-import Unit from "@/models/units";
+import Unit from "@/models/unit";
 
 
 
