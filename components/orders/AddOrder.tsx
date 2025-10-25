@@ -68,14 +68,8 @@ const AddOrder = () => {
     console.log("Orders", orders);
 
     let suppliers: any = supplierData?.suppliers || [];
-    console.log("Suppliers", suppliers);
-
     let categories: any = categoryData?.categories || [];
-    console.log("Categories", categories);
-
-    let products: any;
-    products = productData?.products || [];
-    console.log("Pproducts", products);
+    let products: any = productData?.products || [];
     
     const [date, setDate] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
 
@@ -134,6 +128,18 @@ const AddOrder = () => {
 
     const [filter, setFilter] = useState("");
 
+    let filteredCategories = newOrder.supplier
+        ? products.filter((p: any) => p.supplier?._id === newOrder.supplier)
+            .map((p: any) => p.category)
+            .filter((c: any, i: number, arr: any[]) => c && arr.findIndex((cat: any) => cat?._id === c?._id) === i)
+        : categories;
+
+    let filteredProducts = newOrder.category
+        ? products.filter((p: any) => p.category?._id === newOrder.category && (!newOrder.supplier || p.supplier?._id === newOrder.supplier))
+        : newOrder.supplier
+        ? products.filter((p: any) => p.supplier?._id === newOrder.supplier)
+        : products;
+
     const [addOrder] = useAddOrderMutation();
     const [deleteOrder] = useDeleteOrderMutation();
     const [updateOrder] = useUpdateOrderMutation();
@@ -174,9 +180,14 @@ const AddOrder = () => {
 
     const handleSelectionChange = (e: SelectChangeEvent) => {
         const { name, value } = e.target;
-        setNewOrder({...newOrder, [name]: value});
-
-        console.log(`targetName: ${e.target.name} targetValue: ${e.target.value}`); 
+        
+        if (name === 'supplier') {
+            setNewOrder({...newOrder, supplier: value, category: '', product: ''});
+        } else if (name === 'category') {
+            setNewOrder({...newOrder, category: value, product: ''});
+        } else {
+            setNewOrder({...newOrder, [name]: value});
+        }
     }
 
     const handleAddMoreModal = () => {
@@ -526,9 +537,10 @@ const AddOrder = () => {
                                         },
                                         
                                     }}
+                                    disabled={!newOrder.supplier}
                                 >
                                     {
-                                        categories && categories?.map((s: any, index: number) => (
+                                        filteredCategories && filteredCategories?.map((s: any, index: number) => (
                                             <MenuItem
                                                 key={s._id}
                                                 value={s._id}
@@ -567,10 +579,11 @@ const AddOrder = () => {
                                         },
                                         
                                     }}
+                                    disabled={!newOrder.category}
                                 >
 
                                     {
-                                        products && products?.map((s: any, index: number) => (
+                                        filteredProducts && filteredProducts?.map((s: any, index: number) => (
                                             <MenuItem
                                                 key={s._id}
                                                 value={s._id}
