@@ -83,6 +83,13 @@ export const ordersApiSlice = createApi({
             }),
             invalidatesTags: [{ type: 'Orders' }],
         }),
+        toggleOrderStatus: build.mutation<{ order: Order }, string>({
+            query: (id) => ({
+                url: `/${id}/toggle-status`,
+                method: 'PUT',
+            }),
+            invalidatesTags: [{ type: 'Orders' }],
+        }),
     }),
 });
 
@@ -92,4 +99,4 @@ export const ordersApiSlice = createApi({
 // Same as `ordersApiSlice.endpoints.addOrder.useMutation`
 // Same as `ordersApiSlice.endpoints.updateOrder.useMutation`
 // Same as `ordersApiSlice.endpoints.deleteOrder.useMutation`
-export const { useGetOrdersQuery, useGetOrderQuery, useAddOrderMutation, useUpdateOrderMutation, useDeleteOrderMutation } = ordersApiSlice;
+export const { useGetOrdersQuery, useGetOrderQuery, useAddOrderMutation, useUpdateOrderMutation, useDeleteOrderMutation, useToggleOrderStatusMutation } = ordersApiSlice;

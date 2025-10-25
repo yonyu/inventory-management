@@ -47,6 +47,8 @@ import { bgcolor, borderColor, height, minWidth } from "@mui/system";
 //import { useStaticPicker } from "@mui/x-date-pickers/internals";
 
 
+import OrderList from "./OrderList";
+
 const AddOrder = () => {
 
     const [openAddMoreModal, setOpenAddMoreModal] = useState(false);
@@ -492,7 +494,7 @@ const AddOrder = () => {
             </Button>
 
 
-            {/* <OrderList /> */}
+            <OrderList />
 
 
             {/* start add new row modal */}

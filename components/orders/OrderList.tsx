@@ -27,14 +27,34 @@ import {
 
 import Grid from '@mui/material/Grid';
 import { Edit, Delete, Add, Refresh, Description } from "@mui/icons-material";
+import CheckIcon from "@mui/icons-material/Check";
+import DeleteIcon from "@mui/icons-material/Delete";
+ 
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
-import { useAddOrderMutation, useGetOrdersQuery, useDeleteOrderMutation, useUpdateOrderMutation } from "@/lib/features/orders/ordersApiSlice";
+import { useAddOrderMutation, useGetOrdersQuery, useDeleteOrderMutation, useUpdateOrderMutation, useToggleOrderStatusMutation } from "@/lib/features/orders/ordersApiSlice";
+
+interface Order {
+    _id: string;
+    product: any;
+    supplier: any;
+    category: any;
+    date: string;
+    order_number: string;
+    description: string;
+    quantity: number;
+    unit_price: number;
+    total_cost: number;
+    status: boolean;
+    deletedAt?: string;
+    deleted: boolean;
+}
 import { useGetProductsQuery } from "@/lib/features/products/productsApiSlice";
 import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
+import { borderRadius } from "@mui/system";
 
 
 const OrderTable = () => {
@@ -119,6 +139,7 @@ const OrderTable = () => {
     const [addOrder] = useAddOrderMutation();
     const [deleteOrder] = useDeleteOrderMutation();
     const [updateOrder] = useUpdateOrderMutation();
+    const [toggleOrderStatus] = useToggleOrderStatusMutation();
 
     
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -233,7 +254,16 @@ const OrderTable = () => {
     }, [error]);
 
 
-
+    const handleToggleStatus = (order: Order) => {
+        toggleOrderStatus(order._id)
+            .unwrap()
+            .then(() => {
+                setSnackbar({ open: true, message: "Order status updated successfully", severity: "success" });
+            })
+            .catch((error: any) => {
+                setSnackbar({ open: true, message: error?.data?.err || "Failed to update order status", severity: "error" });
+            });
+    }
 
     return (
         <Box sx={{ p: 2, maxWidth: "100%", width: "1024px" }} >
@@ -321,17 +351,13 @@ const OrderTable = () => {
                         <TableRow>
                             <TableCell>S.No</TableCell>
                             <TableCell>Order Number</TableCell>
-
-                            <TableCell>Product Name</TableCell>
+                            <TableCell>Date</TableCell>
                             <TableCell>Supplier Name</TableCell>
                             <TableCell>Category Name</TableCell>
-
-                            <TableCell>Description</TableCell>
                             <TableCell>Quantity</TableCell>
-                            <TableCell>Unit Price</TableCell>
-                            <TableCell>Total Cost</TableCell>
-
-                            <TableCell>Actions</TableCell>                           
+                            <TableCell>Product Name</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Actions</TableCell>    
                         </TableRow>
                     </TableHead>
 
@@ -355,43 +381,64 @@ const OrderTable = () => {
                             filteredOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order: any, index: number) => (
                                 <TableRow key={order._id}>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-
                                     <TableCell>{order?.order_number}</TableCell>
-
-                                    <TableCell>{order?.product?.name}</TableCell>
+                                    <TableCell>{order?.date ? new Date(order.date).toLocaleDateString() : ''}</TableCell>
                                     <TableCell>{order?.supplier?.name}</TableCell>
                                     <TableCell>{order?.category?.name}</TableCell>
-
-                                    <TableCell>{order?.description}</TableCell>
-                                    <TableCell>{order?.quantity}</TableCell>
-                                    <TableCell>{order?.unit_price}</TableCell>
-                                    <TableCell>{order?.total_cost}</TableCell>
+                                    <TableCell>{order?.quantity}</TableCell>                                    
+                                    <TableCell>{order?.product?.name}</TableCell>
                                     <TableCell>
-                                        <IconButton
-                                            onClick={() => handleOpenEditModal(order)}
-                                            sx={{ color: "blue" }}
+                                        <Button
+                                            variant="contained"
+                                            color={order.status ? "success" : "warning"}
+                                            onClick={ () => handleToggleStatus(order) }
+                                            style={{
+                                                borderRadius: "20px",
+                                                padding: "5px 10px",
+                                                minWidth: "auto",
+                                                fontSize: "0.8rem",
+
+                                            }}
                                         >
-                                            <Edit
-                                                sx={{
-                                                    color: "blue",
-                                                    "&:hover": {
-                                                        color: "darkred",
-                                                    },
-                                                }}
-                                            />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() => handleOpenDeleteModal(order)}
-                                        >
-                                            <Delete
-                                                sx={{
-                                                    color: "red",
-                                                    "&:hover": {
-                                                        color: "darkred",
-                                                    },
-                                                }}
-                                            />
-                                        </IconButton>
+                                            {order?.status ? "Active" : "Pending"}
+                                        </Button>
+                                    </TableCell>
+
+
+                                    <TableCell>
+                                        {order.status ? (
+                                            <>
+                                            <Button
+                                                variant="contained"
+                                                color="success"
+                                                startIcon={<CheckIcon />}
+                                                style={{
+                                                    borderRadius: "20px",
+                                                    padding: "8px 16px",
+                                                    fontSize: "0.9rem",
+                                                }}                                
+                                                onClick={() => handleOpenEditModal(order)}
+                                            ></Button>{" "}
+                                            </>
+                                        ) : (
+                                            <>
+                                                {" "}
+                                                <Button
+                                                    variant="contained"
+                                                    color="error"
+                                                    startIcon={<DeleteIcon />}
+                                                    style={{
+                                                        borderRadius: "20px",
+                                                        padding: "5px 10px",
+                                                        minWidth: "auto",
+                                                        fontSize: "0.8rem",
+                                                    }}
+                                                    onClick={() => handleOpenDeleteModal(order)}                                                      
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))
