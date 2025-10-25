@@ -194,6 +194,7 @@ const AddOrder = () => {
     const handleAddMoreModal = () => {
         const orderToAdd = {
             ...newOrder,
+            date: newOrder.date || new Date().toISOString(),
             total_cost: newOrder.quantity * newOrder.unit_price,
             tempId: Date.now()
         };
@@ -214,6 +215,7 @@ const AddOrder = () => {
             deletedAt: "",
             deleted: false,
         });
+        setStartDate(new Date());
     }
 
 
@@ -362,6 +364,7 @@ const AddOrder = () => {
                         startIcon={<Add />}
                         onClick={() => {
                             setOpenAddMoreModal(true);
+                            setStartDate(new Date());
                             setNewOrder({
                                 ...newOrder,
                                 product: "",
