@@ -42,36 +42,12 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     await dbConnect();
-    //const body = await req.json();
+    const body = await req.json();
 
     try {
-        // const savedOrder = await Promise.all(body.map(async (orderData: any) => {
-        //     const order = await Order.create({ 
-        //         product: orderData.product,
-        //         supplier: orderData.supplier,
-        //         category: orderData.category,
-        //         date: orderData.date,
-        //         order_number: orderData.order_number,
-        //         description: orderData.description,
-        //         quantity: orderData.quantity,
-        //         unit_price: orderData.unit_price,
-        //         total_cost: orderData.total_cost,
-        //         status: orderData.status,
-        //         deletedAt: orderData.deletedAt,
-        //         deleted: orderData.deleted
-        //     });
-        //     return order;
-        // }));
-
-        // return NextResponse.json({ order: savedOrder }, { status: 201 });
-
-
-        const { product, supplier, category, date, order_number, description, quantity, unit_price, total_cost, status, deletedAt, deleted } = await req.json();
-
-        const order = await Order.create({ product, supplier, category, date, order_number, description, quantity, unit_price, total_cost, status, deletedAt, deleted });
-
-        return NextResponse.json({ order: order }, { status: 201 });
-
+        const ordersArray = Array.isArray(body) ? body : [body];
+        const savedOrders = await Order.insertMany(ordersArray);
+        return NextResponse.json({ orders: savedOrders }, { status: 201 });
     } catch (error: any) {
         return NextResponse.json({ err: error.message }, { status: 500 });
     }

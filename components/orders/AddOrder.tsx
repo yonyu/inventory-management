@@ -224,10 +224,8 @@ const AddOrder = () => {
         }
 
         try {
-            for (const order of pendingOrders) {
-                const { tempId, ...orderData } = order;
-                await addOrder(orderData).unwrap();
-            }
+            const ordersToSave = pendingOrders.map(({ tempId, _id, ...order }) => order);
+            await addOrder(ordersToSave).unwrap();
             setSnackbar({ open: true, message: `${pendingOrders.length} order(s) saved successfully`, severity: "success" });
             setPendingOrders([]);
         } catch (error: any) {
@@ -261,15 +259,20 @@ const AddOrder = () => {
     }
 
     const handleDeleteOrder = () => {
-        deleteOrder(selectedOrder?._id).unwrap()
-            .then(() => {
-                setSnackbar({ open: true, message: "Order deleted successfully", severity: "success", });
-                handleCloseDeleteModal();
-
-            })
-            .catch((error: any) => {
-                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete order", severity: "error", });
-            });
+        if (selectedOrder?.tempId) {
+            setPendingOrders(pendingOrders.filter(o => o.tempId !== selectedOrder.tempId));
+            setSnackbar({ open: true, message: "Pending order removed", severity: "success" });
+            handleCloseDeleteModal();
+        } else {
+            deleteOrder(selectedOrder?._id).unwrap()
+                .then(() => {
+                    setSnackbar({ open: true, message: "Order deleted successfully", severity: "success" });
+                    handleCloseDeleteModal();
+                })
+                .catch((error: any) => {
+                    setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete order", severity: "error" });
+                });
+        }
     }
 
     const handleOpenEditModal = (order: any) => {

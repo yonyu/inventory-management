@@ -60,7 +60,7 @@ export const ordersApiSlice = createApi({
             query: (name) => `?name=${name}`,
             providesTags: ['Orders'],
         }),
-        addOrder: build.mutation<Order, Omit<Order, 'status'>>({
+        addOrder: build.mutation<Order | Order[], Omit<Order, 'status'> | Omit<Order, 'status'>[]>({
             query: (newOrder) => ({
                 url: '',
                 method: 'POST',
