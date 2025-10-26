@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import dbConnect from "@/utils/dbConnect";
 
-import product from "@/models/product";
+import Product from "@/models/product";
 
 
 export async function GET(req: Request) {
@@ -14,12 +14,12 @@ export async function GET(req: Request) {
 
         let products;
         if (name) {
-            products = await product.find({ name: { $regex: name, $options: 'i' } })
+            products = await Product.find({ name: { $regex: name, $options: 'i' } })
                 .populate('unit')
                 .populate('category')
                 .populate('supplier');            
         } else {
-            products = await product.find({})
+            products = await Product.find({})
                 .populate('unit')
                 .populate('category')
                 .populate('supplier');
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     try {
         const { name, quantity, status, unit, category, supplier } = await req.json();
 
-        const prdct = await product.create({ name, quantity, status, unit, category, supplier });
+        const prdct = await Product.create({ name, quantity, status, unit, category, supplier });
 
         return NextResponse.json({ prdct: prdct }, { status: 201 });
 

@@ -80,7 +80,7 @@ const OrderTable = () => {
 
     let products: any;
     products = productData?.products || [];
-    console.log("Pproducts", products);
+    console.log("Products", products);
 
     
     const [page, setPage] = React.useState(0);
