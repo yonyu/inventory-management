@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/utils/dbConnect";
 import Order from "@/models/order";
 
+//import Product from "@/models/product";
+
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> })
  {
@@ -22,6 +24,17 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         if (order.status === true) {
             return NextResponse.json({ err: "Order is already completed" }, { status: 400 });
         }
+
+        // // when toggling order status to true, update product quantity (this is not good!) 
+
+        // const product = await Product.findById(order.product);
+        // if (!product) {
+        //     return NextResponse.json({ err: "Product not found" }, { status: 404 });
+        // }
+
+        // const newQuantity = product?.quantity + order.quantity;
+        // await Product.findByIdAndUpdate(order.product, { quantity: newQuantity }, { new: true });
+        // updateBody.status = true;
 
         const updatingOrder = await Order.findByIdAndUpdate(id, updateBody, { new: true });
         if (!updatingOrder) {
