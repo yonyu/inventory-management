@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/utils/dbConnect";
-
 import Order from "@/models/order";
+import "@/models/supplier";
+import "@/models/category";
+import "@/models/product";
 
 export async function POST(req: Request) {
     await dbConnect();
@@ -22,9 +24,9 @@ export async function POST(req: Request) {
         };
 
         const orders = await Order.find(query)
-            .populate("supplier")
-            .populate("category")
-            .populate("product")
+            .populate("supplier", "name")
+            .populate("category", "name")
+            .populate("product", "name")
             .sort({ date: -1 });
 
         console.log("Orders: ", orders);
