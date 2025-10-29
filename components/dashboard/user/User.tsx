@@ -121,6 +121,8 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   const [isCollapseCustomers, setIsCollapseCustomers] = React.useState(true);
   const [isCollapseProducts, setIsCollapseProducts] = React.useState(true);
   const [isCollapseOrders, setIsCollapseOrders] = React.useState(true);
+  const [isCollapseInvoices, setIsCollapseInvoices] = React.useState(true);
+
 
   const router = useRouter();
 
@@ -152,8 +154,12 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
     setIsCollapseProducts(!isCollapseProducts);
   }
 
-    const handleCollapseOrders = () => {
+  const handleCollapseOrders = () => {
     setIsCollapseOrders(!isCollapseOrders);
+  }
+
+  const handleCollapseInvoices = () => {
+    setIsCollapseInvoices(!isCollapseInvoices);
   }
 
   const handleNavigation = (path: String)=> {
@@ -683,6 +689,71 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
           }}
         />
         {/* end all purchase orders */}
+
+        {/* start all invoices */}
+
+        <List>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleCollapseInvoices}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon sx={{ color: "white" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Manage Invoice"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+              {isCollapseInvoices ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={isCollapseInvoices} timeout="auto" unmountOnExit>
+            {["Invoices"].map((text, index) => (
+                <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
+                    sx={{ 
+                      minHeight: 48,
+                      px: 2.5,
+                      justifyContent: open ? "initial" : "center",
+                      marginLeft: "40px",
+                      color: "white",
+                      borderBottom: "2px solid white",
+                    }}
+                  >
+                    <ListItemText
+                      primary={text.replace(/-/g, " ")}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </Collapse>
+        </List>
+        <Divider
+          sx={{
+            borderColor: "white",
+            backgroundColor: "2px solid white",
+          }}
+        />
+        {/* end all invoices */}
+
+
 
       </Drawer>
 

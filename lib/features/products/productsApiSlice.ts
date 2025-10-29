@@ -50,6 +50,10 @@ export const productsApiSlice = createApi({
             query: (name) => `?name=${name}`,
             providesTags: ['Products'],
         }),
+        getProductById: build.query<{ product: Product }, string>({
+            query: (id) => `/../product-stock/${id}`,
+            providesTags: ['Products'],
+        }),
         addProduct: build.mutation<Product, Omit<Product, 'status'>>({
             query: (newProduct) => ({
                 url: '',
@@ -82,4 +86,4 @@ export const productsApiSlice = createApi({
 // Same as `productsApiSlice.endpoints.addProduct.useMutation`
 // Same as `productsApiSlice.endpoints.updateProduct.useMutation`
 // Same as `productsApiSlice.endpoints.deleteProduct.useMutation`
-export const { useGetProductsQuery, useGetProductQuery, useAddProductMutation, useUpdateProductMutation, useDeleteProductMutation } = productsApiSlice;
+export const { useGetProductsQuery, useGetProductQuery, useGetProductByIdQuery, useAddProductMutation, useUpdateProductMutation, useDeleteProductMutation } = productsApiSlice;

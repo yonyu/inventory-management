@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/utils/dbConnect";
 
 import Product from "@/models/product";
+import "@/models/unit";
+import "@/models/category";
+import "@/models/supplier";
 
 
 export async function GET(req: Request) {
