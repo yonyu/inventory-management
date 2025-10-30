@@ -40,9 +40,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 import { useAddInvoiceMutation, useGetInvoicesQuery, useDeleteInvoiceMutation/*, useUpdateInvoiceMutation*/ } from "@/lib/features/invoices/invoicesApiSlice";
+import { useAddCustomerMutation, useGetCustomersQuery, useDeleteCustomerMutation, useUpdateCustomerMutation } from "@/lib/features/customers/customersApiSlice";
 import { useGetProductsQuery, useGetProductByIdQuery } from "@/lib/features/products/productsApiSlice";
-import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
+
+import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
+
 import { bgcolor, borderColor, height, minWidth } from "@mui/system";
 import { set } from "mongoose";
 
@@ -76,6 +79,7 @@ const AddInvoice = () => {
     // const { data: categoryData } = useGetCategoriesQuery(undefined, { skip: !needsReferenceData });    
     const { data: productData} = useGetProductsQuery(undefined, { skip: !needsReferenceData });
     const { data: categoryData } = useGetCategoriesQuery();
+    const { data: customerData } = useGetCustomersQuery();
 
     const [selectedProduct, setSelectedProduct] = useState("");
     const { data: selectedProductData } = useGetProductByIdQuery(selectedProduct, { skip: !selectedProduct });
@@ -83,6 +87,18 @@ const AddInvoice = () => {
 
     const [discount, setDiscount] = useState<number>(0);
     const [grandTotal, setGrandTotal] = useState<number>(0);
+    // const [description, setDescription] = useState<string>("");
+    // const [status, setStatus] = useState<string>("");
+    // const [partialAmount, setPartialAmount] = useState<number | ''>(0);
+
+    const [status, setStatus] = useState('');
+    const [partialAmount, setPartialAmount] = useState<number | ''>('');
+    const [description, setDescription] = useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [selectedCustomer, setSelectedCustomer] = useState('');
+
 
 
     let invoices: any = invoiceData?.invoices || [];
@@ -91,6 +107,7 @@ const AddInvoice = () => {
     //let suppliers: any = supplierData?.suppliers || [];
     let categories: any = categoryData?.categories || [];
     let products: any = productData?.products || [];
+    let customers: any = customerData?.customers || [];
 
     console.log('Categories: ', categories);
     console.log('Products: ', products);
@@ -151,17 +168,6 @@ const AddInvoice = () => {
         product: "",
     });
 
-    //const [supplierName, setSupplierName] = useState("");
-    const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
-
-    const [editInvoice, setEditInvoice] = useState({
-        _id: "",
-        invoice_number: "",
-        description: "",
-        invoiceDate: new Date().toISOString(),
-        status: false,
-    });
-
     let filteredProducts = selectedCategory
         ? products.filter((p: any) => p.category?._id === selectedCategory)
         : products;
@@ -174,20 +180,8 @@ const AddInvoice = () => {
 
     const [filter, setFilter] = useState("");
 
-    // let filteredCategories = newInvoice.supplier
-    //     ? products.filter((p: any) => p.supplier?._id === newInvoice.supplier)
-    //         .map((p: any) => p.category)
-    //         .filter((c: any, i: number, arr: any[]) => c && arr.findIndex((cat: any) => cat?._id === c?._id) === i)
-    //     : categories;
-
-    // let filteredProducts = newInvoice.category
-    //     ? products.filter((p: any) => p.category?._id === newInvoice.category && (!newInvoice.supplier || p.supplier?._id === newInvoice.supplier))
-    //     : newInvoice.supplier
-    //     ? products.filter((p: any) => p.supplier?._id === newInvoice.supplier)
-    //     : products;
-
-    const [addInvoice] = useAddInvoiceMutation();
-    const [deleteInvoice] = useDeleteInvoiceMutation();
+    // const [addInvoice] = useAddInvoiceMutation();
+    // const [deleteInvoice] = useDeleteInvoiceMutation();
     //const [updateInvoice] = useUpdateInvoiceMutation();
 
     
@@ -206,49 +200,6 @@ const AddInvoice = () => {
     //     console.log("Form state changed:", form);
     // }, [form]);
 
-    // const handleOpenAddModal = () => {
-
-    //     setOpenAddModal(true);
-    // };
-
-
-    // const handleCloseAddModal = () => {
-    //     setOpenAddModal(false);
-    // };
-
-    // const handleOpenAddMoreModal = () => {
-
-    //     setOpenAddMoreModal(true);
-    // };
-
-
-    // const handleSelectionChange = (e: SelectChangeEvent) => {
-    //     const { name, value } = e.target;
-    //     setNewInvoice({...newInvoice, [name]: value});
-    // }
-
-    // const handleAddMoreModal = () => {
-    //     const invoiceToAdd = {
-    //         ...newInvoice,
-    //         date: newInvoice.invoiceDate || new Date().toISOString(),
-    //         //total_cost: newInvoice.quantity * newInvoice.unit_price,
-    //         tempId: Date.now()
-    //     };
-    //     setPendingInvoices([...pendingInvoices, invoiceToAdd]);
-    //     setSnackbar({ open: true, message: "Row added to list", severity: "success" });
-    //     setNewInvoice({
-    //         _id: "",
-    //         invoiceNumber: "",
-    //         invoiceDate: "",
-    //         description: "",
-    //         status: false,
-    //         category: "",
-    //         product: "",
-    //     });
-    //     setStartDate(new Date());
-    // }
-
-
     const handleAddMoreFormSubmit = async () => {
         if (pendingInvoices.length === 0) {
             setSnackbar({ open: true, message: "No invoices to save", severity: "warning" });
@@ -265,60 +216,10 @@ const AddInvoice = () => {
         // }
     }
 
-    // const handleAddInvoice = () => {
-    //     addInvoice(newInvoice)
-    //         .unwrap()
-    //         .then(() => {
-    //             setSnackbar({ open: true, message: "Invoice added successfully", severity: "success", });
-
-    //             handleCloseAddModal();
-
-    //         })
-    //         .catch((error: any) => {
-
-    //             setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add invoice", severity: "error", });
-
-    //             console.error("Error adding invoice:", error);
-    //         });
-    // }
-
     const handleCloseDeleteConfirmation = () => {
         setRowToDelete(null);
         setOpenDeleteConfirmation(false);
     }
-
-    // const handleOpenDeleteModal = (invoice: any) => {
-    //     setSelectedInvoice(invoice);
-    //     setOpenDeleteModal(true);
-
-    // }
-
-    // const handleOpenEditModal = (invoice: any) => {
-    //     setOpenEditModal(true);
-    //     setSelectedInvoice(invoice);
-    //     setEditInvoice({ 
-    //         ...invoice,
-    //         product: typeof invoice.product === 'object' ? invoice.product._id : invoice.product,
-    //         category: typeof invoice.category === 'object' ? invoice.category._id : invoice.category,
-    //         supplier: typeof invoice.supplier === 'object' ? invoice.supplier._id : invoice.supplier
-    //     });
-    // };
-
-    // const handleCloseEditModal = () => setOpenEditModal(false);
-
-    // const handleEditInvoice = () => {
-    //     const { _id, ...data } = editInvoice;
-    //     // updateInvoice({ _id, data })
-    //     //     .unwrap()
-    //     //     .then(() => {
-    //     //         setSnackbar({ open: true, message: "Invoice updated successfully", severity: "success", });
-    //     //         handleCloseEditModal();
-    //     //     })
-    //     //     .catch((error: any) => {
-    //     //         setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update invoice", severity: "error", });
-    //     //     });
-
-    // }
 
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
@@ -326,7 +227,6 @@ const AddInvoice = () => {
 
 
     const filteredInvoices = invoices.filter((invoice: any) => {
-        //invoice?.name?.toLowerCase().includes(filter.toLowerCase());
         return invoice?.product?.name.toLowerCase().includes(filter.toLowerCase()) ||
                invoice?.supplier?.name.toLowerCase().includes(filter.toLowerCase());
     });
@@ -343,23 +243,16 @@ const AddInvoice = () => {
         }
     }, [error]);
 
-    // const handleModalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     setNewInvoice({...newInvoice, [event.target.name]: event.target.value});
-    // }
-
-    // const handleInvoiceNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     setNewInvoice({...newInvoice, invoiceNumber: event.target.value});
-    // }
-
     const handleCategorySelectionChange = (e: SelectChangeEvent) => {
         setSelectedCategory(e.target.value);
-        //setNewInvoice({...newInvoice, category: e.target.value});
     }
 
     const handleProductSelectionChange = (e: SelectChangeEvent) => {
         setSelectedProduct(e.target.value);
         setNewInvoice({...newInvoice, product: e.target.value});
     }
+
+
 
     useEffect(() => {
         if (selectedProductData?.product) {
@@ -438,6 +331,36 @@ const AddInvoice = () => {
         setOpenDeleteConfirmation(false);
 
     }
+
+    const handleStatusChange = (e: SelectChangeEvent) => {
+        const selectedStatus = e.target.value;
+        setStatus(selectedStatus);
+        if (selectedStatus !== 'partial_paid') {
+            setPartialAmount('');
+        }
+    }
+
+    const handlePartialAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setPartialAmount(value === '' ? '' : parseFloat(value));
+    }
+
+    const handleCustommerSelectionChange = (e: SelectChangeEvent) => {
+        const customerId = e.target.value;
+        setSelectedCustomer(customerId);
+        
+        if (customerId !== "new_customer" && customerId !== "") {
+            const customer = customers.find((c: any) => c._id === customerId);
+            setName(customer?.name || '');
+            setEmail(customer?.email || '');
+            setPhone(customer?.phone || '');
+        } else {
+            setName('');
+            setEmail('');
+            setPhone('');
+        }
+    }
+
 
 
     return (
@@ -555,7 +478,7 @@ const AddInvoice = () => {
 
                         <TableRow>
                             <TableCell colSpan={4}>
-                                <Typography variant="h6">Discount:</Typography>
+                                <Typography variant="h6">Discount</Typography>
                             </TableCell>
                             <TableCell>
                                 <TextField  fullWidth 
@@ -568,54 +491,13 @@ const AddInvoice = () => {
 
                          <TableRow>
                             <TableCell colSpan={4}>
-                                <Typography variant="h6">Grand Total:</Typography>
+                                <Typography variant="h6">Grand Total</Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="h6">{grandTotal.toFixed(2)}</Typography>
                             </TableCell>
                         </TableRow>
-
-                         <TableRow>
-
-
-
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-
-
-
-                                <TextField 
-                                    fullWidth
-                                    // value={row.description}
-                                    // onChange={ (e) => handleTextFieldChangeInList(e, row.id, "totalPrice")}
-                                />     
-
-
-
-
-
-
-                                                                
-                                Description</TableCell>                         
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Paid Status</TableCell>   
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Partial Payment Amount</TableCell>         
-
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Customer Name</TableCell>  
-
-
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Name</TableCell>  
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Email</TableCell>
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Phone Number</TableCell>
-
-
-
-
-                        </TableRow>
-
-
-
-
-
-                  
+             
 
 
                     </TableBody>
@@ -633,24 +515,30 @@ const AddInvoice = () => {
 
 
                 <Grid container spacing={2} sx={{
-                    xs: 12, sm: 6,
+                    xs: 12, 
+                    sm: 6,
                     my: 5,
+                    maxWidth: 800,
                 }}>
-                    <TextField fullWidth label="Description" />
+                    <TextField fullWidth 
+                        label="Description" 
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
                 </Grid>
 
-                <Box sx={{ m: 1}}> 
-
-                    <FormControl fullWidth variant="outlined" sx={{maxWidth: 10}}>
-                        <InputLabel>Paid Status</InputLabel>
-                        <Select
-                            name="category"
-                            label="Category"
-                            value={selectedCategory}
-                            onChange={handleCategorySelectionChange}
+                <Box sx={{ display: "flex", flexDirection: "raw", alignItems: "center" }}> 
+                    <FormControl fullWidth variant="outlined" sx={{maxWidth: 500, m: 1 }}>
+                        <InputLabel id="paid-status-label">Paid Status</InputLabel>
+                        <Select                            
+                            labelId="paid-status-label"
+                            id="paid_status"
+                            label="Paid Status"
+                            value={status}
+                            onChange={ handleStatusChange }
                             sx={{
-                                mt: 3,
-                                color: "white",
+                                mt: 0,
+                                color: "black",
                                 ".MuiOutlinedInput-notchedOutline": {
                                     borderColor: 'blue',
                                 },
@@ -661,29 +549,115 @@ const AddInvoice = () => {
                                     borderColor: 'blue',
                                 },
                                 "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
+                                    fill: 'black !important',
                                 },
                                 
                             }}
                         >
+                            <MenuItem value="">Select Status</MenuItem>
+                            <MenuItem value="full_paid">Full Paid</MenuItem>
+                            <MenuItem value="full_due">Full Due</MenuItem>
+                            <MenuItem value="partial_paid">Partial Paid</MenuItem>
+                        </Select>
+                    </FormControl>  
+
+                    {status ==="partial_paid" && (
+                        <TextField 
+                            fullWidth
+                            variant="outlined"
+                            label="Enter Partial Payment Amount"
+                            sx={{ maxWidth: 300, ml: 1}}
+                            value={partialAmount}
+                            onChange={handlePartialAmountChange}
+                        />
+                    )}     
+                </Box>
+
+
+
+
+                <Box 
+                    sx={{ display: "flex", flexDirection: "raw", alignItems: "center" }}
+                > 
+                    <FormControl 
+                        fullWidth 
+                        variant="outlined" 
+                        sx={{maxWidth: 500, m: 1}}>
+                        <InputLabel id="customer-label">Customer Name</InputLabel>
+                        <Select                            
+                            labelId="customer-label"
+                            id="customer"
+                            label="Customer Name"
+                            value={selectedCustomer}
+                            onChange={ handleCustommerSelectionChange }
+                            // sx={{
+                            //     mt: 0,
+                            //     color: "black",
+                            //     ".MuiOutlinedInput-notchedOutline": {
+                            //         borderColor: 'blue',
+                            //     },
+                            //     "&Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            //         borderColor: 'blue',
+                            //     },
+                            //     "&:hover .MuiOutlinedInput-notchedOutline": {
+                            //         borderColor: 'blue',
+                            //     },
+                            //     "& .MuiSvgIcon-root": {
+                            //         fill: 'black !important',
+                            //     },
+                                
+                            // }}
+                        >
+                            <MenuItem value="">Select Customer</MenuItem>
                             {
-                                categories && categories?.map((c: any, index: number) => (
+                                customers && customers?.map((c: any, index: number) => (
                                     <MenuItem
                                         key={c._id}
                                         value={c._id}
                                     >
                                         {c.name}
                                     </MenuItem>
-
                                 ))
-                            }                                    
+                            }
+                            <MenuItem value="new_customer">New Customer</MenuItem>
                         </Select>
-                    </FormControl>  
+                    </FormControl>
+
+                    {selectedCustomer === "new_customer" && (
+                        <Box component="form" sx={{ maxWidth: 500, width: '100%', }}>
+                            <Typography variant="h6" gutterBottom>
+                                New Customer Information
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                label="Name"
+                                variant="outlined"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                sx={{ mb: 2}}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                variant="outlined"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                sx={{ mb: 2}}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Phone Number"
+                                variant="outlined"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                sx={{ mb: 2}}
+                            />
+                        </Box>
+
+                    )}
 
 
                 </Box>
-
-
             </TableContainer>
 
             <Button
