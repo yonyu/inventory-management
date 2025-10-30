@@ -56,11 +56,13 @@ const AddInvoice = () => {
 
     const handleOpen = () => setOpenAddMoreModal(true);
 
+    const [rowToDelete, setRowToDelete] = useState<number | null>(null);
+
     const handleCloseAddMoreModal = () => {
         setOpenAddMoreModal(false);
     };
 
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [pendingInvoices, setPendingInvoices] = useState<any[]>([]);
 
@@ -78,6 +80,9 @@ const AddInvoice = () => {
     const [selectedProduct, setSelectedProduct] = useState("");
     const { data: selectedProductData } = useGetProductByIdQuery(selectedProduct, { skip: !selectedProduct });
     const [stock, setStock] = useState<number>()
+
+    const [discount, setDiscount] = useState<number>(0);
+    const [grandTotal, setGrandTotal] = useState<number>(0);
 
 
     let invoices: any = invoiceData?.invoices || [];
@@ -108,7 +113,8 @@ const AddInvoice = () => {
         category: string;
         productName: string;
         quantity: number;
-        unitPirce: number;
+        unitPrice: number;
+        totalPrice: number;
     }
 
     const [rows, setRows] = useState<RowData[]>([]);
@@ -216,31 +222,31 @@ const AddInvoice = () => {
     // };
 
 
-    const handleSelectionChange = (e: SelectChangeEvent) => {
-        const { name, value } = e.target;
-        setNewInvoice({...newInvoice, [name]: value});
-    }
+    // const handleSelectionChange = (e: SelectChangeEvent) => {
+    //     const { name, value } = e.target;
+    //     setNewInvoice({...newInvoice, [name]: value});
+    // }
 
-    const handleAddMoreModal = () => {
-        const invoiceToAdd = {
-            ...newInvoice,
-            date: newInvoice.invoiceDate || new Date().toISOString(),
-            //total_cost: newInvoice.quantity * newInvoice.unit_price,
-            tempId: Date.now()
-        };
-        setPendingInvoices([...pendingInvoices, invoiceToAdd]);
-        setSnackbar({ open: true, message: "Row added to list", severity: "success" });
-        setNewInvoice({
-            _id: "",
-            invoiceNumber: "",
-            invoiceDate: "",
-            description: "",
-            status: false,
-            category: "",
-            product: "",
-        });
-        setStartDate(new Date());
-    }
+    // const handleAddMoreModal = () => {
+    //     const invoiceToAdd = {
+    //         ...newInvoice,
+    //         date: newInvoice.invoiceDate || new Date().toISOString(),
+    //         //total_cost: newInvoice.quantity * newInvoice.unit_price,
+    //         tempId: Date.now()
+    //     };
+    //     setPendingInvoices([...pendingInvoices, invoiceToAdd]);
+    //     setSnackbar({ open: true, message: "Row added to list", severity: "success" });
+    //     setNewInvoice({
+    //         _id: "",
+    //         invoiceNumber: "",
+    //         invoiceDate: "",
+    //         description: "",
+    //         status: false,
+    //         category: "",
+    //         product: "",
+    //     });
+    //     setStartDate(new Date());
+    // }
 
 
     const handleAddMoreFormSubmit = async () => {
@@ -276,57 +282,43 @@ const AddInvoice = () => {
     //         });
     // }
 
-    const handleCloseDeleteModal = () => setOpenDeleteModal(false);
-
-    const handleOpenDeleteModal = (invoice: any) => {
-        setSelectedInvoice(invoice);
-        setOpenDeleteModal(true);
-
+    const handleCloseDeleteConfirmation = () => {
+        setRowToDelete(null);
+        setOpenDeleteConfirmation(false);
     }
 
-    const handleDeleteInvoice = () => {
-        if (selectedInvoice?.tempId) {
-            setPendingInvoices(pendingInvoices.filter(o => o.tempId !== selectedInvoice.tempId));
-            setSnackbar({ open: true, message: "Pending invoice removed", severity: "success" });
-            handleCloseDeleteModal();
-        } else {
-            deleteInvoice(selectedInvoice?._id).unwrap()
-                .then(() => {
-                    setSnackbar({ open: true, message: "Invoice deleted successfully", severity: "success" });
-                    handleCloseDeleteModal();
-                })
-                .catch((error: any) => {
-                    setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete invoice", severity: "error" });
-                });
-        }
-    }
+    // const handleOpenDeleteModal = (invoice: any) => {
+    //     setSelectedInvoice(invoice);
+    //     setOpenDeleteModal(true);
 
-    const handleOpenEditModal = (invoice: any) => {
-        setOpenEditModal(true);
-        setSelectedInvoice(invoice);
-        setEditInvoice({ 
-            ...invoice,
-            product: typeof invoice.product === 'object' ? invoice.product._id : invoice.product,
-            category: typeof invoice.category === 'object' ? invoice.category._id : invoice.category,
-            supplier: typeof invoice.supplier === 'object' ? invoice.supplier._id : invoice.supplier
-        });
-    };
+    // }
 
-    const handleCloseEditModal = () => setOpenEditModal(false);
+    // const handleOpenEditModal = (invoice: any) => {
+    //     setOpenEditModal(true);
+    //     setSelectedInvoice(invoice);
+    //     setEditInvoice({ 
+    //         ...invoice,
+    //         product: typeof invoice.product === 'object' ? invoice.product._id : invoice.product,
+    //         category: typeof invoice.category === 'object' ? invoice.category._id : invoice.category,
+    //         supplier: typeof invoice.supplier === 'object' ? invoice.supplier._id : invoice.supplier
+    //     });
+    // };
 
-    const handleEditInvoice = () => {
-        const { _id, ...data } = editInvoice;
-        // updateInvoice({ _id, data })
-        //     .unwrap()
-        //     .then(() => {
-        //         setSnackbar({ open: true, message: "Invoice updated successfully", severity: "success", });
-        //         handleCloseEditModal();
-        //     })
-        //     .catch((error: any) => {
-        //         setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update invoice", severity: "error", });
-        //     });
+    // const handleCloseEditModal = () => setOpenEditModal(false);
 
-    }
+    // const handleEditInvoice = () => {
+    //     const { _id, ...data } = editInvoice;
+    //     // updateInvoice({ _id, data })
+    //     //     .unwrap()
+    //     //     .then(() => {
+    //     //         setSnackbar({ open: true, message: "Invoice updated successfully", severity: "success", });
+    //     //         handleCloseEditModal();
+    //     //     })
+    //     //     .catch((error: any) => {
+    //     //         setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update invoice", severity: "error", });
+    //     //     });
+
+    // }
 
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
@@ -351,13 +343,13 @@ const AddInvoice = () => {
         }
     }, [error]);
 
-    const handleModalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewInvoice({...newInvoice, [event.target.name]: event.target.value});
-    }
+    // const handleModalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setNewInvoice({...newInvoice, [event.target.name]: event.target.value});
+    // }
 
-    const handleInvoiceNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewInvoice({...newInvoice, invoiceNumber: event.target.value});
-    }
+    // const handleInvoiceNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setNewInvoice({...newInvoice, invoiceNumber: event.target.value});
+    // }
 
     const handleCategorySelectionChange = (e: SelectChangeEvent) => {
         setSelectedCategory(e.target.value);
@@ -383,28 +375,73 @@ const AddInvoice = () => {
     }
 
     const handleAddRow = () => {
+        const quantity = stock || 0;
+        const unitPrice = newRowData.unitPrice || 0;
+        const totalPrice = quantity * unitPrice;
+        
         const newRow = {
             id: rows.length + 1,
             startDate: startDate,
             category: selectedCategory,
             productName: selectedProduct,
-            quantity: newRowData.quantity,
-            unitPirce: newRowData.unitPrice,
-
-
+            quantity: quantity,
+            unitPrice: unitPrice,
+            totalPrice: totalPrice,
         };
-
 
         setRows(prevRows => [...prevRows, newRow]);
         setNewRowData({ quantity: 0, unitPrice: 0 });
         setSelectedCategory("");
         setSelectedProduct("");
+        setStock(undefined);
         setStartDate(new Date());
+        handleCloseAddMoreModal();
+    }
+
+    useEffect( ()=> {
+        setGrandTotal(calculateGrandTotal());
+    }, [discount, rows]);
+
+    const handleTextFieldChangeInList = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, id: number, name: string) => {
+        const updatedRows = rows.map(row => {
+            if (row.id === id) {
+                const updatedRow = { ...row, [name]: event.target.value };
+                if (name === 'quantity') {
+                    updatedRow.totalPrice = updatedRow.quantity * updatedRow.unitPrice;
+                } else if (name === 'unitPrice') {
+                    updatedRow.totalPrice = updatedRow.quantity * updatedRow.unitPrice;
+                }
+                return updatedRow;
+            }
+            return row;
+  
+        });
+        setRows(updatedRows);
+    };
+
+
+    const calculateGrandTotal = () => {
+        const totalWithoutDiscount = rows.reduce((total, row) => total + (parseFloat(row.totalPrice.toString()) || 0), 0);
+        return totalWithoutDiscount - discount;
+    }
+
+
+    const handleDeleteRowInList = (id: number) => {
+        setRowToDelete(id);
+        setOpenDeleteConfirmation(true);
+
+    }
+
+    
+    const handleDeleteNewItem = () => {
+        setRows(rows.filter(row => row.id !== rowToDelete));
+        setOpenDeleteConfirmation(false);
+
     }
 
 
     return (
-        <Box sx={{ p: 2, maxWidth: "100%", width: "1024px" }} >
+        <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{
                     fontSize: "3rem",
@@ -431,20 +468,6 @@ const AddInvoice = () => {
                         startIcon={<Add />}
                         onClick={() => {
                             setOpenAddMoreModal(true);
-
-                            // setStartDate(new Date());
-                            // setNewInvoice({
-                            //     ...newInvoice,
-                            //     invoiceNumber: "",
-                            //     // supplier: "",
-                            //     // category: "",
-                            //     invoiceDate: "",
-                            //     description: "",
-
-                            //     // quantity: 0,
-                            //     // unit_price: 0,
-                            //     // total_cost: 0,
-                            // });
                         }}
                         sx={{
                             backgroundColor: "blue",
@@ -463,12 +486,12 @@ const AddInvoice = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell colSpan={3} sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Category</TableCell>
-                            <TableCell colSpan={3} sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Product Name</TableCell>                          
-                            <TableCell colSpan={3} sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>PSC/KG</TableCell>
-                            <TableCell colSpan={3} sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Unit Price</TableCell>    
-                            <TableCell colSpan={3} sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Total Price</TableCell>
-                            <TableCell colSpan={3} sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Actions</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Category</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Product Name</TableCell>                          
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>PSC/KG</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Unit Price</TableCell>    
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Total Price</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Actions</TableCell>
                         </TableRow>
                     </TableHead>
 
@@ -484,6 +507,7 @@ const AddInvoice = () => {
                                     <TableCell>
                                         <TextField 
                                             fullWidth
+                                            sx={{xs: 12, sm: 4}}
                                             value={cat?.name || row.category}
                                         />
                                     </TableCell>
@@ -491,34 +515,36 @@ const AddInvoice = () => {
                                     <TableCell>
                                         <TextField 
                                             fullWidth
+                                            sx={{xs: 12, sm: 4}}
                                             value={prod?.name || row.product}                                        
-                                        />
+                                        />    
                                     </TableCell>  
 
                                     <TableCell>                                        
                                         <TextField 
                                             fullWidth
-                                            value={row.quantity}                                       
+                                            value={row.quantity}
+                                            
+                                            onChange={ (e) => handleTextFieldChangeInList(e, row.id, "quantity")}
                                         />   
                                     </TableCell>
 
                                     <TableCell>
                                         <TextField 
                                             fullWidth
-                                            value={row.unitPrice}                                      
+                                            value={row.unitPrice}
+
+                                            onChange={ (e) => handleTextFieldChangeInList(e, row.id, "unitPrice")}
                                         />                                                                                   
                                     </TableCell>
 
                                     <TableCell>
-                                        <TextField 
-                                            fullWidth
-                                            value={row.totalPrice}                                        
-                                        />                                           
+                                        {row.totalPrice}                              
                                     </TableCell>
 
                                     <TableCell>
                                         <IconButton 
-                                            //onClick={() => handleOpenDeleteModal(order)}
+                                            onClick={() => handleDeleteRowInList(row.id)}
                                         >
                                             <Delete sx={{ color: "red", "&:hover": { color: "darkred" } }} />
                                         </IconButton>
@@ -529,40 +555,67 @@ const AddInvoice = () => {
 
                         <TableRow>
                             <TableCell colSpan={4}>
-                                <Typography variant="h6">Discount</Typography>
-
+                                <Typography variant="h6">Discount:</Typography>
                             </TableCell>
-
-                            <TableCell colSpan={12}>
-                                <TextField
-                                    fullWidth
-                                    type="number"
-                                    sx={{ mr:2 }}
-                                
+                            <TableCell>
+                                <TextField  fullWidth 
+                                    value={discount}
+                                    type="number" sx={{ mr:2 }}
+                                    onChange={(e) => setDiscount(parseFloat(e.target.value))}
                                 />
                             </TableCell>
+                        </TableRow>
+
+                         <TableRow>
+                            <TableCell colSpan={4}>
+                                <Typography variant="h6">Grand Total:</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="h6">{grandTotal.toFixed(2)}</Typography>
+                            </TableCell>
+                        </TableRow>
+
+                         <TableRow>
 
 
 
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                                <Typography variant="h6">Grand Total</Typography>
-                            </TableCell>
 
-                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Description</TableCell>                         
+
+
+                                <TextField 
+                                    fullWidth
+                                    // value={row.description}
+                                    // onChange={ (e) => handleTextFieldChangeInList(e, row.id, "totalPrice")}
+                                />     
+
+
+
+
+
+
+                                                                
+                                Description</TableCell>                         
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Paid Status</TableCell>   
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Partial Payment Amount</TableCell>         
 
                             <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Customer Name</TableCell>  
 
 
-
-
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Name</TableCell>  
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Email</TableCell>
+                            <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Phone Number</TableCell>
 
 
 
 
                         </TableRow>
-                        
+
+
+
+
+
+                  
 
 
                     </TableBody>
@@ -588,8 +641,6 @@ const AddInvoice = () => {
 
                 <Box sx={{ m: 1}}> 
 
-
-
                     <FormControl fullWidth variant="outlined" sx={{maxWidth: 10}}>
                         <InputLabel>Paid Status</InputLabel>
                         <Select
@@ -614,7 +665,6 @@ const AddInvoice = () => {
                                 },
                                 
                             }}
-                            //disabled={!newInvoice.supplier}
                         >
                             {
                                 categories && categories?.map((c: any, index: number) => (
@@ -751,7 +801,7 @@ const AddInvoice = () => {
                                         ))
                                     }   
                                 </Select>
-                            </FormControl>                              
+                            </FormControl>
                         </Grid>
 
                          <Grid size={{ xs: 12, sm: 6 }}>
@@ -869,29 +919,29 @@ const AddInvoice = () => {
 
             {/* start confirm deletion modal */}
             <Modal
-                open={openDeleteModal}
-                onClose={handleCloseDeleteModal}
+                open={openDeleteConfirmation}
+                onClose={handleCloseDeleteConfirmation}
                 aria-labelledby="delete-invoice-modal"
                 aria-describedby="delet-invoice-modal-description"
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
                     <Typography id="delete-invoice-modal" variant="h6" component="h2">
-                        Delete Invoice
+                        Confirm Invoice Deletion
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
-                        Are you sure you want to delete invoice
-                        &nbsp;&quot;{selectedInvoice?.invoiceNumber}&quot;?
+                        Are you sure you want to delete this item
+                        {/* &nbsp;&quot;{row.invoiceNumber}&quot;? */}
                     </Typography>
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
                         <Button
-                            onClick={handleCloseDeleteModal}
+                            onClick={handleCloseDeleteConfirmation}
                             sx={{ mr: 2 }}
                         >
                             Cancel
                         </Button>                    
                         <Button variant="contained" color="error"
-                            onClick={handleDeleteInvoice}
+                            onClick={handleDeleteNewItem}
                         >
                             Delete
                         </Button>
