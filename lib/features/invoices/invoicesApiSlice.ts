@@ -48,7 +48,7 @@ export const invoicesApiSlice = createApi({
             query: (name) => `?name=${name}`,
             providesTags: ['Invoices'],
         }),
-        addInvoice: build.mutation<Invoice, Omit<Invoice, 'status'>>({
+        addInvoice: build.mutation<Invoice, any>({
             query: (newInvoice) => ({
                 url: '',
                 method: 'POST',

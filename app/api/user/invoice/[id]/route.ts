@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 
 import dbConnect from "@/utils/dbConnect";
 import Invoice from "@/models/invoice";
-import InvoiceDetails from "@/models/invoice_details";
+import InvoiceDetails from "@/models/invoice-details";
 import Payment from "@/models/payment";
-import PaymentDetails from "@/models/payment_details";
+import PaymentDetails from "@/models/payment-details";
 
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {

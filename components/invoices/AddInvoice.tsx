@@ -72,6 +72,7 @@ const AddInvoice = () => {
     const dispatch = useAppDispatch();
 
     const { data: invoiceData, error, isLoading: loading } = useGetInvoicesQuery();
+    const [addInvoice] = useAddInvoiceMutation();
     
     // Only load reference data when modals are open
     const needsReferenceData = openAddMoreModal || openEditModal;
@@ -200,21 +201,6 @@ const AddInvoice = () => {
     //     console.log("Form state changed:", form);
     // }, [form]);
 
-    const handleAddMoreFormSubmit = async () => {
-        if (pendingInvoices.length === 0) {
-            setSnackbar({ open: true, message: "No invoices to save", severity: "warning" });
-            return;
-        }
-
-        // try {
-        //     const invoicesToSave = pendingInvoices.map(({ tempId, _id, ...invoice }) => invoice);
-        //     await addInvoice(invoicesToSave).unwrap();
-        //     setSnackbar({ open: true, message: `${pendingInvoices.length} invoice(s) saved successfully`, severity: "success" });
-        //     setPendingInvoices([]);
-        // } catch (error: any) {
-        //     setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to save invoices", severity: "error" });
-        // }
-    }
 
     const handleCloseDeleteConfirmation = () => {
         setRowToDelete(null);
@@ -361,6 +347,81 @@ const AddInvoice = () => {
         }
     }
 
+    const handleAddMoreFormSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+
+        if (rows.length === 0) {
+            setSnackbar({ open: true, message: "Please add at least one item", severity: "warning" });
+            return;
+        }
+
+        const purchaseData = rows.map((row) => ({
+            category: row.category,
+            product: row.productName,
+            date: row.startDate?.toISOString(),
+            quantity: row.quantity,
+            price: row.unitPrice,
+            total: row.totalPrice,
+            discount: 0,
+        }));
+
+        const hasEmptyFields = purchaseData.some((row: any) => {
+            return !row.category || !row.product || !row.date || !row.quantity || !row.price || !row.total;
+        });
+
+        if (hasEmptyFields) {
+            setSnackbar({ open: true, message: "Please fill in all fields", severity: "warning" });
+            return;
+        }
+
+        const payload = {
+            invoiceDate: rows[0].startDate?.toISOString(),
+            date: rows[0].startDate?.toISOString(),
+            grandTotal,
+            partialAmount,
+            selectedCustomer,
+            name,
+            email,
+            phone,
+            discount,
+            description,
+            purchaseData: purchaseData,
+            //purchaseDate: rows[0].startDate?.toISOString(),
+            status: status,// === 'full_paid',
+        };
+
+        console.log('Payload:', payload);
+
+        await addInvoice(payload).unwrap()
+            .then((res: any) => {
+                
+                setSnackbar({ open: true, message: "Invoice saved successfully", severity: "success" });
+                setRows([]);
+                setDiscount(0);
+                setStatus('');
+                setPartialAmount('');
+                setDescription('');
+                setSelectedCustomer('');
+                setName('');
+                setEmail('');
+                setPhone('');
+            })
+            .catch((error: any) => {
+                console.error('Error saving invoice:', error);
+                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to save invoice", severity: "error" });
+            });
+        // setSnackbar({ open: true, message: "Invoice saved successfully", severity: "success" });
+        // setRows([]);
+        // setDiscount(0);
+        // setStatus('');
+        // setPartialAmount('');
+        // setDescription('');
+        // setSelectedCustomer('');
+        // setName('');
+        // setEmail('');
+        // setPhone('');
+
+    }
 
 
     return (

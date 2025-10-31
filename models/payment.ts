@@ -22,19 +22,19 @@ const PaymentSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    paid_amount: {
+    paidAmount: {
         type: Number,
         required: false,
     },
-    due_amount: {
+    dueAmount: {
         type: Number,
         required: false,
     },
-    total_amount: {
+    totalAmount: {
         type: Number,
         required: false,
     },
-    discount_amount: {
+    discountAmount: {
         type: Number,
         required: false,
     },
