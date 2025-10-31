@@ -7,7 +7,7 @@ const PaymentDetailsSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Invoice",
     },
-    current_paid_amount: {
+    currentPaidAmount: {
         type: Number,
         required: false,
     },

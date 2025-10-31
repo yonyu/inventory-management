@@ -28,10 +28,20 @@ const InvoiceDetailsSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    unit_price: {
+    unitPrice: {
         type: Number,
         required: true,
     },
+
+    totalCost: {
+        type: Number,
+        required: true,
+    },
+    discount: {
+        type: Number,
+        required: true,
+    },
+    
     status: {
         type: Boolean,
         default: true,
