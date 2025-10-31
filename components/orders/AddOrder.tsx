@@ -343,7 +343,7 @@ const AddOrder = () => {
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{
                     fontSize: "3rem",
-                    color: "0073e6", // a nice blue color
+                    color: "#0073e6", // a nice blue color
                     marginBottom: "20px", // 1rem = 16px
                     textAlign: "center",
                     fontWeight: "bold",

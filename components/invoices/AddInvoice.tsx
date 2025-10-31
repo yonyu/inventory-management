@@ -47,7 +47,6 @@ import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSl
 import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 
 import { bgcolor, borderColor, height, minWidth } from "@mui/system";
-import { set } from "mongoose";
 
 
 
@@ -355,13 +354,14 @@ const AddInvoice = () => {
             return;
         }
 
-        const purchaseData = rows.map((row) => ({
-            category: row.category,
-            product: row.productName,
-            date: row.startDate?.toISOString(),
-            quantity: row.quantity,
-            price: row.unitPrice,
-            total: row.totalPrice,
+        const purchaseData = rows.map((invDetails) => ({
+            //invoice: invoice?.id,
+            category: invDetails.category,
+            product: invDetails.productName,
+            date: invDetails.startDate?.toISOString(),
+            quantity: invDetails.quantity,
+            price: invDetails.unitPrice,
+            total: invDetails.totalPrice,
             discount: 0,
         }));
 
@@ -386,7 +386,6 @@ const AddInvoice = () => {
             discount,
             description,
             purchaseData: purchaseData,
-            //purchaseDate: rows[0].startDate?.toISOString(),
             status: status,// === 'full_paid',
         };
 
@@ -410,26 +409,16 @@ const AddInvoice = () => {
                 console.error('Error saving invoice:', error);
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to save invoice", severity: "error" });
             });
-        // setSnackbar({ open: true, message: "Invoice saved successfully", severity: "success" });
-        // setRows([]);
-        // setDiscount(0);
-        // setStatus('');
-        // setPartialAmount('');
-        // setDescription('');
-        // setSelectedCustomer('');
-        // setName('');
-        // setEmail('');
-        // setPhone('');
 
     }
 
 
     return (
         <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
-            <Typography variant="h4" sx={{ mb: 2 }}
+            <Typography variant="h5" sx={{ mb: 2 }}
                 style={{
                     fontSize: "3rem",
-                    color: "0073e6", // a nice blue color
+                    color: "#0073e6", // a nice blue color
                     marginBottom: "20px", // 1rem = 16px
                     textAlign: "center",
                     fontWeight: "bold",

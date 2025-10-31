@@ -16,7 +16,7 @@ const InvoiceSchema = new mongoose.Schema({
     },
     status: {
         type: Boolean,
-        default: false
+        default: false  // true: fully paid
     },
 
 

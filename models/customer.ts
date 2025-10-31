@@ -13,12 +13,12 @@ const CustomerSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: true,
+        //required: true,
         trim: true,
     },
     address: {
         type: String,
-        required: true,
+        //required: true,
         trim: true,
     },
     status: {

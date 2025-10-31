@@ -81,14 +81,14 @@ export async function GET(req: Request) {
     await dbConnect();
 
     try {
-        const [invoices, invoiceDetails, payment, paymentDetails] = await Promise.all([
+        const [invoices, invoiceDetails, payments, paymentDetails] = await Promise.all([
             Invoice.find().sort({ invoiceDate: -1 }),
             InvoiceDetails.find().populate("invoice", "invoiceNumber").populate("product", "name").populate("category", "name").sort({ date: -1 }),
             Payment.find().populate("customer", "name").populate("invoice", "invoiceNumber").sort({ date: -1 }),
             PaymentDetails.find().populate("invoice", "invoiceNumber").sort({ date: -1 })
         ]);
 
-        return NextResponse.json({ invoices, payment, invoiceDetails, paymentDetails }, { status: 200 });
+        return NextResponse.json({ invoices, payments, invoiceDetails, paymentDetails }, { status: 200 });
     } catch (error: any) {
         return NextResponse.json({ err: error.message }, { status: 500 });
     }
@@ -143,6 +143,10 @@ export async function POST(req: Request) {
             status: status === "full_paid",
         });
 
+        if (!newInvoice) {
+            return NextResponse.json({ err: "Failed to create invoice" }, { status: 500 });
+        }
+
         const invoice_details = await Promise.all(
             purchaseData.map(async (invoiceDetail: any) => {
                 return InvoiceDetails.create({
@@ -153,7 +157,7 @@ export async function POST(req: Request) {
                     quantity: invoiceDetail.quantity,
                     unitPrice: invoiceDetail.price,
                     totalCost: invoiceDetail.total,
-                    discount: invoiceDetail.discount,
+                    //discount: invoiceDetail.discount,
                     status: status === "full_paid",
                 });
             })
@@ -188,10 +192,10 @@ export async function POST(req: Request) {
         }
 
         await Payment.create({
-            date: parsedPurchaseDate,
-            invoice: newInvoice._id,
-            customer: customerId,
-            status,
+            //date: parsedPurchaseDate,
+            invoice: newInvoice._id, // verify later if it is redundant
+            customer: customerId, 
+            status, // full-paid, partial_paid, full_due
             discountAmount: parsedDiscount,
             totalAmount: parsedGrandTotal,
             paidAmount: paidAmount,
