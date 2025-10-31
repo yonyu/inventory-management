@@ -166,6 +166,8 @@ export async function POST(req: Request) {
                 name,
                 email,
                 mobileNumber: phone,
+                address: '',
+                image: '',
             });
             customerId = new_customer._id;
         }

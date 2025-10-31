@@ -347,7 +347,7 @@ const AddInvoice = () => {
         }
     }
 
-    const handleAddMoreFormSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleAddInvoiceFormSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         if (rows.length === 0) {
@@ -725,7 +725,7 @@ const AddInvoice = () => {
                 fullWidth
                 variant="contained"
                 startIcon={<Add />}
-                onClick={handleAddMoreFormSubmit}
+                onClick={handleAddInvoiceFormSubmit}
                 sx={{
                     p: 1,
                     backgroundColor: "blue",
