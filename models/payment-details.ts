@@ -13,7 +13,7 @@ const PaymentDetailsSchema = new mongoose.Schema({
     },
     date: {
         type: Date,
-        required: false,
+        default: Date.now,
     },
     // createdAt: {
     //     type: Date,

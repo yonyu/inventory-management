@@ -7,7 +7,7 @@ import Product from "./product";
 const InvoiceDetailsSchema = new mongoose.Schema({
     date: {
         type: Date,
-        required: true,
+        default: Date.now,
     },
     invoice: {
         type: mongoose.Schema.Types.ObjectId,

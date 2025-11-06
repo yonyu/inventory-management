@@ -6,7 +6,7 @@ import "./invoice";
 const PaymentSchema = new mongoose.Schema({
     date: {
         type: Date,
-        required: true,
+        default: Date.now,
     },
     invoice: {
         type: mongoose.Schema.Types.ObjectId,
