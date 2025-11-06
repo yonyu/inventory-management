@@ -50,7 +50,7 @@ import { bgcolor, borderColor, height, minWidth } from "@mui/system";
 
 
 
-//import InvoiceList from "./InvoiceList";
+import InvoiceList from "./InvoiceList";
 
 const AddInvoice = () => {
 
@@ -727,7 +727,7 @@ const AddInvoice = () => {
             </Button>
 
 
-            {/* <InvoiceList /> */}
+            <InvoiceList />
 
 
             {/* start add new row modal */}

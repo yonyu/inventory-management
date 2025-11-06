@@ -224,9 +224,9 @@ const InvoiceTable = () => {
     };
 
 
-    const filteredInvoices = invoices.filter((product: any) =>
-
-        product?.name?.toLowerCase().includes(filter.toLowerCase())
+    const filteredInvoices = invoices.filter((invoice: any) =>
+        invoice?.invoiceNumber?.toLowerCase().includes(filter.toLowerCase()) ||
+        invoice?.description?.toLowerCase().includes(filter.toLowerCase())
     )
 
 
@@ -319,11 +319,10 @@ const InvoiceTable = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>S.No</TableCell>
-                            <TableCell>Invoice Name</TableCell>
-                            <TableCell>Supplier Name</TableCell>
-                            <TableCell>Unit Name</TableCell>
-                            <TableCell>Category Name</TableCell>
-                            <TableCell>Quantity</TableCell>
+                            <TableCell>Invoice Number</TableCell>
+                            <TableCell>Invoice Date</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell>Status</TableCell>
                             <TableCell>Actions</TableCell>                           
                         </TableRow>
                     </TableHead>
@@ -343,17 +342,16 @@ const InvoiceTable = () => {
                                 <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
                             </TableRow>
                         ) : (
-                            filteredInvoices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((product: any, index: number) => (
-                                <TableRow key={product._id}>
+                            filteredInvoices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((invoice: any, index: number) => (
+                                <TableRow key={invoice._id}>
                                     <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                    <TableCell>{product?.name}</TableCell>
-                                    <TableCell>{product?.supplier?.name}</TableCell>
-                                    <TableCell>{product?.unit?.name}</TableCell>
-                                    <TableCell>{product?.category?.name}</TableCell>
-                                    <TableCell>{product?.quantity}</TableCell>
+                                    <TableCell>{invoice?.invoiceNumber}</TableCell>
+                                    <TableCell>{new Date(invoice?.invoiceDate).toLocaleDateString()}</TableCell>
+                                    <TableCell>{invoice?.description}</TableCell>
+                                    <TableCell>{invoice?.status ? 'Active' : 'Inactive'}</TableCell>
                                     <TableCell>
                                         <IconButton
-                                            onClick={() => handleOpenEditModal(product)}
+                                            onClick={() => handleOpenEditModal(invoice)}
                                             sx={{ color: "blue" }}
                                         >
                                             <Edit
@@ -366,7 +364,7 @@ const InvoiceTable = () => {
                                             />
                                         </IconButton>
                                         <IconButton
-                                            onClick={() => handleOpenDeleteModal(product)}
+                                            onClick={() => handleOpenDeleteModal(invoice)}
                                         >
                                             <Delete
                                                 sx={{
