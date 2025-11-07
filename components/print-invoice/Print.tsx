@@ -66,8 +66,15 @@ const InvoiceTable = ({search}: any)=> {
     let invoices: any = invoiceData?.invoices || [];
     console.log("Invoices", invoices);
 
+
+    // invoice details
+
     const { data: paymentData } = useGetPaymentsQuery();
     const payments = paymentData?.payments || [];
+
+
+    // payment details
+
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
@@ -93,6 +100,8 @@ const InvoiceTable = ({search}: any)=> {
             invoice?.description?.toLowerCase().includes(searchTerm)
         );
     })
+
+    //const [invoiceDetails, setInvoiceDetails] = useState<any[]>([]);
 
     return ( 
         <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
@@ -275,6 +284,190 @@ const InvoiceTable = ({search}: any)=> {
                         sx={{ backgroundColor: "white" }}
                     />
                 </TableContainer>
+
+
+
+
+
+
+
+                <TableContainer component={Paper} sx={{ overflowX: 'auto', my: '25' }} >
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="center">Sl</TableCell>
+                                <TableCell align="center">Category</TableCell>
+                                <TableCell align="center">Product Name</TableCell>
+                                <TableCell align="center">Current Stock</TableCell>
+                                <TableCell align="center">Quantity</TableCell>
+                                <TableCell align="center">Unit Price</TableCell>
+                                <TableCell align="center">Total Price</TableCell>                       
+                            </TableRow>
+                        </TableHead>
+
+                        <TableBody>
+                            {
+                                filteredInvoices.map((details: any, index: number) => (
+                                    <TableRow key={index}>
+                                        <TableCell align="center">{index + 1}</TableCell>
+                                        <TableCell align="center">{details?.invoiceNumber}</TableCell>
+                                        <TableCell align="center">{details?.description}</TableCell>
+                                        <TableCell align="center">{details?.description}</TableCell>
+                                        <TableCell align="center">{details?.description}</TableCell>
+                                        <TableCell align="center">{details?.description}</TableCell>
+                                        <TableCell align="center">{details?.description}</TableCell>
+
+
+
+                                        {/* <TableCell>
+                                            <Button
+                                                variant="contained"
+                                                color={details?.status ? "success" : "warning"}
+                                                style={{
+                                                    borderRadius: '20px',
+                                                    padding: '5px 10px,',
+                                                    minWidth: 'auto',
+                                                    fontSize: '0.8rem',
+                                                }}
+                                            >
+                                                {details?.status ? "Active" : "Pending"}
+                                            </Button>
+                                        </TableCell>
+
+                                        <TableCell>
+                                            <Button
+                                                variant="contained"
+                                                startIcon={ <AddTaskIcon /> }
+                                                onClick={ ()=> router.push(`/dashboard/user/print-invoice?invoiceid=${details?._id}`) }
+                                                sx={{
+                                                    m: 1,
+                                                    borderRadius: '20px',
+                                                    padding: '5px 10px',
+                                                    minWidth: 'auto',
+                                                    fontSize: '0.8rem',
+                                                }}
+                                            >
+                                            </Button>
+
+                                            <Button
+                                                variant="outlined"
+                                                color="error"
+                                                startIcon={<DeleteIcon />}
+                                                onClick={()=> handleOpenDeleteModal(details)}
+                                                sx={{
+                                                    borderRadius: '20px',
+                                                    padding: '5px 10px',
+                                                    minWidth: 'auto',
+                                                    fontSize: '0.8rem',
+                                                }}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </TableCell> */}
+                                    </TableRow>
+                                ))
+                            }
+
+                            {/* Subtotal row */}
+
+                            <TableRow>
+                                <TableCell colSpan={6} align="right" style={{fontWeight:'bold'}}>
+                                    Subtotal
+                                </TableCell>
+                                <TableCell align="center" style={{fontWeight:'bold'}}>
+                                    $subtotal
+                                </TableCell>
+                            </TableRow>
+
+                            {payments && payments.map((invoice) => (
+                                <React.Fragment key={invoice._id}>
+                                    <TableRow>
+                                        <TableCell colSpan={6} align="right" style={{fontWeight:'bold'}}>
+                                            Discount
+                                        </TableCell>
+                                        <TableCell align="center" style={{fontWeight:'bold'}}>
+                                            $invoice.discount_amount
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow>
+                                        <TableCell colSpan={6} align="right" style={{fontWeight:'bold'}}>
+                                            Paid Amount
+                                        </TableCell>
+                                        <TableCell align="center" style={{fontWeight:'bold'}}>
+                                            $invoice.paid_amount
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow>
+                                        <TableCell colSpan={6} align="right" style={{fontWeight:'bold'}}>
+                                            Due Amount
+                                        </TableCell>
+                                        <TableCell align="center" style={{fontWeight:'bold'}}>
+                                            $invoice.due_amount
+                                        </TableCell>
+                                    </TableRow>
+
+                                    <TableRow>
+                                        <TableCell colSpan={6} align="right" style={{fontWeight:'bold'}}>
+                                            Grand Amount
+                                        </TableCell>
+                                        <TableCell align="center" style={{fontWeight:'bold'}}>
+                                            $invoice.total_amount
+                                        </TableCell>
+                                    </TableRow>
+                                </React.Fragment>
+
+                            ))}
+
+
+                            <TableRow>
+
+                                <TableCell colSpan={7} align="center">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        //onClick={ ()=> router.push(`/dashboard/user/print-invoice?invoiceid=${details?._id}`) }
+                                        // sx={{
+                                        //     m: 1,
+                                        //     borderRadius: '20px',
+                                        //     padding: '5px 10px',
+                                        //     minWidth: 'auto',
+                                        //     fontSize: '0.8rem',
+                                        // }}
+                                    >
+                                        Approve
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+
+
+                        </TableBody>
+                    </Table>
+
+                </TableContainer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             </Box>
 
 
