@@ -40,6 +40,9 @@ import { useAddInvoiceMutation, useGetInvoicesQuery, useDeleteInvoiceMutation/*,
 import { useGetUnitsQuery } from "@/lib/features/units/unitsApiSlice";
 import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
+import { useGetCustomersQuery } from "@/lib/features/customers/customersApiSlice";
+import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
+
 
 
 const InvoiceTable = () => {
@@ -50,6 +53,7 @@ const InvoiceTable = () => {
     const { data: unitData } = useGetUnitsQuery();
     const { data: supplierData } = useGetSuppliersQuery();
     const { data: categoryData } = useGetCategoriesQuery();
+    const { data: paymentData } = useGetPaymentsQuery();
 
     let invoices: any;
     invoices = productData?.invoices || [];
@@ -67,6 +71,8 @@ const InvoiceTable = () => {
     const [page, setPage] = React.useState(0);
 
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const payments = paymentData?.payments || [];
 
     const [openAddModal, setOpenAddModal] = React.useState(false);
     const [newInvoice, setNewInvoice] = useState({
@@ -92,6 +98,8 @@ const InvoiceTable = () => {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
     const [openEditModal, setOpenEditModal] = useState(false);
+
+
 
     const [snackbar, setSnackbar] = useState({
         open: false,
@@ -223,7 +231,6 @@ const InvoiceTable = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-
     const filteredInvoices = invoices.filter((invoice: any) =>
         invoice?.invoiceNumber?.toLowerCase().includes(filter.toLowerCase()) ||
         invoice?.description?.toLowerCase().includes(filter.toLowerCase())
@@ -235,7 +242,7 @@ const InvoiceTable = () => {
     }
 
     return (
-        <Box sx={{ p: 2, maxWidth: "100%", width: "1024px" }} >
+        <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{
                     fontSize: "3rem",
@@ -250,7 +257,7 @@ const InvoiceTable = () => {
                 }}
 
             >
-                Invoices
+                All Invoices
             </Typography>
 
             <Button
@@ -270,7 +277,7 @@ const InvoiceTable = () => {
             </Button>
 
             <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid size={{ xs: 12, sm: 12 }}>
                     <TextField
                         fullWidth
                         variant="outlined"
@@ -295,23 +302,6 @@ const InvoiceTable = () => {
                         }}
                     />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 4 }}>     {/* <Grid item xs={12} sm={4}> */}
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        startIcon={<Add />}
-                        onClick={handleOpenAddModal}
-                        sx={{
-                            backgroundColor: "blue",
-                            "&:hover": {
-                                backgroundColor: "blue",
-                            },
-                            height: "100%",
-                        }}
-                    >
-                        Add Invoice
-                    </Button>
-                </Grid>
             </Grid>
 
             <TableContainer component={Paper} sx={{ overflowX: 'auto' }} >
@@ -323,6 +313,8 @@ const InvoiceTable = () => {
                             <TableCell>Invoice Date</TableCell>
                             <TableCell>Description</TableCell>
                             <TableCell>Status</TableCell>
+                            <TableCell>Customer Name</TableCell>
+                            <TableCell>Amount</TableCell>
                             <TableCell>Actions</TableCell>                           
                         </TableRow>
                     </TableHead>
@@ -349,6 +341,18 @@ const InvoiceTable = () => {
                                     <TableCell>{new Date(invoice?.invoiceDate).toLocaleDateString()}</TableCell>
                                     <TableCell>{invoice?.description}</TableCell>
                                     <TableCell>{invoice?.status ? 'Active' : 'Inactive'}</TableCell>
+                                    {
+                                        (() => {
+                                            const matchingPayment = Array.isArray(payments) ? payments.find((payment: any) => payment?.invoice?._id?.toString() === invoice._id.toString()) : null;
+                                            return (
+                                                <>
+                                                    <TableCell>{matchingPayment?.customer?.name || 'n/a'}</TableCell>
+                                                    <TableCell>{matchingPayment?.totalAmount || 'n/a'}</TableCell>
+                                                </>
+                                            );
+                                        })()
+                                    }
+
                                     <TableCell>
                                         <IconButton
                                             onClick={() => handleOpenEditModal(invoice)}
@@ -392,218 +396,6 @@ const InvoiceTable = () => {
                     sx={{ backgroundColor: "white" }}
                 />
             </TableContainer>
-
-            {/* start add product modal */}
-            <Modal
-                open={openAddModal}
-                onClose={handleCloseAddModal}
-                aria-labelledby="add-product-modal"
-                aria-describedby="add-product-modal-description"
-                sx={modalBackdropStyle}
-            >
-                <Box sx={modalStyle}>
-                    <Typography id="add-product-modal" variant="h6" component="h2">
-                        Add Invoice
-                    </Typography>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        label="Name"
-                        name="name"
-                        value={newInvoice.name}
-                        onChange={(e) => setNewInvoice({ ...newInvoice, name: e.target.value })}
-                        required
-                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
-                        sx={{
-                            mt: 2,
-                            input: { color: "white", },
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "blue",
-                                },
-                            },
-                        }}
-                    />
-                    <FormControl fullWidth sx={{ mb: 2}}>
-                        <InputLabel>Supplier Name</InputLabel>
-                        <Select
-                            value={newInvoice.supplier}
-                            onChange={(e) => setNewInvoice({...newInvoice, supplier: e.target.value})}
-                            sx={{
-                                mt: 3,
-                                color: "white",
-                                ".MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
-                                },
-                                
-                            }}
-                        >
-                            {
-                                suppliers && suppliers?.map((s: any, index: number) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={s._id}
-                                    >
-                                        {s.name}
-                                    </MenuItem>
-
-                                  ))
-                            }
-
-                        </Select>
-                    </FormControl>
-
-                    <FormControl fullWidth sx={{ mb: 2}}>
-                        <InputLabel>Unit Name</InputLabel>
-                        <Select
-                            value={newInvoice.unit}
-                            onChange={(e) => setNewInvoice({...newInvoice, unit: e.target.value})}
-                            sx={{
-                                mt: 3,
-                                color: "white",
-                                ".MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
-                                },
-                                
-                            }}
-                        >
-                            {
-                                units && units?.map((u: any, index: number) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={u._id}
-                                    >
-                                        {u.name}
-                                    </MenuItem>
-
-                                  ))
-                            }
-
-                        </Select>
-                    </FormControl>
-
-                    <FormControl fullWidth sx={{ mb: 2}}>
-                        <InputLabel>Category Name</InputLabel>
-                        <Select
-                            value={newInvoice.category}
-                            onChange={(e) => setNewInvoice({...newInvoice, category: e.target.value})}
-                            sx={{
-                                mt: 3,
-                                color: "white",
-                                ".MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
-                                },
-                                
-                            }}
-                        >
-                            {
-                                categories && categories?.map((c: any, index: number) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={c._id}
-                                    >
-                                        {c.name}
-                                    </MenuItem>
-
-                                  ))
-                            }
-
-                        </Select>
-                    </FormControl>
-
-                    <TextField
-                        type="number"
-                        required
-                        fullWidth
-                        variant="outlined"
-                        label="Quantity"
-                        name="quantity"
-                        value={newInvoice.quantity || ""}
-                        onChange={handleFormChange}
-                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
-                        sx={{
-                            mt: 2,
-                            input: { color: "white", },
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "blue",
-                                },
-                            },
-                        }}
-                    />
-
-                    <Button           
-                        variant="contained"
-                        sx={{
-                            mt: 2,
-                            ml: 2,
-                            backgroundColor: "blue",
-                            "&:hover": {
-                                backgroundColor: "blue",
-                            },
-                        }}
-                        onClick={handleAddInvoice}
-                    >
-                        Add
-                    </Button>
-                    <Button
-                        onClick={handleCloseAddModal}
-                        variant="outlined"
-                        sx={{
-                            mt: 2,
-                            ml: 2,
-                            color: "white",
-                            borderColor: "blue",
-                            "&:hover": {
-                                borderColor: "blue",
-                            },
-                        }}
-                    >
-                        Cancel
-                    </Button>
-                </Box>
-            </Modal>
-
-            {/* end add product modal */}
 
 
             {/* start edit product modal */}
