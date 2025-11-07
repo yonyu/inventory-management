@@ -231,10 +231,13 @@ const InvoiceTable = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const filteredInvoices = invoices.filter((invoice: any) =>
-        invoice?.invoiceNumber?.toLowerCase().includes(filter.toLowerCase()) ||
-        invoice?.description?.toLowerCase().includes(filter.toLowerCase())
-    )
+    const filteredInvoices = invoices.filter((invoice: any) => {
+        const searchTerm = filter.toLowerCase().trim();
+        return (
+            invoice?.invoiceNumber?.toLowerCase().includes(searchTerm) ||
+            invoice?.description?.toLowerCase().includes(searchTerm)
+        );
+    })
 
 
     const handleFilterChange = (e: any) => {
