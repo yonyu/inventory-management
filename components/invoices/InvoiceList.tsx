@@ -49,14 +49,14 @@ const InvoiceTable = () => {
 
     const dispatch = useAppDispatch();
 
-    const { data: productData, error, isLoading: loading } = useGetInvoicesQuery();
+    const { data: invoiceData, error, isLoading: loading } = useGetInvoicesQuery();
     const { data: unitData } = useGetUnitsQuery();
     const { data: supplierData } = useGetSuppliersQuery();
     const { data: categoryData } = useGetCategoriesQuery();
     const { data: paymentData } = useGetPaymentsQuery();
 
     let invoices: any;
-    invoices = productData?.invoices || [];
+    invoices = invoiceData?.invoices || [];
     //console.log("Invoices", invoices);
     let units: any;
     units = unitData?.units || [];
@@ -177,8 +177,8 @@ const InvoiceTable = () => {
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
-    const handleOpenDeleteModal = (product: any) => {
-        setSelectedInvoice(product);
+    const handleOpenDeleteModal = (invoice: any) => {
+        setSelectedInvoice(invoice);
         //console.log("Selecting Invoice: ", product);
         //setForm(product);
         setOpenDeleteModal(true);
@@ -402,7 +402,7 @@ const InvoiceTable = () => {
             </TableContainer>
 
 
-            {/* start edit product modal */}
+            {/* start edit invoice modal */}
             <Modal
                 open={openEditModal}
                 onClose={handleCloseEditModal}
@@ -655,24 +655,24 @@ const InvoiceTable = () => {
                 </Box>
             </Modal>
 
-            {/* end edit product modal */}
+            {/* end edit invoice modal */}
 
 
-            {/* start delete product modal */}
+            {/* start delete invoice modal */}
             <Modal
                 open={openDeleteModal}
                 onClose={handleCloseDeleteModal}
-                aria-labelledby="delete-product-modal"
-                aria-describedby="delet-product-modal-description"
+                aria-labelledby="delete-invoice-modal"
+                aria-describedby="delet-invoice-modal-description"
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="delete-product-modal" variant="h6" component="h2">
+                    <Typography id="delete-invoice-modal" variant="h6" component="h2">
                         Delete Invoice
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
                         Are you sure you want to delete
-                        &nbsp;&quot;{selectedInvoice?.name}&quot;?
+                        &nbsp;&quot;{selectedInvoice?.invoiceNumber}&quot;?
                     </Typography>
                     <Button
                         onClick={handleCloseDeleteModal}
@@ -706,7 +706,7 @@ const InvoiceTable = () => {
                 </Box>
             </Modal>
 
-            {/* end delete product modal */}
+            {/* end delete invoice modal */}
 
 
             {/* snackbar */}
