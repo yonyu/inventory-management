@@ -344,9 +344,10 @@ const InvoiceTable = () => {
                                     {
                                         (() => {
                                             const matchingPayment = Array.isArray(payments) ? payments.find((payment: any) => payment?.invoice?._id?.toString() === invoice._id.toString()) : null;
+                                            const customerName = matchingPayment && typeof matchingPayment.customer === 'object' ? matchingPayment.customer.name : 'n/a';
                                             return (
                                                 <>
-                                                    <TableCell>{matchingPayment?.customer?.name || 'n/a'}</TableCell>
+                                                    <TableCell>{customerName}</TableCell>
                                                     <TableCell>{matchingPayment?.totalAmount || 'n/a'}</TableCell>
                                                 </>
                                             );
