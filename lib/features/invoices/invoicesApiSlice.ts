@@ -71,6 +71,13 @@ export const invoicesApiSlice = createApi({
             }),
             invalidatesTags: [{ type: 'Invoices' }],
         }),
+        approveInvoice: build.mutation<{ invoice: Invoice; msg: string }, string>({
+            query: (id) => ({
+                url: `/invoice-approve/${id}`,
+                method: 'PUT',
+            }),
+            invalidatesTags: [{ type: 'Invoices' }],
+        }),
     }),
 });
 
@@ -80,4 +87,4 @@ export const invoicesApiSlice = createApi({
 // Same as `invoicesApiSlice.endpoints.addInvoice.useMutation`
 // Same as `invoicesApiSlice.endpoints.updateInvoice.useMutation`
 // Same as `invoicesApiSlice.endpoints.deleteInvoice.useMutation`
-export const { useGetInvoicesQuery, useGetInvoiceQuery, useAddInvoiceMutation, /*useUpdateInvoiceMutation,*/ useDeleteInvoiceMutation } = invoicesApiSlice;
+export const { useGetInvoicesQuery, useGetInvoiceQuery, useAddInvoiceMutation, /*useUpdateInvoiceMutation,*/ useDeleteInvoiceMutation, useApproveInvoiceMutation } = invoicesApiSlice;

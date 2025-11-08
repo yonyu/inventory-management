@@ -30,7 +30,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useRouter } from "next/navigation";
 
 
-import { useGetInvoicesQuery, useDeleteInvoiceMutation } from "@/lib/features/invoices/invoicesApiSlice";
+import { useGetInvoicesQuery, useDeleteInvoiceMutation, useApproveInvoiceMutation } from "@/lib/features/invoices/invoicesApiSlice";
 import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
 import { useGetInvoiceDetailsByInvoiceQuery, useGetInvoiceWithDetailsQuery } from "@/lib/features/invoice-details/invoiceDetailsApiSlice";
 
@@ -68,6 +68,7 @@ const InvoiceTable = ({search}: {search: string})=> {
     // console.log("Invoices", invoices);
 
     const [deleteInvoice, { isLoading: isDeleting }] = useDeleteInvoiceMutation();
+    const [approveInvoice] = useApproveInvoiceMutation();
 
     const { data: details, isLoading: loading, error } = useGetInvoiceWithDetailsQuery(search, {
         skip: !search
@@ -126,8 +127,19 @@ const InvoiceTable = ({search}: {search: string})=> {
         );
     })
 
-    const handleApprove = () =>  {
-        alert("Approve Invoice: " + selectedInvoice?.invoiceNumber);
+    const handleApprove = async () =>  {
+        if (!selectedInvoice?._id) {
+            setSnackbar({ open: true, message: "No invoice selected", severity: "error" });
+            return;
+        }
+
+        try {
+            await approveInvoice(selectedInvoice._id).unwrap();
+            setSnackbar({ open: true, message: "Invoice approved successfully", severity: "success" });
+        } catch(error: any) {
+            setSnackbar({ open: true, message: error?.data?.err || "Failed to approve the invoice", severity: "error" });
+            console.log("Error Approving Invoice: ", error);
+        }
     }
 
     return ( 
