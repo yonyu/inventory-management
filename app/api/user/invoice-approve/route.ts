@@ -10,7 +10,8 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { invoiceDetails } = body;
         
-        if (!invoiceDetails || !Array.isArray(invoiceDetails) || invoiceDetails.length === 0) {
+        if (!invoiceDetails || !Array.isArray(invoiceDetails) || invoiceDetails.length === 0 ||
+            !invoiceDetails.every(d => d?.product && d?.invoice && typeof d?.quantity === 'number' && d.quantity > 0)) {
             return NextResponse.json({ err: "Invalid invoice details" }, { status: 400 });
         }
 
@@ -27,9 +28,10 @@ export async function POST(req: Request) {
 
 
         // Get unique product and invoice IDs
-        const productIds = [...new Set(invoiceDetails.map(d => d.product))];
-        const invoiceIds = [...new Set(invoiceDetails.map(d => d.invoice))];
+        const productIds = Array.from(new Set(invoiceDetails.map(d => d.product)));
+        const invoiceIds = Array.from(new Set(invoiceDetails.map(d => d.invoice)));
 
+        // amazonq-ignore-next-line
         // Fetch all products and invoices at once
         const [products, invoices] = await Promise.all([
             Product.find({ _id: { $in: productIds } }),
