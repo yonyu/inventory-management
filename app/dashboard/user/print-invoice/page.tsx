@@ -17,7 +17,7 @@ export default function Pos() {
 
     return (
         <>
-            <PrintInvoicePage search={search} />       
+            <PrintInvoicePage search={search || ""} />       
         </>
     )
 }

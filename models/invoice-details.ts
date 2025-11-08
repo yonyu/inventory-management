@@ -24,7 +24,7 @@ const InvoiceDetailsSchema = new mongoose.Schema({
         ref: "Product",
         required: true,
     },
-    quantity: {
+    quantity: { //selling quantity
         type: Number,
         required: true,
     },
@@ -32,8 +32,7 @@ const InvoiceDetailsSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-
-    totalCost: {
+    totalCost: { //sellingPrice
         type: Number,
         required: true,
     },

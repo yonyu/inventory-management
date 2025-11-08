@@ -14,7 +14,7 @@ interface InvoiceDetailsApiResponse {
 }
 
 export const invoiceDetailsApiSlice = createApi({
-    baseQuery: fetchBaseQuery({ baseUrl: "/api/user/invoice-detail" }),
+    baseQuery: fetchBaseQuery({ baseUrl: "/api/user/invoice-details" }),
     reducerPath: "invoiceDetailsApi",
     tagTypes: ["InvoiceDetails"],
     endpoints: (build) => ({
@@ -42,7 +42,7 @@ export const invoiceDetailsApiSlice = createApi({
             invalidatesTags: ['InvoiceDetails'],
         }),
         getInvoiceWithDetails: build.query<any, string>({
-            query: (invoiceId) => `/full/${invoiceId}`,
+            query: (invoiceId) => `?invoiceid=${invoiceId}`,
             providesTags: ['InvoiceDetails'],
         }),
     }),

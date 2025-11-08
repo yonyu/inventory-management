@@ -35,6 +35,7 @@ import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
 import { useGetInvoiceDetailsByInvoiceQuery, useGetInvoiceWithDetailsQuery } from "@/lib/features/invoice-details/invoiceDetailsApiSlice";
 
 const InvoiceTable = ({search}: {search: string})=> {
+    console.log("Search: ", search);
 
     const dispatch = useAppDispatch();
     const router = useRouter();
@@ -68,23 +69,26 @@ const InvoiceTable = ({search}: {search: string})=> {
 
     const [deleteInvoice, { isLoading: isDeleting }] = useDeleteInvoiceMutation();
 
-    const { data: details, isLoading: loading, error } = useGetInvoiceWithDetailsQuery(search);
-        
-    // if (details) {
-    //     const { invoice: invoices, invoiceDetails, payment: payments, paymentDetails, pagination } = details;
-    //     return { invoice, invoiceDetails, payment, paymentDetails, pagination, isLoading, error };
-    // }
-        
-    //     return { invoice: null, invoiceDetails: [], payment: null, paymentDetails: [], pagination: null, isLoading, error };
+    const { data: details, isLoading: loading, error } = useGetInvoiceWithDetailsQuery(search, {
+        skip: !search
+    });
 
-    const invoices = details?.invoice || [];
-    console.log("Invoices", invoices);
+    const invoices = details?.invoice ? [details.invoice] : [];
     const invoiceDetails = details?.invoiceDetails || [];
-    console.log("Invoice Details", invoiceDetails);
     const payments = details?.payment || [];
-    console.log("Payments", payments);
     const paymentDetails = details?.paymentDetails || [];
-    console.log("Payment Details", paymentDetails);
+
+    console.log("Invoice Data:", invoices);
+    console.log("Invoice[0]:", invoices[0]);
+    console.log("Payments Data:", payments);
+
+    useEffect(() => {
+        if (invoices.length > 0) {
+            setSelectedInvoice(invoices[0]);
+        }
+    }, [invoices]);
+
+    const subTotal = invoiceDetails && invoiceDetails?.reduce((acc: number, item: any)=> acc+item.totalCost, 0);
 
 
     // invoice details
@@ -122,22 +126,9 @@ const InvoiceTable = ({search}: {search: string})=> {
         );
     })
 
-    // useEffect(() => {
-    //     fetchInvoice();
-    // }, [])
-
-    const fetchInvoice = () => {
-        const { data: details, isLoading, error } = useGetInvoiceWithDetailsQuery(search);
-        
-        if (details) {
-            const { invoice, invoiceDetails, payment, paymentDetails, pagination } = details;
-            return { invoice, invoiceDetails, payment, paymentDetails, pagination, isLoading, error };
-        }
-        
-        return { invoice: null, invoiceDetails: [], payment: null, paymentDetails: [], pagination: null, isLoading, error };
+    const handleApprove = () =>  {
+        alert("Approve Invoice: " + selectedInvoice?.invoiceNumber);
     }
-
-    //const [invoiceDetails, setInvoiceDetails] = useState<any[]>([]);
 
     return ( 
         <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
@@ -221,8 +212,8 @@ const InvoiceTable = ({search}: {search: string})=> {
                                 <TableCell>Description</TableCell>
                                 <TableCell>Customer Name</TableCell>
                                 <TableCell>Amount</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>                           
+                                {/* <TableCell>Status</TableCell>
+                                <TableCell>Actions</TableCell>                            */}
                             </TableRow>
                         </TableHead>
 
@@ -241,25 +232,15 @@ const InvoiceTable = ({search}: {search: string})=> {
                                     <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
                                 </TableRow>
                             ) : (
-                                filteredInvoices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((invoice: any, index: number) => (
+                                invoices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((invoice: any, index: number) => (
                                     <TableRow key={invoice._id}>
                                         <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                                         <TableCell>{invoice?.invoiceNumber}</TableCell>
                                         <TableCell>{new Date(invoice?.invoiceDate).toLocaleDateString()}</TableCell>
                                         <TableCell>{invoice?.description}</TableCell>
-                                        {
-                                            (() => {
-                                                const matchingPayment = Array.isArray(payments) ? payments.find((payment: any) => payment?.invoice?._id?.toString() === invoice._id.toString()) : null;
-                                                const customerName = matchingPayment && typeof matchingPayment.customer === 'object' ? matchingPayment.customer.name : 'n/a';
-                                                return (
-                                                    <>
-                                                        <TableCell>{customerName}</TableCell>
-                                                        <TableCell>{matchingPayment?.totalAmount || 'n/a'}</TableCell>
-                                                    </>
-                                                );
-                                            })()
-                                        }
-                                        <TableCell>
+                                        <TableCell>{payments[0]?.customer?.name || 'n/a'}</TableCell>
+                                        <TableCell>{payments[0]?.totalAmount || 'n/a'}</TableCell>
+                                        {/* <TableCell>
                                             <Button
                                                 variant="contained"
                                                 color={invoice?.status ? "success" : "warning"}
@@ -303,7 +284,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                             >
                                                 Delete
                                             </Button>
-                                        </TableCell>
+                                        </TableCell> */}
                                     </TableRow>
                                 ))
                             )}
@@ -312,7 +293,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={filteredInvoices.length}
+                        count={invoices.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
@@ -321,13 +302,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                     />
                 </TableContainer>
 
-
-
-
-
-
-
-                <TableContainer component={Paper} sx={{ overflowX: 'auto', my: '25' }} >
+                <TableContainer component={Paper} sx={{ overflowX: 'auto', mt: 4 }} >
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -348,7 +323,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                         <TableCell align="center">{index + 1}</TableCell>
                                         <TableCell align="center">{details?.category.name}</TableCell>
                                         <TableCell align="center">{details?.product.name}</TableCell>
-                                        <TableCell align="center">{details?.quantity}</TableCell>
+                                        <TableCell align="center">{details?.product.quantity}</TableCell>
                                         <TableCell align="center">{details?.quantity}</TableCell>
                                         <TableCell align="center">{details?.unitPrice}</TableCell>
                                         <TableCell align="center">{details?.totalCost}</TableCell>
@@ -411,7 +386,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                     Subtotal
                                 </TableCell>
                                 <TableCell align="center" style={{fontWeight:'bold'}}>
-                                    $subtotal
+                                    ${subTotal}
                                 </TableCell>
                             </TableRow>
 
@@ -422,7 +397,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                             Discount
                                         </TableCell>
                                         <TableCell align="center" style={{fontWeight:'bold'}}>
-                                            {payment.discountAmount}
+                                            ${payment.discountAmount}
                                         </TableCell>
                                     </TableRow>
 
@@ -431,7 +406,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                             Paid Amount
                                         </TableCell>
                                         <TableCell align="center" style={{fontWeight:'bold'}}>
-                                            {payment.paidAmount}
+                                            ${payment.paidAmount}
                                         </TableCell>
                                     </TableRow>
 
@@ -440,7 +415,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                             Due Amount
                                         </TableCell>
                                         <TableCell align="center" style={{fontWeight:'bold'}}>
-                                            {payment.dueAmount}
+                                            ${payment.dueAmount}
                                         </TableCell>
                                     </TableRow>
 
@@ -449,7 +424,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                             Grand Amount
                                         </TableCell>
                                         <TableCell align="center" style={{fontWeight:'bold'}}>
-                                            {payment.totalAmount}
+                                            ${payment.totalAmount}
                                         </TableCell>
                                     </TableRow>
                                 </React.Fragment>
@@ -463,7 +438,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                     <Button
                                         variant="contained"
                                         color="primary"
-                                        //onClick={ ()=> router.push(`/dashboard/user/print-invoice?invoiceid=${details?._id}`) }
+                                        onClick={ handleApprove }
                                         // sx={{
                                         //     m: 1,
                                         //     borderRadius: '20px',
