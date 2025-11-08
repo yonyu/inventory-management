@@ -12,10 +12,10 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const invoiceid = searchParams.get('invoiceid');
 
-        const invoice = await invoiceDetails.find({ invoiceid: invoiceid })
+        const invoiceDetailsArray = await invoiceDetails.find({ invoiceid: invoiceid })
             .populate('product');
 
-        return NextResponse.json({ invoice: invoice }, { status: 200 });
+        return NextResponse.json({ invoiceDetails: invoiceDetailsArray }, { status: 200 });
 
     } catch (error: any) {
         return NextResponse.json({ err: error.message }, { status: 500 });
