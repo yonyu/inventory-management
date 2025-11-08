@@ -14,12 +14,17 @@ export async function POST(req: Request) {
             return NextResponse.json({ err: "Invalid invoice details" }, { status: 400 });
         }
 
-        // Validate input structure
+        const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+        
         for (const detail of invoiceDetails) {
-            if (!detail.product || !detail.invoice || typeof detail.quantity !== 'number' || detail.quantity <= 0) {
-                return NextResponse.json({ err: "Invalid detail structure" }, { status: 400 });
+            if (!detail.product || !detail.invoice || 
+                typeof detail.quantity !== 'number' || detail.quantity <= 0 ||
+                !isValidObjectId(detail.product) || !isValidObjectId(detail.invoice)) {
+                return NextResponse.json({ err: "Invalid detail structure or IDs" }, { status: 400 });
             }
         }
+
+
 
         // Get unique product and invoice IDs
         const productIds = [...new Set(invoiceDetails.map(d => d.product))];
