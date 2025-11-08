@@ -32,8 +32,9 @@ import { useRouter } from "next/navigation";
 
 import { useGetInvoicesQuery, useDeleteInvoiceMutation } from "@/lib/features/invoices/invoicesApiSlice";
 import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
+import { useGetInvoiceDetailsByInvoiceQuery, useGetInvoiceWithDetailsQuery } from "@/lib/features/invoice-details/invoiceDetailsApiSlice";
 
-const InvoiceTable = ({search}: any)=> {
+const InvoiceTable = ({search}: {search: string})=> {
 
     const dispatch = useAppDispatch();
     const router = useRouter();
@@ -60,18 +61,36 @@ const InvoiceTable = ({search}: any)=> {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const { data: invoiceData, error, isLoading: loading } = useGetInvoicesQuery();
+   
+    //const { data: invoiceData, error, isLoading: loading } = useGetInvoicesQuery();
+    // let invoices: any = invoiceData?.invoices || [];
+    // console.log("Invoices", invoices);
+
     const [deleteInvoice, { isLoading: isDeleting }] = useDeleteInvoiceMutation();
 
-    let invoices: any = invoiceData?.invoices || [];
+    const { data: details, isLoading: loading, error } = useGetInvoiceWithDetailsQuery(search);
+        
+    // if (details) {
+    //     const { invoice: invoices, invoiceDetails, payment: payments, paymentDetails, pagination } = details;
+    //     return { invoice, invoiceDetails, payment, paymentDetails, pagination, isLoading, error };
+    // }
+        
+    //     return { invoice: null, invoiceDetails: [], payment: null, paymentDetails: [], pagination: null, isLoading, error };
+
+    const invoices = details?.invoice || [];
     console.log("Invoices", invoices);
+    const invoiceDetails = details?.invoiceDetails || [];
+    console.log("Invoice Details", invoiceDetails);
+    const payments = details?.payment || [];
+    console.log("Payments", payments);
+    const paymentDetails = details?.paymentDetails || [];
+    console.log("Payment Details", paymentDetails);
 
 
     // invoice details
 
-    const { data: paymentData } = useGetPaymentsQuery();
-    const payments = paymentData?.payments || [];
-
+    // const { data: paymentData } = useGetPaymentsQuery();
+    // const payments = paymentData?.payments || [];
 
     // payment details
 
@@ -84,6 +103,8 @@ const InvoiceTable = ({search}: any)=> {
         //console.log("Selecting Invoice: ", invoice);
         setOpenDeleteModal(true);
     }
+
+
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
@@ -100,6 +121,21 @@ const InvoiceTable = ({search}: any)=> {
             invoice?.description?.toLowerCase().includes(searchTerm)
         );
     })
+
+    // useEffect(() => {
+    //     fetchInvoice();
+    // }, [])
+
+    const fetchInvoice = () => {
+        const { data: details, isLoading, error } = useGetInvoiceWithDetailsQuery(search);
+        
+        if (details) {
+            const { invoice, invoiceDetails, payment, paymentDetails, pagination } = details;
+            return { invoice, invoiceDetails, payment, paymentDetails, pagination, isLoading, error };
+        }
+        
+        return { invoice: null, invoiceDetails: [], payment: null, paymentDetails: [], pagination: null, isLoading, error };
+    }
 
     //const [invoiceDetails, setInvoiceDetails] = useState<any[]>([]);
 
@@ -307,15 +343,15 @@ const InvoiceTable = ({search}: any)=> {
 
                         <TableBody>
                             {
-                                filteredInvoices.map((details: any, index: number) => (
+                                invoiceDetails.map((details: any, index: number) => (
                                     <TableRow key={index}>
                                         <TableCell align="center">{index + 1}</TableCell>
-                                        <TableCell align="center">{details?.invoiceNumber}</TableCell>
-                                        <TableCell align="center">{details?.description}</TableCell>
-                                        <TableCell align="center">{details?.description}</TableCell>
-                                        <TableCell align="center">{details?.description}</TableCell>
-                                        <TableCell align="center">{details?.description}</TableCell>
-                                        <TableCell align="center">{details?.description}</TableCell>
+                                        <TableCell align="center">{details?.category.name}</TableCell>
+                                        <TableCell align="center">{details?.product.name}</TableCell>
+                                        <TableCell align="center">{details?.quantity}</TableCell>
+                                        <TableCell align="center">{details?.quantity}</TableCell>
+                                        <TableCell align="center">{details?.unitPrice}</TableCell>
+                                        <TableCell align="center">{details?.totalCost}</TableCell>
 
 
 
@@ -379,14 +415,14 @@ const InvoiceTable = ({search}: any)=> {
                                 </TableCell>
                             </TableRow>
 
-                            {payments && payments.map((invoice) => (
-                                <React.Fragment key={invoice._id}>
+                            {payments && payments.map((payment: any, index: number) => (
+                                <React.Fragment key={payment._id}>
                                     <TableRow>
                                         <TableCell colSpan={6} align="right" style={{fontWeight:'bold'}}>
                                             Discount
                                         </TableCell>
                                         <TableCell align="center" style={{fontWeight:'bold'}}>
-                                            $invoice.discount_amount
+                                            {payment.discountAmount}
                                         </TableCell>
                                     </TableRow>
 
@@ -395,7 +431,7 @@ const InvoiceTable = ({search}: any)=> {
                                             Paid Amount
                                         </TableCell>
                                         <TableCell align="center" style={{fontWeight:'bold'}}>
-                                            $invoice.paid_amount
+                                            {payment.paidAmount}
                                         </TableCell>
                                     </TableRow>
 
@@ -404,7 +440,7 @@ const InvoiceTable = ({search}: any)=> {
                                             Due Amount
                                         </TableCell>
                                         <TableCell align="center" style={{fontWeight:'bold'}}>
-                                            $invoice.due_amount
+                                            {payment.dueAmount}
                                         </TableCell>
                                     </TableRow>
 
@@ -413,7 +449,7 @@ const InvoiceTable = ({search}: any)=> {
                                             Grand Amount
                                         </TableCell>
                                         <TableCell align="center" style={{fontWeight:'bold'}}>
-                                            $invoice.total_amount
+                                            {payment.totalAmount}
                                         </TableCell>
                                     </TableRow>
                                 </React.Fragment>

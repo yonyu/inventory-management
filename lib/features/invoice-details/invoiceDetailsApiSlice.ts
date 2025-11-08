@@ -41,6 +41,10 @@ export const invoiceDetailsApiSlice = createApi({
             }),
             invalidatesTags: ['InvoiceDetails'],
         }),
+        getInvoiceWithDetails: build.query<any, string>({
+            query: (invoiceId) => `/full/${invoiceId}`,
+            providesTags: ['InvoiceDetails'],
+        }),
     }),
 });
 
@@ -48,5 +52,6 @@ export const {
     useGetInvoiceDetailsQuery, 
     useGetInvoiceDetailsByInvoiceQuery, 
     useAddInvoiceDetailMutation, 
-    useDeleteInvoiceDetailMutation 
+    useDeleteInvoiceDetailMutation,
+    useGetInvoiceWithDetailsQuery
 } = invoiceDetailsApiSlice;
