@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 
 import dbConnect from "@/utils/dbConnect";
 
-import InvoiceDetails from "@/models/invoice-details";
+import Customer from "@/models/customer";
+import Category from "@/models/category";
+import Product from "@/models/product";
 import Invoice from "@/models/invoice";
+import InvoiceDetails from "@/models/invoice-details";
 import Payment from "@/models/payment";
 import PaymentDetails from "@/models/payment-details";
 
