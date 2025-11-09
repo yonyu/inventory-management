@@ -36,7 +36,7 @@ import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
 import { useGetInvoiceDetailsByInvoiceQuery, useGetInvoiceWithDetailsQuery } from "@/lib/features/invoice-details/invoiceDetailsApiSlice";
 
 const InvoiceTable = ({search}: {search: string})=> {
-    console.log("Search: ", search);
+    //console.log("Search: ", search);
 
     const dispatch = useAppDispatch();
     const router = useRouter();
@@ -63,11 +63,6 @@ const InvoiceTable = ({search}: {search: string})=> {
         setSnackbar({ ...snackbar, open: false });
     };
 
-   
-    //const { data: invoiceData, error, isLoading: loading } = useGetInvoicesQuery();
-    // let invoices: any = invoiceData?.invoices || [];
-    // console.log("Invoices", invoices);
-
     const [deleteInvoice, { isLoading: isDeleting }] = useDeleteInvoiceMutation();
     const [approveAndUpdate] = useApproveAndUpdateMutation();
 
@@ -80,10 +75,6 @@ const InvoiceTable = ({search}: {search: string})=> {
     const payments = details?.payment || [];
     const paymentDetails = details?.paymentDetails || [];
 
-    console.log("Invoice Data:", invoices);
-    console.log("Invoice[0]:", invoices[0]);
-    console.log("Payments Data:", payments);
-
     useEffect(() => {
         if (invoices.length > 0) {
             setSelectedInvoice(invoices[0]);
@@ -91,15 +82,6 @@ const InvoiceTable = ({search}: {search: string})=> {
     }, [invoices]);
 
     const subTotal = invoiceDetails && invoiceDetails?.reduce((acc: number, item: any)=> acc+item.totalCost, 0);
-
-
-    // invoice details
-
-    // const { data: paymentData } = useGetPaymentsQuery();
-    // const payments = paymentData?.payments || [];
-
-    // payment details
-
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
@@ -134,12 +116,31 @@ const InvoiceTable = ({search}: {search: string})=> {
             return;
         }
 
+        // for (const detail of invoiceDetails) {
+        //     console.log("Invoice Detail: ", detail);
+        //     // const product = detail.product;
+        //     // const quantity = detail.quantity;
+
+        //     // if (product.quantity < quantity) {
+        //     //     setSnackbar({ open: true, message: `Insufficient stock of ${product.name}`, severity: "error" });
+        //     //     return;
+        //     // }
+        // }
+
+        const formattedDetails = invoiceDetails.map((detail: any) => ({
+            product: detail.product._id || detail.product,
+            invoice: selectedInvoice._id,
+            quantity: detail.quantity
+        }));
+
+        //console.log("Formatted Details:", formattedDetails);
+
         try {
-            await approveAndUpdate(invoiceDetails).unwrap();
+            await approveAndUpdate(formattedDetails).unwrap();
             setSnackbar({ open: true, message: "Invoice approved successfully", severity: "success" });
         } catch(error: any) {
             setSnackbar({ open: true, message: error?.data?.err || "Failed to approve the invoice", severity: "error" });
-            console.log("Error Approving Invoice: ", error);
+            //console.log("Error Approving Invoice: ", error);
         }
     }
 
@@ -184,34 +185,6 @@ const InvoiceTable = ({search}: {search: string})=> {
             </Grid>
 
 
-            <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid size={{ xs: 12, sm: 12 }}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        placeholder="Search......"
-
-                        value={filter}
-                        onChange={handleFilterChange}
-
-                        sx={{
-                            input: { color: "white", },
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "blue",
-                                },
-                            },
-                        }}
-                    />
-                </Grid>
-            </Grid>
-
             <Box
             
             >
@@ -225,8 +198,6 @@ const InvoiceTable = ({search}: {search: string})=> {
                                 <TableCell>Description</TableCell>
                                 <TableCell>Customer Name</TableCell>
                                 <TableCell>Amount</TableCell>
-                                {/* <TableCell>Status</TableCell>
-                                <TableCell>Actions</TableCell>                            */}
                             </TableRow>
                         </TableHead>
 
@@ -253,51 +224,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                         <TableCell>{invoice?.description}</TableCell>
                                         <TableCell>{payments[0]?.customer?.name || 'n/a'}</TableCell>
                                         <TableCell>{payments[0]?.totalAmount || 'n/a'}</TableCell>
-                                        {/* <TableCell>
-                                            <Button
-                                                variant="contained"
-                                                color={invoice?.status ? "success" : "warning"}
-                                                style={{
-                                                    borderRadius: '20px',
-                                                    padding: '5px 10px,',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.8rem',
-                                                }}
-                                            >
-                                                {invoice?.status ? "Active" : "Pending"}
-                                            </Button>
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <Button
-                                                variant="contained"
-                                                startIcon={ <AddTaskIcon /> }
-                                                onClick={ ()=> router.push(`/dashboard/user/print-invoice?invoiceid=${invoice?._id}`) }
-                                                sx={{
-                                                    m: 1,
-                                                    borderRadius: '20px',
-                                                    padding: '5px 10px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.8rem',
-                                                }}
-                                            >
-                                            </Button>
-
-                                            <Button
-                                                variant="outlined"
-                                                color="error"
-                                                startIcon={<DeleteIcon />}
-                                                onClick={()=> handleOpenDeleteModal(invoice)}
-                                                sx={{
-                                                    borderRadius: '20px',
-                                                    padding: '5px 10px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.8rem',
-                                                }}
-                                            >
-                                                Delete
-                                            </Button>
-                                        </TableCell> */}
+                                        
                                     </TableRow>
                                 ))
                             )}
@@ -341,53 +268,6 @@ const InvoiceTable = ({search}: {search: string})=> {
                                         <TableCell align="center">{details?.unitPrice}</TableCell>
                                         <TableCell align="center">{details?.totalCost}</TableCell>
 
-
-
-                                        {/* <TableCell>
-                                            <Button
-                                                variant="contained"
-                                                color={details?.status ? "success" : "warning"}
-                                                style={{
-                                                    borderRadius: '20px',
-                                                    padding: '5px 10px,',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.8rem',
-                                                }}
-                                            >
-                                                {details?.status ? "Active" : "Pending"}
-                                            </Button>
-                                        </TableCell>
-
-                                        <TableCell>
-                                            <Button
-                                                variant="contained"
-                                                startIcon={ <AddTaskIcon /> }
-                                                onClick={ ()=> router.push(`/dashboard/user/print-invoice?invoiceid=${details?._id}`) }
-                                                sx={{
-                                                    m: 1,
-                                                    borderRadius: '20px',
-                                                    padding: '5px 10px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.8rem',
-                                                }}
-                                            >
-                                            </Button>
-
-                                            <Button
-                                                variant="outlined"
-                                                color="error"
-                                                startIcon={<DeleteIcon />}
-                                                onClick={()=> handleOpenDeleteModal(details)}
-                                                sx={{
-                                                    borderRadius: '20px',
-                                                    padding: '5px 10px',
-                                                    minWidth: 'auto',
-                                                    fontSize: '0.8rem',
-                                                }}
-                                            >
-                                                Delete
-                                            </Button>
-                                        </TableCell> */}
                                     </TableRow>
                                 ))
                             }
@@ -452,13 +332,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                         variant="contained"
                                         color="primary"
                                         onClick={ handleApprove }
-                                        // sx={{
-                                        //     m: 1,
-                                        //     borderRadius: '20px',
-                                        //     padding: '5px 10px',
-                                        //     minWidth: 'auto',
-                                        //     fontSize: '0.8rem',
-                                        // }}
+
                                     >
                                         Approve
                                     </Button>
@@ -471,27 +345,6 @@ const InvoiceTable = ({search}: {search: string})=> {
 
                 </TableContainer>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             </Box>
 
 
@@ -500,7 +353,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                 open={snackbar.open}
                 onClose={handleCloseSnackbar}
                 autoHideDuration={6000}
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             >
                 <Alert
                     onClose={handleCloseSnackbar}
