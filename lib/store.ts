@@ -13,6 +13,7 @@ import { ordersApiSlice } from "./features/orders/ordersApiSlice";
 import { invoicesApiSlice } from "./features/invoices/invoicesApiSlice";
 import { paymentsApiSlice } from "./features/payments/paymentsApiSlice";
 import { invoiceDetailsApiSlice } from "./features/invoice-details/invoiceDetailsApiSlice";
+import { invoicesApproveApiSlice } from "./features/invoice-approve/invoicesApproveApiSlice";
 
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
@@ -28,6 +29,7 @@ const rootReducer = combineSlices(
   invoicesApiSlice,
   paymentsApiSlice,
   invoiceDetailsApiSlice,
+  invoicesApproveApiSlice,
 );
 
 // Infer the `RootState` type from the root reducer
@@ -54,6 +56,7 @@ export const makeStore = () => {
         invoicesApiSlice.middleware,
         paymentsApiSlice.middleware,
         invoiceDetailsApiSlice.middleware,
+        invoicesApproveApiSlice.middleware,
       );
     },
   });
