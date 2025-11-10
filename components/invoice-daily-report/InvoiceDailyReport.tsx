@@ -16,19 +16,26 @@ import Grid from '@mui/material/Grid';
 import { border, borderColor, height, minWidth } from '@mui/system';
 import { BorderStyle } from '@mui/icons-material';
 
+import { useAddInvoiceMutation, useGetInvoicesQuery, useDeleteInvoiceMutation } from "@/lib/features/invoices/invoicesApiSlice";
+import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
+
 import SnapPOS from '@/components/nav/SnapPOS';
 
 const InvoiceDailyReport = () => {
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const [daily, setDaily] = useState([]);
 
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
 
+    const { data: paymentData } = useGetPaymentsQuery();
+
     const tableRef = useRef<HTMLDivElement>(null);
 
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -40,28 +47,36 @@ const InvoiceDailyReport = () => {
     };
 
 
+
+    const payments = paymentData?.payments || [];
+
+
+
     const handleSearch = async () => {
         if (!startDate || !endDate) {
             alert('Please select both start and end dates.');
             return;
         }
 
-        const response = await fetch(`${process.env.API}/user/daily-order-report`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ startDate, endDate }),
-        });
+        try {
+            const response = await fetch(`${process.env.API}/user/invoice-daily-report`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ startDate, endDate }),
+            });
 
-        const data = await response.json();
-        //console.log('API Response:', data);
-        //console.log('Is Array:', Array.isArray(data));
-        const orders = Array.isArray(data) ? data : (data?.orders || data?.data || []);
-        //console.log('Orders to set:', orders);
-        setDaily(orders);
+            const data = await response.json();
+            //console.log('API Response:', data);
+            //console.log('Is Array:', Array.isArray(data));
+            const invoices = Array.isArray(data) ? data : (data?.invoices || data?.data || []);
+            //console.log('Orders to set:', orders);
+            setDaily(invoices);
 
-
+        } catch(err) {
+            console.error('Error fetching invoice data:', err);
+        }
     };
 
     const printTable = () => {
@@ -95,14 +110,14 @@ const InvoiceDailyReport = () => {
 
     return (
         <>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap:2 }}>
+
                 <DatePicker
                     selected={startDate}
                     onChange={(date: Date) => setStartDate(date)}
                     placeholderText="Start Date"
                     dateFormat="dd/MM/yyyy"
                     customInput={<input style={customInputStyles} />}
-
                 />
 
                 <DatePicker
@@ -111,7 +126,6 @@ const InvoiceDailyReport = () => {
                     placeholderText="End Date"
                     dateFormat="dd/MM/yyyy"
                     customInput={<input style={customInputStyles} />}
-
                 />
 
                 <Grid container sx={{ mb: 2 }}>
@@ -119,7 +133,7 @@ const InvoiceDailyReport = () => {
                         <Button 
                             fullWidth
                             variant="contained" 
-                            startIcon={<FindInPageIcon />}
+                            startIcon={<ContentPasteSearchIcon />}
                             onClick={handleSearch}
                             sx={{ 
                                 p: 2,
@@ -137,98 +151,78 @@ const InvoiceDailyReport = () => {
             <Box
                 ref={tableRef}
             >
-                        <h1
-                            style={{
-                                fontSize: '3rem',
-                                color: '#0073e6', // a nice blue color
-                                marginBottom: '20px', // to center the text vertically
-                                textAlign: 'center', // to center the text horizontally
-                                fontWeight: 'bold', // to make the text bold
-                                textShadow: '1px 1px 2px rgba(0, 0, 0, 0.2)', // to add a shadow effect
-                                padding: '10px', // to add some padding around the text
-                                borderBottom: '2px solid #0073e6', // to add a bottom border
-                                letterSpacing: '1px',
-                            }}
-                        >
-                            Daily Order Report
-                        </h1>
-                        <SnapPOS />
-                        <Table
-                            
-                            sx={{
-                                backgroundColor: 'white',
-                                borderRadius: '8px',
-                                overflow: 'hidden',
-                                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                <Table
+                    
+                    sx={{
+                        backgroundColor: 'white',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
 
-                            }}
-                        >
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>S.No.</TableCell>
-                                    <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Order No.</TableCell>
-                                    <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Supplier Name</TableCell>
-                                    <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Product Name</TableCell>
-                                    <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Buying Quantity</TableCell>
-                                    <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Unit Price</TableCell>
-                                    <TableCell sx={{ fontWeight: "bold", fontSize: "1.2rem" }}>Total Cost</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {daily.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order: any, index: number) => (
-                                <TableRow key={order._id}>
-                                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                        <TableCell>{order?.order_number}</TableCell>
-                                        <TableCell>{order?.supplier?.name}</TableCell>
-                                        <TableCell>{order?.product?.name}</TableCell>
-                                        <TableCell>{order.quantity}</TableCell>
-                                        <TableCell>{order.unit_price}</TableCell>
-                                        <TableCell>{order.total_cost}</TableCell>
-                                    </TableRow>
-                                ))
+                    }}
+                >
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>S.No</TableCell>
+                            <TableCell>Invoice Number</TableCell>
+                            <TableCell>Invoice Date</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell>Customer Name</TableCell>
+                            <TableCell>Amount</TableCell>
+
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {daily &&
+                        daily.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((invoice: any, index: number) => (
+                            <TableRow key={invoice._id}>
+                                <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                                <TableCell>{invoice?.invoiceNumber}</TableCell>
+                                <TableCell>{new Date(invoice?.invoiceDate).toLocaleDateString()}</TableCell>
+                                <TableCell>{invoice?.description}</TableCell>
+
+                                {
+                                    (() => {
+                                        const matchingPayment = Array.isArray(payments) ? payments.find((payment: any) => payment?.invoice?._id?.toString() === invoice._id.toString()) : null;
+                                        const customerName = matchingPayment && typeof matchingPayment.customer === 'object' ? matchingPayment.customer.name : 'n/a';
+                                        return (
+                                            <>
+                                                <TableCell>{customerName}</TableCell>
+                                                <TableCell>{matchingPayment?.totalAmount || 'n/a'}</TableCell>
+                                            </>
+                                        );
+                                    })()
                                 }
-                            </TableBody>
-                        </Table>
-                        <Grid container spacing={2} sx={{ mt: 2}}>
-                            <Grid sx={{ xs: 12, sm: 12}}>
-                                <Button
-                                    fullWidth
-                                    variant='contained'
-                                    startIcon={<PrintIcon />}
-                                    onClick={ printTable }
-                                    sx={{
-                                        p: 3,
-                                        backgroundColor: 'blue',
-                                        '&:hover': {
-                                            backgroundColor: 'darkblue',
-                                        },
-                                        height: '100%',
-                                        minWidth: '300px',
-                                    }}
-                                >
-                                    Print
-                                </Button>
-                            </Grid>
-                        </Grid>
+                            </TableRow>
+                        ))
+                        }
+                    </TableBody>
+                </Table>
+                <Grid container spacing={2} sx={{ mt: 2}}>
+                    <Grid sx={{ xs: 12, sm: 12}}>
+                        <Button
+                            fullWidth
+                            variant='contained'
+                            startIcon={<PrintIcon />}
+                            onClick={ printTable }
+                            sx={{
+                                p: 3,
+                                backgroundColor: 'blue',
+                                '&:hover': {
+                                    backgroundColor: 'darkblue',
+                                },
+                                height: '100%',
+                                minWidth: '300px',
+                            }}
+                        >
+                            Print
+                        </Button>
+                    </Grid>
+                </Grid>
             </Box>
-
-            
         </>
     );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const customInputStyles = { // 218
     minWidth: '430px',
@@ -242,5 +236,4 @@ const customInputStyles = { // 218
     outline: 'none',
 };
 
-// 230
 export default InvoiceDailyReport;
