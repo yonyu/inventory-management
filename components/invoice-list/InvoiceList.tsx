@@ -44,6 +44,7 @@ import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
 import { useGetCustomersQuery } from "@/lib/features/customers/customersApiSlice";
 import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
+import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 
 
 
@@ -56,6 +57,8 @@ const InvoiceTable = () => {
     const { data: supplierData } = useGetSuppliersQuery();
     const { data: categoryData } = useGetCategoriesQuery();
     const { data: paymentData } = useGetPaymentsQuery();
+
+    const router = useRouter();
 
     let invoices: any;
     invoices = invoiceData?.invoices || [];
@@ -387,7 +390,7 @@ const InvoiceTable = () => {
                                         <Button
                                             variant="outlined"
                                             startIcon={<PrintIcon />}
-                                            //onClick={() => handleOpenEditModal(invoice)}
+                                            onClick={() => router.push(`/dashboard/user/invoice-list-pdf?invoiceid=${invoice._id}`)}
                                             style={{
                                                 //m: 5,
                                                 borderRadius: '20px',
