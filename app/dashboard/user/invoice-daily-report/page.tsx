@@ -2,7 +2,7 @@
 
 import { Container } from "@mui/material";
 import InvoiceDailyReport from "@/components/invoice-daily-report/InvoiceDailyReport";
-
+import SnapPOS from '@/components/nav/SnapPOS';
 
 export default function Pos() {
 
@@ -25,7 +25,7 @@ export default function Pos() {
                 >
                     Daily Invoice Report
                 </h1>
-                
+                <SnapPOS />
                 <InvoiceDailyReport />
             </Container>
         </>

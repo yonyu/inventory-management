@@ -81,30 +81,35 @@ const InvoiceDailyReport = () => {
 
     const printTable = () => {
 
-        // if (!tableRef.current) return;
-        // const printContent = tableRef.current.innerHTML;
-
-        // window.print();
-        // document.body.innerHTML = printContent;
-
-
         if (!tableRef.current) return;
         const printContent = tableRef.current.innerHTML;
-        const printWindow = window.open('', '', 'width=800,height=600');
-        if (!printWindow) return;
-        printWindow.document.body.innerHTML = `
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-                th { background-color: #0073e6; color: white; font-weight: bold; }
-                tr:nth-child(even) { background-color: #f9f9f9; }
-                h1 { color: #0073e6; text-align: center; border-bottom: 2px solid #0073e6; padding-bottom: 10px; }
-                @media print { button { display: none; } }
-            </style>
-            ${printContent}
-        `;
-        printWindow.print();
+        const originalContent = document.body.innerHTML;
+
+        document.body.innerHTML = printContent;
+        window.print();
+
+        // This destroys the React component tree, making it impossible to print again. 
+        //document.body.innerHTML = originalConent; // restore the content; 
+        // Reloads the page to restore the React component tree, so that it can be printed again.
+        window.location.reload();
+
+        // if (!tableRef.current) return;
+        // const printContent = tableRef.current.innerHTML;
+        // const printWindow = window.open('', '', 'width=800,height=600');
+        // if (!printWindow) return;
+        // printWindow.document.body.innerHTML = `
+        //     <style>
+        //         body { font-family: Arial, sans-serif; margin: 20px; }
+        //         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        //         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        //         th { background-color: #0073e6; color: white; font-weight: bold; }
+        //         tr:nth-child(even) { background-color: #f9f9f9; }
+        //         h1 { color: #0073e6; text-align: center; border-bottom: 2px solid #0073e6; padding-bottom: 10px; }
+        //         @media print { button { display: none; } }
+        //     </style>
+        //     ${printContent}
+        // `;
+        // printWindow.print();
     }
 
 
@@ -207,12 +212,13 @@ const InvoiceDailyReport = () => {
                             onClick={ printTable }
                             sx={{
                                 p: 3,
+                                alignContent: 'center',
                                 backgroundColor: 'blue',
                                 '&:hover': {
                                     backgroundColor: 'darkblue',
                                 },
                                 height: '100%',
-                                minWidth: '300px',
+                                minWidth: '600px',
                             }}
                         >
                             Print
@@ -224,7 +230,7 @@ const InvoiceDailyReport = () => {
     );
 }
 
-const customInputStyles = { // 218
+const customInputStyles = {
     minWidth: '430px',
     height: '60px',
     borderColor: 'blue',
