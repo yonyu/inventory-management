@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     Alert,
     Box, Button, TextField, Typography, Paper,
@@ -44,6 +44,8 @@ const InvoiceTable = ({search}: {search: string})=> {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+    const tableRef = useRef<HTMLDivElement>(null);
+
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -80,6 +82,8 @@ const InvoiceTable = ({search}: {search: string})=> {
             setSelectedInvoice(invoices[0]);
         }
     }, [invoices]);
+
+    
 
     const subTotal = invoiceDetails && invoiceDetails?.reduce((acc: number, item: any)=> acc+item.totalCost, 0);
 
@@ -144,6 +148,17 @@ const InvoiceTable = ({search}: {search: string})=> {
         }
     }
 
+    const printTable = () => {
+        if (!tableRef.current) return;
+        const printContent = tableRef.current.innerHTML;
+        const originalConent = document.body.innerHTML;
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalConent; // restore the content
+
+
+    }
+
     return ( 
         <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
             {/* Page Title */}
@@ -172,7 +187,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                         fullWidth
                         variant="contained"
                         startIcon={<PrintIcon />}
-                        //onClick={()=> router.push(`/dashboard/user/invoices`)}
+                        onClick={()=> printTable}
                         sx={{
                             p: 1,
                             backgroundColor: 'blue',                            
@@ -190,7 +205,50 @@ const InvoiceTable = ({search}: {search: string})=> {
 
             {/* Begin table zone */}
             <Box
+                ref={tableRef}
             >
+
+
+
+
+                {/* Invoice & cutomer briefs */}
+                <TableContainer component={Paper} sx={{ overflowX: 'auto', mt: 4 }} >
+                    <Table>
+
+                        <TableBody>
+
+                            <TableRow 
+                                sx={{ml: 1024}}
+                            key={1}>
+                                <div >Invoice: #{selectedInvoice?.invoiceNumber}</div>
+                                <div>Date: {new Date(selectedInvoice?.invoiceDate).toLocaleDateString()}</div>
+                            </TableRow>
+
+                            <TableRow 
+                                sx={{ml: 1024}}
+                            key={2}>
+                                <div>Customer Details</div>
+                                <div>Name: {payments[0]?.customer?.name}</div>
+                                <div>Email: {payments[0]?.customer?.email}</div>
+                                <div>Phone: {payments[0]?.customer?.mobileNumber}</div>
+
+                            </TableRow>
+
+                            
+
+                        </TableBody>
+                    </Table>
+
+                </TableContainer>
+                {/* End Invoice & cutomer briefs */}
+
+
+
+
+
+
+
+                
                 {/* Invoice List */}
                 <TableContainer component={Paper} sx={{ overflowX: 'auto' }} >
                     <Table>
@@ -232,6 +290,13 @@ const InvoiceTable = ({search}: {search: string})=> {
                                     </TableRow>
                                 ))
                             )}
+
+
+
+
+
+
+
                         </TableBody>
                     </Table>
                     <TablePagination
@@ -278,8 +343,8 @@ const InvoiceTable = ({search}: {search: string})=> {
                                 ))
                             }
 
-                            {/* Subtotal row */}
 
+                            {/* Subtotal row */}
                             <TableRow>
                                 <TableCell colSpan={6} align="right" style={{fontWeight:'bold'}}>
                                     Subtotal
@@ -288,6 +353,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                                     ${subTotal}
                                 </TableCell>
                             </TableRow>
+                            {/* End Subtotal row */}
 
                             {/* Begin payment details */}
                             {payments && payments.map((payment: any, index: number) => (
@@ -375,21 +441,6 @@ const InvoiceTable = ({search}: {search: string})=> {
         </Box>
     )    
 }
-
-
-const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "#000",
-    border: "2px solid blue",
-    boxShadow: 24,
-    borderRadius: 2,
-    p: 4,
-    color: "white",
-};
 
 const modalBackdropStyle = {
     backdropFilter: "blur(5px)", // for blurring the background
