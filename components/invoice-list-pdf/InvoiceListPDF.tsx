@@ -155,8 +155,6 @@ const InvoiceTable = ({search}: {search: string})=> {
         document.body.innerHTML = printContent;
         window.print();
         document.body.innerHTML = originalConent; // restore the content
-
-
     }
 
     return ( 
@@ -187,7 +185,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                         fullWidth
                         variant="contained"
                         startIcon={<PrintIcon />}
-                        onClick={()=> printTable}
+                        onClick={printTable}
                         sx={{
                             p: 1,
                             backgroundColor: 'blue',                            
@@ -217,24 +215,21 @@ const InvoiceTable = ({search}: {search: string})=> {
 
                         <TableBody>
 
-                            <TableRow 
-                                sx={{ml: 1024}}
-                            key={1}>
-                                <div >Invoice: #{selectedInvoice?.invoiceNumber}</div>
-                                <div>Date: {new Date(selectedInvoice?.invoiceDate).toLocaleDateString()}</div>
+                            <TableRow key={1}>
+                                <TableCell colSpan={2}>
+                                    <div>Invoice: #{selectedInvoice?.invoiceNumber}</div>
+                                    <div>Date: {new Date(selectedInvoice?.invoiceDate).toLocaleDateString()}</div>
+                                </TableCell>
                             </TableRow>
 
-                            <TableRow 
-                                sx={{ml: 1024}}
-                            key={2}>
-                                <div>Customer Details</div>
-                                <div>Name: {payments[0]?.customer?.name}</div>
-                                <div>Email: {payments[0]?.customer?.email}</div>
-                                <div>Phone: {payments[0]?.customer?.mobileNumber}</div>
-
+                            <TableRow key={3}>
+                                <TableCell colSpan={2}>
+                                    <div>Customer Details</div>
+                                    <div>Name: {payments[0]?.customer?.name}</div>
+                                    <div>Email: {payments[0]?.customer?.email}</div>
+                                    <div>Phone: {payments[0]?.customer?.mobileNumber}</div>
+                                </TableCell>
                             </TableRow>
-
-                            
 
                         </TableBody>
                     </Table>
