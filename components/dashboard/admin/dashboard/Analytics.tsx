@@ -3,24 +3,13 @@
 import { useRouter } from "next/navigation";
 
 
-import { Box, Button, Grid, Typography, Card, CardActionArea, CardContent } from "@mui/material";
+import { Box, Button, Grid, Typography, Card, CardActionArea, CardContent, CircularProgress } from "@mui/material";
 import { styled } from "@mui/system";
 import { Dashboard, Inventory, Add, ListAlt, Assessment, People, Settings, ShoppingCart, BarChart } from "@mui/icons-material";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const pages = [
-    { name : '12', icon: <Dashboard />, path: '/dashboard' },
-    { name : '32', icon: <Inventory />, path: '/products' },
-    { name : '35', icon: <Add />, path: '/add-product' },
-    { name : '63', icon: <ListAlt />, path: '/inventory' },
-    { name : '65', icon: <ShoppingCart />, path: '/orders' },
-    { name : '32', icon: <Assessment />, path: '/reports' },
-    { name : '45', icon: <People />, path: '/customers' },
-    { name : '35', icon: <Settings />, path: '/settings' },
-    { name : '65', icon: <BarChart />, path: '/analytics' },
-];
 
 // Background and styling
 const BackgroundBox = styled(Box) ({
@@ -50,13 +39,101 @@ const ContentBox = styled(Box) ({
     zIndex: 2,
 });
 
+
+    
+
+
 const Home = () => {
     const router = useRouter();
     const [isAnnual, setIsAnnual] = useState(false);
 
+    const [data, setData] = useState<{
+        categoryCount?: number;
+        customerCount?: number;
+        invoiceCount?: number;
+        invoiceDetailsCount?: number;
+        paymentCount?: number;
+        paymentDetailsCount?: number;
+        productCount?: number;
+        orderCount?: number;
+        subscriptionCount?: number;
+        supplierCount?: number;
+        unitCount?: number;
+    }>({});
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`${process.env.API}/user/home`);
+                const jsonData = await response.json();
+                setData(jsonData);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const pages = [
+        { name : 'Categories', icon: <Dashboard />, path: '/dashboard', count: data?.categoryCount },
+        { name : 'Customers', icon: <Inventory />, path: '/products', count: data?.customerCount },
+        { name : 'Invoices', icon: <Add />, path: '/add-product', count: data?.invoiceCount },
+        { name : 'Invoice Details', icon: <ListAlt />, path: '/inventory', count: data?.invoiceDetailsCount },
+        { name : 'Payments', icon: <ShoppingCart />, path: '/orders', count: data?.paymentCount },
+        { name : 'Payment Details', icon: <Assessment />, path: '/reports', count: data?.paymentDetailsCount },
+        { name : 'Products', icon: <People />, path: '/customers', count: data?.productCount },
+        { name : 'Purchase', icon: <Settings />, path: '/settings', count: data?.orderCount },
+        { name : 'Subscription', icon: <BarChart />, path: '/analytics', count: data?.subscriptionCount || 0 },
+
+        { name : 'Suppliers', icon: <People />, path: '/settings', count: data?.supplierCount },
+        { name : 'Units', icon: <Settings />, path: '/analytics', count: data?.unitCount },
+    ];
+
+    if (loading) {
+        return (
+            <Box
+                sx={{
+                    display:'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                }}
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (!data) {
+        return (
+            <Box
+                sx={{
+                    display:'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+
+                }}
+            >
+                <Typography 
+                    variant="h6"
+                    sx={{
+                        textAlign: 'center',
+                        mt: '2rem',
+                    }}
+                >
+                    No data available
+                </Typography>
+            </Box>
+        );
+    }
+
     return (
         <BackgroundBox>
-
             <Overlay />
             <ContentBox>
                 { /* Hero Section */}
@@ -111,15 +188,16 @@ const Home = () => {
                 </motion.div>
 
 
-
-
                 {/*Rreponsive Navigation Cards */ }
                 <Grid container spacing={4} justifyContent='center'>
                     {pages && pages.map((page, index) => (
-                        <Grid key={index} sx={{ 
-                            xs:12, 
-                            sm:6, 
-                            md:4, }}
+                        <Grid 
+                            key={index} 
+                            sx={{ 
+                                xs:12, 
+                                sm:6, 
+                                md:4, 
+                            }}
                         >
                             <motion.div
                                 initial={{ scale: 0.9, opacity: 0, }}
@@ -141,15 +219,11 @@ const Home = () => {
                                         },
                                     }}
                                 >
-                                    <CardActionArea
-
-
-
-
-                                    >
-                                        <CardContent sx={{ textAlign: 'center', padding: 2 }}>
-                                            <Box sx={{ fontSize: 58, mb: 1, color: 'green'}}>{page.icon}</Box>
-                                            <Typography variant="h5" component='div' sx={{ mb: 1 }} gutterBottom>
+                                    <CardActionArea>
+                                        <CardContent sx={{ textAlign: 'center', padding: '1rem' }}>
+                                            <Box sx={{ fontSize: 98, mb: 1, color: 'greenyellow'}}>{page.icon}</Box>
+                                            <Box sx={{ fontSize: 30, mb: 1, color: 'greenyellow'}}>{page.count}</Box>
+                                            <Typography variant="h5" component='div' sx={{ mb: 1, fontWeight: 'bold' }} gutterBottom>
                                                 {page.name}
                                             </Typography>
                                             <Typography variant="body2" sx={{ mb: 1, color: 'inherit' }}>
