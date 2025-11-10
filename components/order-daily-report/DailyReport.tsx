@@ -44,7 +44,7 @@ const DailyOrderReport = () => {
             return;
         }
 
-        const response = await fetch(`${process.env.API}/user/daily-order-report`, {
+        const response = await fetch(`${process.env.API}/user/order-daily-report`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
