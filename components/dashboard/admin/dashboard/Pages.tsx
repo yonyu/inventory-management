@@ -21,7 +21,7 @@ const HomePage = () => {
           letterSpacing: "1px",
         }}
       >
-        Dashboard Card
+        Welcome to the Inventory System
       </Typography>
 
       <Ai />

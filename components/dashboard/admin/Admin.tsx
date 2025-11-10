@@ -659,7 +659,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
             </ListItemButton>
           </ListItem>
           <Collapse in={isCollapseOrders} timeout="auto" unmountOnExit>
-            {["Orders", "Order-Daily-Report"].map((text, index) => (
+            {["Orders"].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
 
@@ -722,7 +722,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
             </ListItemButton>
           </ListItem>
           <Collapse in={isCollapseInvoices} timeout="auto" unmountOnExit>
-            {["Invoices", "Approve-Invoice", "Print-Invoice", "Invoice-List", "Invoice-List-PDF", "Invoice-Daily-Report"].map((text, index) => (
+            {["Invoices"].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
 
