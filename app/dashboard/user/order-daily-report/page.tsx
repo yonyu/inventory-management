@@ -1,6 +1,6 @@
 "use client";
 
-import DailyReport from "@/components/daily-order-report/DailyReport";
+import DailyReport from "@/components/order-daily-report/DailyReport";
 
 export default function DailyReportPage() {
     return (
