@@ -42,14 +42,12 @@ const ChartDisplay = () => {
             const chartData = [
                 { name: 'Categories', count: data.categoryCount || 5 },
                 { name: 'Customers', count: data.customerCount || 10 },
-
                 { name: 'Invoices', count: data.invoiceCount || 20 },
                 { name: 'Invoice Details', count: data.invoiceDetailsCount || 25 },
                 { name: 'Payments', count: data.paymentCount || 18 },
                 { name: 'Payment Details', count: data.paymentDetailsCount || 22 },
-
                 { name: 'Products', count: data.productCount || 15 },
-                { name: 'Purchases', count: data.orderCount || 8 },
+                { name: 'Orders', count: data.orderCount || 8 },
                 { name: 'Subscriptions', count: data.subscriptionCount || 30 },
                 { name: 'Suppliers', count: data.supplierCount || 12 },
                 { name: 'Units', count: data.unitCount || 6 },
@@ -58,12 +56,12 @@ const ChartDisplay = () => {
             const barChart = new Chart(barChartRef.current, {
                 type: "bar",
                 data: {
-                    labels: chartData.map((item) => item.name), //[]
+                    labels: chartData.map((item) => item.name),
                     datasets: [
                         {
                             label: "Count",
-                            data: chartData.map((item) => item.count), // []
-                            backgroundColor: //"rgba(54, 162, 235, 0.2)",
+                            data: chartData.map((item) => item.count),
+                            backgroundColor:
                             [
                                 "#FF6384",
                                 "#36A2EB",
@@ -77,8 +75,6 @@ const ChartDisplay = () => {
                                 "#4BC0C0",
                                 "#9966FF",
                             ],
-                            //borderColor: "rgba(54, 162, 235, 1)",
-                            //borderWidth: 1,
                         },
                     ],
                 },
@@ -96,21 +92,19 @@ const ChartDisplay = () => {
                 barChart.destroy();
             };
         }
+    }, [data]);
 
-
-
+    useEffect(() => {
         if (pieChartRef.current) {
             const chartData = [
                 { name: 'Categories', count: data.categoryCount || 5 },
                 { name: 'Customers', count: data.customerCount || 10 },
-
                 { name: 'Invoices', count: data.invoiceCount || 20 },
                 { name: 'Invoice Details', count: data.invoiceDetailsCount || 25 },
                 { name: 'Payments', count: data.paymentCount || 18 },
                 { name: 'Payment Details', count: data.paymentDetailsCount || 22 },
-
                 { name: 'Products', count: data.productCount || 15 },
-                { name: 'Purchases', count: data.orderCount || 8 },
+                { name: 'Orders', count: data.orderCount || 8 },
                 { name: 'Subscriptions', count: data.subscriptionCount || 30 },
                 { name: 'Suppliers', count: data.supplierCount || 12 },
                 { name: 'Units', count: data.unitCount || 6 },
@@ -119,37 +113,28 @@ const ChartDisplay = () => {
             const pieChart = new Chart(pieChartRef.current, {
                 type: "pie",
                 data: {
-                    labels: chartData.map((item) => item.name), //[]
+                    labels: chartData.map((item) => item.name),
                     datasets: [
                         {
-                            label: "Count",
-                            data: chartData.map((item) => item.count), // []
-                            backgroundColor: //"rgba(54, 162, 235, 0.2)",
-                            [
+                            data: chartData.map((item) => item.count),
+                            backgroundColor: [
                                 "#FF6384",
                                 "#36A2EB",
                                 "#FFCE56",
                                 "#4BC0C0",
-                                "#9966FF",                                
+                                "#9966FF",
                                 "#FF9F40",
                                 "#C9CBCF",
-                                "#36A2EB",
-                                "#FF6384",
-                                "#4BC0C0",
-                                "#9966FF",
+                                "#FF6B6B",
+                                "#4ECDC4",
+                                "#45B7D1",
+                                "#96CEB4",
                             ],
-                            //borderColor: "rgba(54, 162, 235, 1)",
-                            //borderWidth: 1,
                         },
                     ],
                 },
                 options: {
                     responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                        },
-                    },
                 },
             });
 
@@ -157,9 +142,6 @@ const ChartDisplay = () => {
                 pieChart.destroy();
             };
         }
-
-
-
     }, [data]);
 
     return (
