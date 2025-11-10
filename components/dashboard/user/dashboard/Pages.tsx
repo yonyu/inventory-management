@@ -21,7 +21,7 @@ const HomePage = () => {
           letterSpacing: "1px",
         }}
       >
-        DashboardCard
+        Dashboard Card
       </Typography>
 
       <Ai />
