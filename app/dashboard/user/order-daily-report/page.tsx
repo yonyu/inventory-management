@@ -1,6 +1,7 @@
 "use client";
 
 import DailyReport from "@/components/order-daily-report/DailyReport";
+import SnapPOS from '@/components/nav/SnapPOS';
 
 export default function DailyReportPage() {
     return (
@@ -21,6 +22,7 @@ export default function DailyReportPage() {
             >
                 Daily Order Report
             </h1>
+            <SnapPOS />
             <DailyReport />
         </div>
     );

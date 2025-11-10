@@ -135,7 +135,7 @@ const DailyOrderReport = () => {
             <Box
                 ref={tableRef}
             >
-                        <h1
+                        {/* <h1
                             style={{
                                 fontSize: '3rem',
                                 color: '#0073e6', // a nice blue color
@@ -150,7 +150,7 @@ const DailyOrderReport = () => {
                         >
                             Daily Order Report
                         </h1>
-                        <SnapPOS />
+                        <SnapPOS /> */}
                         <Table
                             
                             sx={{
