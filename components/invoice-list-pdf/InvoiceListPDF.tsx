@@ -154,7 +154,10 @@ const InvoiceTable = ({search}: {search: string})=> {
         const originalConent = document.body.innerHTML;
         document.body.innerHTML = printContent;
         window.print();
-        document.body.innerHTML = originalConent; // restore the content
+
+        //document.body.innerHTML = originalConent; // restore the content; but it destroys the React component tree, making it impossible to print again. 
+        // Reloads the page to restore the React component tree, so that it can be printed again.
+        window.location.reload();
     }
 
     return ( 
@@ -245,7 +248,7 @@ const InvoiceTable = ({search}: {search: string})=> {
 
                 
                 {/* Invoice List */}
-                <TableContainer component={Paper} sx={{ overflowX: 'auto' }} >
+                <TableContainer component={Paper} sx={{ overflowX: 'auto', mt: 2 }} >
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -308,7 +311,7 @@ const InvoiceTable = ({search}: {search: string})=> {
                 {/* End Invoice List */}
 
                 {/* Invoice Details */}
-                <TableContainer component={Paper} sx={{ overflowX: 'auto', mt: 4 }} >
+                <TableContainer component={Paper} sx={{ overflowX: 'auto', mt: 2 }} >
                     <Table>
                         <TableHead>
                             <TableRow>
