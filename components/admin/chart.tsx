@@ -21,6 +21,51 @@ const ChartDisplay = () => {
     const barChartRef = useRef<HTMLCanvasElement>(null);
     const pieChartRef = useRef<HTMLCanvasElement>(null);
     const lineChartRef = useRef<HTMLCanvasElement>(null);
+    const barChartInstance = useRef<Chart | null>(null);
+    const pieChartInstance = useRef<Chart | null>(null);
+    const lineChartInstance = useRef<Chart | null>(null);
+
+
+    const toArray = (obj: {
+        categoryCount?: number;
+        customerCount?: number;
+        invoiceCount?: number;
+        invoiceDetailsCount?: number;
+        paymentCount?: number;
+        paymentDetailsCount?: number;
+        productCount?: number;
+        orderCount?: number;
+        subscriptionCount?: number;
+        supplierCount?: number;
+        unitCount?: number;
+    }) => [
+        { name: 'Categories', count: obj.categoryCount || 5 },
+        { name: 'Customers', count: obj.customerCount || 10 },
+        { name: 'Invoices', count: obj.invoiceCount || 20 },
+        { name: 'Invoice Details', count: obj.invoiceDetailsCount || 25 },
+        { name: 'Payments', count: obj.paymentCount || 18 },
+        { name: 'Payment Details', count: obj.paymentDetailsCount || 22 },
+        { name: 'Products', count: obj.productCount || 15 },
+        { name: 'Orders', count: obj.orderCount || 8 },
+        { name: 'Subscriptions', count: obj.subscriptionCount || 30 },
+        { name: 'Suppliers', count: obj.supplierCount || 12 },
+        { name: 'Units', count: obj.unitCount || 6 },
+    ];
+
+
+    const bgColors = [
+        "#FF6384",
+        "#36A2EB",
+        "#FFCE56",
+        "#4BC0C0",
+        "#9966FF",
+        "#FF9F40",
+        "#C9CBCF",
+        "#E74C3C",
+        "#8E44AD",
+        "#F39C12",
+        "#96CEB4",
+    ];
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,43 +83,22 @@ const ChartDisplay = () => {
 
 
     useEffect(() => {
-        if (barChartRef.current) {
-            const chartData = [
-                { name: 'Categories', count: data.categoryCount || 5 },
-                { name: 'Customers', count: data.customerCount || 10 },
-                { name: 'Invoices', count: data.invoiceCount || 20 },
-                { name: 'Invoice Details', count: data.invoiceDetailsCount || 25 },
-                { name: 'Payments', count: data.paymentCount || 18 },
-                { name: 'Payment Details', count: data.paymentDetailsCount || 22 },
-                { name: 'Products', count: data.productCount || 15 },
-                { name: 'Orders', count: data.orderCount || 8 },
-                { name: 'Subscriptions', count: data.subscriptionCount || 30 },
-                { name: 'Suppliers', count: data.supplierCount || 12 },
-                { name: 'Units', count: data.unitCount || 6 },
-            ];
 
-            const barChart = new Chart(barChartRef.current, {
+        if (barChartRef.current) {
+            const chartData = toArray(data);
+            if (barChartInstance.current) {
+                barChartInstance.current.destroy();
+            }
+
+            barChartInstance.current = new Chart(barChartRef.current, {
                 type: "bar",
                 data: {
-                    labels: chartData.map((item) => item.name),
+                    labels: toArray(data).map((item) => item.name),
                     datasets: [
                         {
                             label: "Count",
-                            data: chartData.map((item) => item.count),
-                            backgroundColor:
-                            [
-                                "#FF6384",
-                                "#36A2EB",
-                                "#FFCE56",
-                                "#4BC0C0",
-                                "#9966FF",
-                                "#FF9F40",
-                                "#C9CBCF",
-                                "#E74C3C",
-                                "#8E44AD",
-                                "#F39C12",
-                                "#96CEB4",
-                            ],
+                            data: toArray(data).map((item) => item.count),
+                            backgroundColor: bgColors,
                         },
                     ],
                 },
@@ -89,47 +113,29 @@ const ChartDisplay = () => {
             });
 
             return () => {
-                barChart.destroy();
+                if (barChartInstance.current) {
+                    barChartInstance.current.destroy();
+                }
             };
         }
     }, [data]);
 
     useEffect(() => {
         if (pieChartRef.current) {
-            const chartData = [
-                { name: 'Categories', count: data.categoryCount || 5 },
-                { name: 'Customers', count: data.customerCount || 10 },
-                { name: 'Invoices', count: data.invoiceCount || 20 },
-                { name: 'Invoice Details', count: data.invoiceDetailsCount || 25 },
-                { name: 'Payments', count: data.paymentCount || 18 },
-                { name: 'Payment Details', count: data.paymentDetailsCount || 22 },
-                { name: 'Products', count: data.productCount || 15 },
-                { name: 'Orders', count: data.orderCount || 8 },
-                { name: 'Subscriptions', count: data.subscriptionCount || 30 },
-                { name: 'Suppliers', count: data.supplierCount || 12 },
-                { name: 'Units', count: data.unitCount || 6 },
-            ];
+            const chartData = toArray(data);
+            
+            if (pieChartInstance.current) {
+                pieChartInstance.current.destroy();
+            }
 
-            const pieChart = new Chart(pieChartRef.current, {
+            pieChartInstance.current = new Chart(pieChartRef.current, {
                 type: "pie",
                 data: {
                     labels: chartData.map((item) => item.name),
                     datasets: [
                         {
                             data: chartData.map((item) => item.count),
-                            backgroundColor: [
-                                "#FF6384",
-                                "#36A2EB",
-                                "#FFCE56",
-                                "#4BC0C0",
-                                "#9966FF",
-                                "#FF9F40",
-                                "#C9CBCF",
-                                "#FF6B6B",
-                                "#8E44AD",
-                                "#F39C12",
-                                "#96CEB4",
-                            ],
+                            backgroundColor: bgColors,
                         },
                     ],
                 },
@@ -139,47 +145,29 @@ const ChartDisplay = () => {
             });
 
             return () => {
-                pieChart.destroy();
+                if (pieChartInstance.current) {
+                    pieChartInstance.current.destroy();
+                }
             };
         }
     }, [data]);
 
     useEffect(() => {
         if (lineChartRef.current) {
-            const chartData = [
-                { name: 'Categories', count: data.categoryCount || 5 },
-                { name: 'Customers', count: data.customerCount || 10 },
-                { name: 'Invoices', count: data.invoiceCount || 20 },
-                { name: 'Invoice Details', count: data.invoiceDetailsCount || 25 },
-                { name: 'Payments', count: data.paymentCount || 18 },
-                { name: 'Payment Details', count: data.paymentDetailsCount || 22 },
-                { name: 'Products', count: data.productCount || 15 },
-                { name: 'Orders', count: data.orderCount || 8 },
-                { name: 'Subscriptions', count: data.subscriptionCount || 30 },
-                { name: 'Suppliers', count: data.supplierCount || 12 },
-                { name: 'Units', count: data.unitCount || 6 },
-            ];
+            const chartData = toArray(data);
 
-            const lineChart = new Chart(lineChartRef.current, {
+            if (lineChartInstance.current) {
+                lineChartInstance.current.destroy();
+            }
+
+            lineChartInstance.current = new Chart(lineChartRef.current, {
                 type: "line",
                 data: {
                     labels: chartData.map((item) => item.name),
                     datasets: [
                         {
                             data: chartData.map((item) => item.count),
-                            backgroundColor: [
-                                "#FF6384",
-                                "#36A2EB",
-                                "#FFCE56",
-                                "#4BC0C0",
-                                "#9966FF",
-                                "#FF9F40",
-                                "#C9CBCF",
-                                "#FF6B6B",
-                                "#8E44AD",
-                                "#F39C12",
-                                "#96CEB4",
-                            ],
+                            backgroundColor:bgColors,
                         },
                     ],
                 },
@@ -189,7 +177,9 @@ const ChartDisplay = () => {
             });
 
             return () => {
-                lineChart.destroy();
+                if (lineChartInstance.current) {
+                    lineChartInstance.current.destroy();
+                }
             };
         }
     }, [data]);
