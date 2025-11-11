@@ -67,13 +67,13 @@ const ChartDisplay = () => {
                                 "#36A2EB",
                                 "#FFCE56",
                                 "#4BC0C0",
-                                "#9966FF",                                
+                                "#9966FF",
                                 "#FF9F40",
                                 "#C9CBCF",
-                                "#36A2EB",
-                                "#FF6384",
-                                "#4BC0C0",
-                                "#9966FF",
+                                "#E74C3C",
+                                "#8E44AD",
+                                "#F39C12",
+                                "#96CEB4",
                             ],
                         },
                     ],
@@ -126,8 +126,8 @@ const ChartDisplay = () => {
                                 "#FF9F40",
                                 "#C9CBCF",
                                 "#FF6B6B",
-                                "#4ECDC4",
-                                "#45B7D1",
+                                "#8E44AD",
+                                "#F39C12",
                                 "#96CEB4",
                             ],
                         },
@@ -144,6 +144,57 @@ const ChartDisplay = () => {
         }
     }, [data]);
 
+    useEffect(() => {
+        if (lineChartRef.current) {
+            const chartData = [
+                { name: 'Categories', count: data.categoryCount || 5 },
+                { name: 'Customers', count: data.customerCount || 10 },
+                { name: 'Invoices', count: data.invoiceCount || 20 },
+                { name: 'Invoice Details', count: data.invoiceDetailsCount || 25 },
+                { name: 'Payments', count: data.paymentCount || 18 },
+                { name: 'Payment Details', count: data.paymentDetailsCount || 22 },
+                { name: 'Products', count: data.productCount || 15 },
+                { name: 'Orders', count: data.orderCount || 8 },
+                { name: 'Subscriptions', count: data.subscriptionCount || 30 },
+                { name: 'Suppliers', count: data.supplierCount || 12 },
+                { name: 'Units', count: data.unitCount || 6 },
+            ];
+
+            const lineChart = new Chart(lineChartRef.current, {
+                type: "line",
+                data: {
+                    labels: chartData.map((item) => item.name),
+                    datasets: [
+                        {
+                            data: chartData.map((item) => item.count),
+                            backgroundColor: [
+                                "#FF6384",
+                                "#36A2EB",
+                                "#FFCE56",
+                                "#4BC0C0",
+                                "#9966FF",
+                                "#FF9F40",
+                                "#C9CBCF",
+                                "#FF6B6B",
+                                "#8E44AD",
+                                "#F39C12",
+                                "#96CEB4",
+                            ],
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                },
+            });
+
+            return () => {
+                lineChart.destroy();
+            };
+        }
+    }, [data]);
+
+
     return (
         <div style={{padding: '20px'}}>
             <h1>Bar Chart</h1>
@@ -152,8 +203,8 @@ const ChartDisplay = () => {
             <h1>Pie Chart</h1>
             <canvas ref={pieChartRef} height="900"></canvas>
 
-            {/* <h1>Line Chart</h1>
-            <canvas ref={barChartRef} width="400" height="200"></canvas> */}
+            <h1>Line Chart</h1>
+            <canvas ref={lineChartRef} width="400" height="200"></canvas>
         </div>
     )
 }
