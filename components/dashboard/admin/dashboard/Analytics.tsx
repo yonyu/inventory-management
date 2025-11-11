@@ -65,7 +65,7 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${process.env.API}/user/home`);
+                const response = await fetch(`${process.env.API}/admin/home`);
                 const jsonData = await response.json();
                 setData(jsonData);
                 setLoading(false);

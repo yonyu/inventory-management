@@ -163,7 +163,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   }
 
   const handleNavigation = (path: String)=> {
-    router.push(`/dashboard/user/${path}`);
+    router.push(`/dashboard/admin/${path}`);
   }
 
 
@@ -248,7 +248,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
           {["dashboard"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
-                onClick={() => router.push(`/dashboard/user`)}
+                onClick={() => router.push(`/dashboard/admin`)}
                 sx={[
                   {
                     minHeight: 48,
@@ -339,7 +339,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
             </ListItemButton>
           </ListItem>
           <Collapse in={isCollapse} timeout="auto" unmountOnExit>
-            {["all-categories"].map((text, index) => (
+            {["Categories"].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
 
