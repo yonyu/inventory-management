@@ -343,7 +343,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
 
-                    onClick={ ()=> handleNavigation(text) }
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
                     sx={{ 
                       minHeight: 48,
                       px: 2.5,
@@ -402,11 +402,11 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
             </ListItemButton>
           </ListItem>
           <Collapse in={isCollapseUnits} timeout="auto" unmountOnExit>
-            {["all-units"].map((text, index) => (
+            {["Units"].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
 
-                    onClick={ ()=> handleNavigation(text) }
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
                     sx={{ 
                       minHeight: 48,
                       px: 2.5,
@@ -470,7 +470,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
 
-                    onClick={ ()=> handleNavigation(text) }
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
                     sx={{ 
                       minHeight: 48,
                       px: 2.5,
@@ -535,7 +535,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
                 <ListItem key={text} disablePadding sx={{ display: "block" }}>
                   <ListItemButton
 
-                    onClick={ ()=> handleNavigation(text) }
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
                     sx={{ 
                       minHeight: 48,
                       px: 2.5,
