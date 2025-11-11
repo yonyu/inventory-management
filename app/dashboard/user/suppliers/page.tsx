@@ -1,7 +1,7 @@
 "use client";
 
 import { Container } from "@mui/material";
-import Suppliers from "@/components/all-suppliers/AllSuppliers";
+import Suppliers from "@/components/suppliers/AllSuppliers";
 
 export default function Pos() {
 
