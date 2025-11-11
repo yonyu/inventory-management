@@ -2,21 +2,28 @@ import { useEffect, useRef, useState } from "react";
 
 import { Chart } from "chart.js/auto";
 
+interface DashboardData {
+    categoryCount?: number;
+    customerCount?: number;
+    invoiceCount?: number;
+    invoiceDetailsCount?: number;
+    paymentCount?: number;
+    paymentDetailsCount?: number;
+    productCount?: number;
+    orderCount?: number;
+    subscriptionCount?: number;
+    supplierCount?: number;
+    unitCount?: number;
+}
+
+interface ChartItem {
+    name: string;
+    count: number;
+}
+
 const ChartDisplay = () => {
 
-    const [data, setData] = useState<{
-        categoryCount?: number;
-        customerCount?: number;
-        invoiceCount?: number;
-        invoiceDetailsCount?: number;
-        paymentCount?: number;
-        paymentDetailsCount?: number;
-        productCount?: number;
-        orderCount?: number;
-        subscriptionCount?: number;
-        supplierCount?: number;
-        unitCount?: number;
-    }>({});
+    const [data, setData] = useState<DashboardData>({});
 
     const barChartRef = useRef<HTMLCanvasElement>(null);
     const pieChartRef = useRef<HTMLCanvasElement>(null);
@@ -26,19 +33,7 @@ const ChartDisplay = () => {
     const lineChartInstance = useRef<Chart | null>(null);
 
 
-    const toArray = (obj: {
-        categoryCount?: number;
-        customerCount?: number;
-        invoiceCount?: number;
-        invoiceDetailsCount?: number;
-        paymentCount?: number;
-        paymentDetailsCount?: number;
-        productCount?: number;
-        orderCount?: number;
-        subscriptionCount?: number;
-        supplierCount?: number;
-        unitCount?: number;
-    }) => [
+    const toArray = (obj: DashboardData): ChartItem[] => [
         { name: 'Categories', count: obj.categoryCount || 5 },
         { name: 'Customers', count: obj.customerCount || 10 },
         { name: 'Invoices', count: obj.invoiceCount || 20 },
@@ -87,7 +82,7 @@ const ChartDisplay = () => {
         if (barChartRef.current) {
             const chartData = toArray(data);
             if (barChartInstance.current) {
-                barChartInstance.current.destroy();
+                barChartInstance.current.destroy(); // runs when data changes
             }
 
             barChartInstance.current = new Chart(barChartRef.current, {
@@ -113,6 +108,7 @@ const ChartDisplay = () => {
             });
 
             return () => {
+                // Runs when component unmounts or useEffect dependencies change
                 if (barChartInstance.current) {
                     barChartInstance.current.destroy();
                 }
@@ -123,7 +119,7 @@ const ChartDisplay = () => {
     useEffect(() => {
         if (pieChartRef.current) {
             const chartData = toArray(data);
-            
+
             if (pieChartInstance.current) {
                 pieChartInstance.current.destroy();
             }
