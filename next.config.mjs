@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-import config from './config.js';
+import config, { STRIPE_SECRET_KEY } from './config.js';
 
 const nextConfig = {
   reactStrictMode: true,
@@ -12,6 +12,7 @@ const nextConfig = {
     CLOUDINARY_CLOUD_NAME: config.CLOUDINARY_CLOUD_NAME,
     CLOUDINARY_API_KEY: config.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: config.CLOUDINARY_API_SECRET,
+    STRIPE_SECRET_KEY: config.STRIPE_SECRET_KEY,
   }
 };
 

@@ -19,6 +19,8 @@ import {
     Alert,
     Card,
     Switch,
+    CardContent,
+    IconButton,
 } from "@mui/material";
 
 import { styled } from "@mui/system";
@@ -28,7 +30,17 @@ import FlashOnIcon from "@mui/icons-material/FlashOn";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import { color, motion } from "framer-motion";
 import { FormControlLabel } from "@mui/material";
+import { error } from "console";
 
+interface PricingCardProps {
+    title: string;
+    price: string;
+    features: string[];
+    buttonLabel: string;
+    icon: React.ReactNode;
+    billingPeriod: string;
+    handleCheckout: (billingPeriod: string, price: string) => void;
+}
 
 const StyledCard = styled(Card) (( { theme, variant }) => ({
     maxWidth: 500,
@@ -87,7 +99,7 @@ const ButtonStyled = styled(Button)({
 // Background and styling
 const BackgroundBox = styled(Box)({
     backgroundImage: "url('/images/pos1.png')",
-    backgroundSize: "cover",
+    backgroundSize: "100vw 100vh",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     position: "relative",
@@ -95,7 +107,36 @@ const BackgroundBox = styled(Box)({
     textAlign: "center",
     color: "#FFFFFF",
     overflow: "hidden",
+    minHeight: "100vh",
+    width: "100vw",
 });
+
+
+const PricingCard: React.FC<PricingCardProps> = ({title, price, features, buttonLabel, icon, billingPeriod, handleCheckout}) => {
+    return (
+        <StyledCard>
+            <CardContent>
+                <PlanTitle variant="h6">
+                    <IconButton size="small" sx={{
+                        color: "yellow",
+                    }}>{icon}</IconButton>
+                    {title}
+                </PlanTitle>
+                <PriceText>{price}</PriceText>
+                <Box mt={2}>
+                    {
+                        features.map((feature, index) => (
+                            <FeatureText key={index}>{feature}</FeatureText>
+                        ))
+                    }
+                </Box>
+                <ButtonStyled onClick={() => handleCheckout(billingPeriod, price)}>
+                    {buttonLabel}
+                </ButtonStyled>
+            </CardContent>
+        </StyledCard>
+    );
+}
 
 
 const BillingToggle = () => {
@@ -103,6 +144,45 @@ const BillingToggle = () => {
     const [isAnually, setIsAnually] = useState(false);
 
     const handleToggle = () => setIsAnually(!isAnually);
+
+    const handleCheckout = async (billingPeriod:string, price: string) => {
+        try {
+            console.log("Checkout initiated");
+            console.log("Billing Period: ", billingPeriod);
+            console.log("Price: ", price);
+
+            const numericPrice = parseFloat(price.replace(/[^0-9.]/g, ''));
+
+            console.log("server url ", `${process.env.API}/user/billing-toggle`);
+            
+            const response = await fetch(`${process.env.API}/user/billing-toggle`,{
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    billingPeriod,
+                    price: isAnually ? numericPrice * 10 : numericPrice,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log(data);
+            
+            if (data?.err) {
+                console.log("Error occurred when checking out: ", data?.err);
+                return;
+            } else {
+                window.location.href = data.id;
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+        }
+    };
 
     return (
         <BackgroundBox>
@@ -196,6 +276,55 @@ const BillingToggle = () => {
                         gap: 3,
                     }}
                 >
+                    <PricingCard
+                        title={"purchase 1 report"}
+                        price={isAnually ? "$290 USD/Year" : "$29 USD"}
+                        features={[
+                            "Unlimited Reports",
+                            "Unlimited Customers",
+                            "Unlimited Products",
+                        ]}
+                        buttonLabel="Purchase"
+                        icon={<AssessmentIcon />}
+                        billingPeriod={isAnually ? "Year" : "Month"}
+                        handleCheckout={handleCheckout}
+                    />       
+
+                    <PricingCard
+                        title="Starter Plan"
+                        price={isAnually ? "$190 USD/Year" : "$19 USD"}
+                        features={[
+                            "Unlimited Reports",
+                            "Unlimited Customers",
+                            "Unlimited Products",
+                        ]}
+                        buttonLabel="Get Started"
+                        icon={<FlashOnIcon />}
+                        billingPeriod={isAnually ? "Year" : "Month"}
+                        handleCheckout={handleCheckout}
+                    />
+
+                    <PricingCard
+                        title="Agency Plan"
+                        price={isAnually ? "$990 USD/Year" : "$99 USD"}
+                        features={
+                            isAnually
+                                ? [
+                                    "Custom dashboard with analytics",
+                                    "Priority Customer support",
+                                    "Advanced inventory categorization",
+                                ]
+                                : [
+                                    "Basic inventory tools",
+                                    "Real time stock updates",
+                                    "User adn admin roles",
+                                ]
+                        }
+                        buttonLabel="Get Started"
+                        icon={<StarIcon />}
+                        billingPeriod={isAnually ? "Year" : "Month"}
+                        handleCheckout={handleCheckout}
+                    />                                 
                 </Box>
             </Box>
         </BackgroundBox>
