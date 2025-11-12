@@ -10,6 +10,8 @@ const CLOUDINARY_CLOUD_NAME = "do57apg18";
 const CLOUDINARY_API_KEY = "423564622937158";
 const CLOUDINARY_API_SECRET = "kyaN9ff0mFr744rPsMZ8aZEOuYk";
 
+const CLIENT_URL = "http://192.168.1.69:3000";
+
 const STRIPE_SECRET_KEY = "";
 
 
@@ -22,4 +24,5 @@ module.exports = {
     CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET,
     STRIPE_SECRET_KEY,
+    CLIENT_URL,
 };

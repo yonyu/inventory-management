@@ -11,25 +11,33 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 export async function POST(req: Request) {
     console.log("POST*** /api/user/billing-toggle");
     try {
+        console.log("1. Connecting to DB...");
         await dbConnect();
+        console.log("2. DB connected");
 
         const body = await req.json();
         const { billingPeriod, price } : { billingPeriod: string; price: number} = body;
-        console.log("Billing-Period", billingPeriod );
-        console.log("Price", price);
+        console.log("3. Billing-Period", billingPeriod );
+        console.log("4. Price", price);
 
+        console.log("5. Getting session...");
         const session = await getServerSession(authOptions);
-        console.log("Server session", session);
+        console.log("6. Server session", session);
         
         if (!session?.user?.id) {
+            console.log("7. No session - Unauthorized");
             return NextResponse.json({ err: "Unauthorized" }, { status: 401 });
         }
 
+        console.log("8. Finding user...");
         const user = await User.findOne({ _id: session.user.id });
         if (!user) {
+            console.log("9. User not found");
             return NextResponse.json({ err: "User not found" }, { status: 404 });
         }
+        console.log("10. User found:", user.email);
 
+        console.log("11. Creating Stripe session...");
         const stripeSession = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [{ 
@@ -38,7 +46,7 @@ export async function POST(req: Request) {
                     product_data: {
                         name: `${billingPeriod} Basic Plan`,
                     },
-                    unit_amount: price * 100,
+                    unit_amount: price,// * 100,
                     // recurring: {
                     //     interval: billingPeriod,
                     // },
@@ -60,7 +68,9 @@ export async function POST(req: Request) {
         return NextResponse.json({ id: stripeSession.url }, { status: 200 });
 
     } catch(error: any) {
-        console.log("error ", error);
+        console.log("ERROR CAUGHT:", error);
+        console.log("ERROR MESSAGE:", error.message);
+        console.log("ERROR STACK:", error.stack);
         return NextResponse.json({ err: error.message || "Something went wrong" }, { status: 500 });
     }   
 }
