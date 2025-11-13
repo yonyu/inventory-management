@@ -50,51 +50,29 @@ export async function GET(req: Request, {params}: {params: Promise<{id: string}>
             }
 
             if (existingSubscription) {
-                if (currentDate < existingSubscription.endDate) {
-                    const updatedEndDate = new Date(existingSubscription.endDate);
-                    if (billingPeriod === "Year") {
-                        updatedEndDate.setFullYear(updatedEndDate.getFullYear() + 1);
-                    } else if (billingPeriod === "Month") {
-                        updatedEndDate.setMonth(updatedEndDate.getMonth() + 1);                       
-                    }
-                    existingSubscription.endDate = updatedEndDate;
-
-                    const moneyOrder = new MoneyOrder({
-                        user: userId,
-                        transactionId: stripeSession.id,
-                        status: "Completed",
-                        paymentMethod: "Credit Card",
-                        paymentStatus: "Paid",
-                        totalPrice: amount,
-
-                    });
-
-                    await moneyOrder.save();
-
-                } else {
-                    const newEndDate = new Date();
-                    if (billingPeriod === "Year") {
-                        newEndDate.setFullYear(newEndDate.getFullYear() + 1);
-                    } else if (billingPeriod === "Month") {
-                        newEndDate.setMonth(newEndDate.getMonth() + 1);
-                    }
-                    existingSubscription.endDate = newEndDate;
-
-                    const moneyOrder = new MoneyOrder({
-                        user: userId,
-                        transactionId: stripeSession.id,
-                        status: "Completed",
-                        paymentMethod: "Credit Card",
-                        paymentStatus: "Paid",
-                        totalPrice: amount,
-
-                    });
-
-                    await moneyOrder.save();
+                const baseDate = currentDate < existingSubscription.endDate 
+                    ? new Date(existingSubscription.endDate) 
+                    : new Date();
+                
+                if (billingPeriod === "Year") {
+                    baseDate.setFullYear(baseDate.getFullYear() + 1);
+                } else if (billingPeriod === "Month") {
+                    baseDate.setMonth(baseDate.getMonth() + 1);
                 }
 
-                await Subscription.findByIdAndUpdate(existingSubscription._id, { endDate: existingSubscription.endDate });
-                console.log("Updated existing subscription");
+                await Subscription.findByIdAndUpdate(existingSubscription._id, { endDate: baseDate });
+                console.log("Updated existing subscription to:", baseDate);
+
+                const moneyOrder = new MoneyOrder({
+                    user: userId,
+                    transactionId: stripeSession.id,
+                    status: "Completed",
+                    paymentMethod: "Credit Card",
+                    paymentStatus: "Paid",
+                    totalPrice: amount,
+                });
+
+                await moneyOrder.save();
 
             } else {
                 const endDate = new Date();
