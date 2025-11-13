@@ -72,7 +72,7 @@ const ContentBox = styled(Box)({
 
 const Home = () => {
   const router = useRouter();
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [isAnnually, setIsAnnually] = useState(false);
 
   return (
     <BackgroundBox
@@ -253,8 +253,8 @@ const Home = () => {
               </Box>
             </motion.div>
             <Switch
-              checked={isAnnual}
-              onChange={() => setIsAnnual(!isAnnual)}
+              checked={isAnnually}
+              onChange={() => setIsAnnually(!isAnnually)}
               slotProps={{ input: { "aria-label": "Toggle Subscription" } }}
             />
 
@@ -282,7 +282,7 @@ const Home = () => {
                   },
                 }}
               >
-                <Typography variant="body1">Annual</Typography>
+                <Typography variant="body1">Annually</Typography>
               </Box>
             </motion.div>
           </Stack>
@@ -312,7 +312,7 @@ const Home = () => {
               }}
             >
               <Typography variant="body1">
-                {isAnnual ? "$990 / year" : "$10 / month"}
+                {isAnnually ? "$990 / year" : "$10 / month"}
               </Typography>
             </Box>
           </motion.div>

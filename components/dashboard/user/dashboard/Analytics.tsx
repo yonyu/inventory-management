@@ -45,7 +45,7 @@ const ContentBox = styled(Box) ({
 
 const Home = () => {
     const router = useRouter();
-    const [isAnnual, setIsAnnual] = useState(false);
+    const [isAnnually, setIsAnnually] = useState(false);
 
     const [data, setData] = useState<{
         categoryCount?: number;
