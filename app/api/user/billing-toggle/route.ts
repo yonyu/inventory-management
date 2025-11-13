@@ -26,14 +26,34 @@ export async function POST(req: Request) {
         
         if (!session?.user?.id) {
             console.log("7. No session - Unauthorized");
-            return NextResponse.json({ err: "Unauthorized" }, { status: 401 });
+            return NextResponse.json(
+                { err: "Unauthorized" }, 
+                { 
+                    status: 401,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                    }
+                }
+            );
         }
 
         console.log("8. Finding user...");
         const user = await User.findOne({ _id: session.user.id });
         if (!user) {
             console.log("9. User not found");
-            return NextResponse.json({ err: "User not found" }, { status: 404 });
+            return NextResponse.json(
+                { err: "User not found" }, 
+                { 
+                    status: 404,
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                        'Access-Control-Allow-Headers': 'Content-Type',
+                    }
+                }
+            );
         }
         console.log("10. User found:", user.email);
 
@@ -65,13 +85,33 @@ export async function POST(req: Request) {
 
         console.log("stripeSession", stripeSession);
 
-        return NextResponse.json({ id: stripeSession.url }, { status: 200 });
+        return NextResponse.json(
+            { id: stripeSession.url }, 
+            { 
+                status: 200,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                }
+            }
+        );
 
     } catch(error: any) {
         console.log("ERROR CAUGHT:", error);
         console.log("ERROR MESSAGE:", error.message);
         console.log("ERROR STACK:", error.stack);
-        return NextResponse.json({ err: error.message || "Something went wrong" }, { status: 500 });
+        return NextResponse.json(
+            { err: error.message || "Something went wrong" }, 
+            { 
+                status: 500,
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                }
+            }
+        );
     }   
 }
 
