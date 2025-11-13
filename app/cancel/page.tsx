@@ -11,7 +11,6 @@ const Failure = () => {
     const router = useRouter();
 
     useEffect(() => {
-
         const timer = setTimeout(() => {
             router.push("/billing-toggle");
         }, 10000);
@@ -50,14 +49,6 @@ const Failure = () => {
                 variant="contained"
                 color="secondary"
                 onClick={ ()=> router.push("/billing-toggle")}
-                // sx={{
-                //     backgroundColor: 'blue',
-                //     color: 'white',
-                //     "&:hover": {
-                //         backgroundColor: 'blue',
-                //     },
-
-                // }}
             >
                 Try Again
             </Button>

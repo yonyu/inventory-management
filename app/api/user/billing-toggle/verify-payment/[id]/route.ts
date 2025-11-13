@@ -12,7 +12,7 @@ import MoneyOrder from "@/models/money-order";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 
-export async function GET(req: Request, {params}: {params: {id: string}}) {
+export async function GET(req: Request, {params}: {params: Promise<{id: string}>}) {
     await dbConnect();
 
     try {
@@ -21,25 +21,30 @@ export async function GET(req: Request, {params}: {params: {id: string}}) {
             return NextResponse.json({ err: "Unauthorized" }, { status: 401 });
         }
 
-        const stripeSession = await stripe.checkout.sessions.retrieve(/*sessionId*/params.id);
+        const { id } = await params;
+        const stripeSession = await stripe.checkout.sessions.retrieve(id);
         console.log("stripeSession", stripeSession);
 
         if (stripeSession?.payment_status === "paid") {
+            console.log("Payment verified, processing...");
+            
             const user = await User.findOne({ _id: userSession.user.id });
             if (!user) {
+                console.log("User not found:", userSession.user.id);
                 return NextResponse.json({ err: "User not found" }, { status: 404 });
             }
-            //console.log("user", user);
+            console.log("User found:", user._id);
+            
             const existingSubscription = await Subscription.findOne({ user: user._id });
+            console.log("Existing subscription:", existingSubscription);
 
             const currentDate = new Date();
-
-            const startDate = new Date();
-            const endDate = new Date();
             const billingPeriod = stripeSession?.metadata?.billing;
             const userId = stripeSession?.metadata?.userId;
 
             const amount = (stripeSession?.amount_total || 0) / 100;
+            console.log("Amount:", amount, "Billing:", billingPeriod);
+            
             if (amount === 0) {
                 return NextResponse.json({ err: "Amount is zero" }, { status: 400 });
             }
@@ -89,6 +94,7 @@ export async function GET(req: Request, {params}: {params: {id: string}}) {
                 }
 
                 await Subscription.findByIdAndUpdate(existingSubscription._id, { endDate: existingSubscription.endDate });
+                console.log("Updated existing subscription");
 
             } else {
                 const endDate = new Date();
@@ -122,8 +128,7 @@ export async function GET(req: Request, {params}: {params: {id: string}}) {
                 await User.findByIdAndUpdate(userId, { subscription: newSubscription._id });
             }
 
-            return NextResponse.json({ message: "Payment verified" }, { status: 200 });
-
+            return NextResponse.redirect(`${process.env.CLIENT_URL}/success?session_id=${id}`);
         } else {
             return NextResponse.redirect(`${process.env.CLIENT_URL}/cancel`);
         }
