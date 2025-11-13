@@ -6,7 +6,7 @@ import dbConnect from "@/utils/dbConnect";
 import { authOptions } from "@/utils/authOptions";
 import User from "@/models/user";
 import Subscription from "@/models/subscription";
-import MoneyOrder from "@/models/transaction";
+import Transaction from "@/models/transaction";
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
@@ -63,7 +63,7 @@ export async function GET(req: Request, {params}: {params: Promise<{id: string}>
                 await Subscription.findByIdAndUpdate(existingSubscription._id, { endDate: baseDate });
                 console.log("Updated existing subscription to:", baseDate);
 
-                const moneyOrder = new MoneyOrder({
+                const transaction = new Transaction({
                     user: userId,
                     transactionId: stripeSession.id,
                     status: "Completed",
@@ -72,7 +72,7 @@ export async function GET(req: Request, {params}: {params: Promise<{id: string}>
                     totalPrice: amount,
                 });
 
-                await moneyOrder.save();
+                await transaction.save();
 
             } else {
                 const endDate = new Date();
@@ -92,7 +92,7 @@ export async function GET(req: Request, {params}: {params: Promise<{id: string}>
                 });
                 await newSubscription.save();
 
-                const moneyOrder = new MoneyOrder({
+                const transaction = new Transaction({
                     user: userId,
                     transactionId: stripeSession.id,
                     status: "Completed",
@@ -101,7 +101,7 @@ export async function GET(req: Request, {params}: {params: Promise<{id: string}>
                     totalPrice: amount,
                 });
 
-                await moneyOrder.save();
+                await transaction.save();
 
                 await User.findByIdAndUpdate(userId, { subscription: newSubscription._id });
             }

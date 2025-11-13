@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 import User from "./user";
 
-const MoneyOrderSchema = new Schema({
+const TransactionSchema = new Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -34,4 +34,4 @@ const MoneyOrderSchema = new Schema({
 }, {timestamps: true});
 
 
-export default mongoose.models.MoneyOrder || mongoose.model("MoneyOrder", MoneyOrderSchema);
+export default mongoose.models.Transaction || mongoose.model("Transaction", TransactionSchema);
