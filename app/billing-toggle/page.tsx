@@ -147,22 +147,20 @@ const BillingToggle = () => {
 
     const handleCheckout = async (billingPeriod:string, price: string) => {
         try {
-            console.log("Checkout initiated");
-            console.log("Billing Period: ", billingPeriod);
-            console.log("Price: ", price);
+            //console.log("Checkout initiated");
+            //console.log("Billing Period: ", billingPeriod);
+            //console.log("Price: ", price);
 
             const numericPrice = parseFloat(price.replace(/[^0-9.]/g, ''));
 
-            console.log("server url ", `${process.env.API}/user/billing-toggle`);
-            
-            const response = await fetch(`${process.env.API}/user/billing-toggle`,{
+            const response = await fetch(`/api/user/billing-toggle`,{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     billingPeriod,
-                    price: isAnually ? numericPrice * 10 : numericPrice,
+                    price: numericPrice,
                 }),
             });
 

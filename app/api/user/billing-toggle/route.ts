@@ -46,7 +46,7 @@ export async function POST(req: Request) {
                     product_data: {
                         name: `${billingPeriod} Basic Plan`,
                     },
-                    unit_amount: price,// * 100,
+                    unit_amount: price * 100, // Stripe requires amounts in cents
                     // recurring: {
                     //     interval: billingPeriod,
                     // },
