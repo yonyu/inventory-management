@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+import Subscription from "./subscription";
+
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -31,8 +33,8 @@ const UserSchema = new mongoose.Schema({
     },
     subscription: {
         type: String,
-        enum: ['free', 'premium'],
-        default: 'free',
+        //enum: ['free', 'premium'],
+        //default: 'free',
         required: true
     },
     avatar: {

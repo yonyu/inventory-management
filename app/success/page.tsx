@@ -17,7 +17,7 @@ const Success = () => {
                 const sessionId = searchParams.get('session_id');
                 if (sessionId) {
                     try {
-                        const response = await fetch(`/api/user/billing-toggle/verify-payment?session_id=${sessionId}`);
+                        const response = await fetch(`/api/user/billing-toggle/verify-payment/${sessionId}`);
                         const data = await response.json();
                         console.log("Payment verification response:", data);
 
