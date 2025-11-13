@@ -6,7 +6,7 @@ import dbConnect from "@/utils/dbConnect";
 import { authOptions } from "@/utils/authOptions";
 import User from "@/models/user";
 import Subscription from "@/models/subscription";
-import MoneyOrder from "@/models/money-order";
+import MoneyOrder from "@/models/transaction";
 
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
