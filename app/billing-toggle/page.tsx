@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import {
     Box,
@@ -140,20 +142,26 @@ const PricingCard: React.FC<PricingCardProps> = ({title, price, features, button
 
 
 const BillingToggle = () => {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const [isAnnually, setIsAnnually] = useState(false);
 
-    const [isAnually, setIsAnually] = useState(false);
-
-    const handleToggle = () => setIsAnually(!isAnually);
+    const handleToggle = () => setIsAnnually(!isAnnually);
 
     const handleCheckout = async (billingPeriod:string, price: string) => {
         try {
-            //console.log("Checkout initiated");
-            //console.log("Billing Period: ", billingPeriod);
-            //console.log("Price: ", price);
+            if (status === "unauthenticated") {
+                router.push("/api/auth/signin");
+                return;
+            }
+
+            if (status === "loading") {
+                return;
+            }
 
             const numericPrice = parseFloat(price.replace(/[^0-9.]/g, ''));
 
-            const response = await fetch(`/api/user/billing-toggle`,{
+            const response = await fetch(`/api/user/billing-toggle`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -235,7 +243,7 @@ const BillingToggle = () => {
                     </motion.div>
 
                     <Switch
-                        checked={isAnually}
+                        checked={isAnnually}
                         onChange={handleToggle}
                         color="warning" 
                     />
@@ -263,7 +271,7 @@ const BillingToggle = () => {
                                 },
                             }}                               
                         >
-                            <Typography variant="body1">Annualy</Typography>
+                            <Typography variant="body1">Annually</Typography>
                         </Box>
                     </motion.div>
                 </Box>
@@ -276,7 +284,7 @@ const BillingToggle = () => {
                 >
                     <PricingCard
                         title={"purchase 1 report"}
-                        price={isAnually ? "$290 USD/Year" : "$29 USD"}
+                        price={isAnnually ? "$290 USD/Year" : "$29 USD"}
                         features={[
                             "Unlimited Reports",
                             "Unlimited Customers",
@@ -284,13 +292,13 @@ const BillingToggle = () => {
                         ]}
                         buttonLabel="Purchase"
                         icon={<AssessmentIcon />}
-                        billingPeriod={isAnually ? "Year" : "Month"}
+                        billingPeriod={isAnnually ? "Year" : "Month"}
                         handleCheckout={handleCheckout}
                     />       
 
                     <PricingCard
                         title="Starter Plan"
-                        price={isAnually ? "$190 USD/Year" : "$19 USD"}
+                        price={isAnnually ? "$190 USD/Year" : "$19 USD"}
                         features={[
                             "Unlimited Reports",
                             "Unlimited Customers",
@@ -298,15 +306,15 @@ const BillingToggle = () => {
                         ]}
                         buttonLabel="Get Started"
                         icon={<FlashOnIcon />}
-                        billingPeriod={isAnually ? "Year" : "Month"}
+                        billingPeriod={isAnnually ? "Year" : "Month"}
                         handleCheckout={handleCheckout}
                     />
 
                     <PricingCard
                         title="Agency Plan"
-                        price={isAnually ? "$990 USD/Year" : "$99 USD"}
+                        price={isAnnually ? "$990 USD/Year" : "$99 USD"}
                         features={
-                            isAnually
+                            isAnnually
                                 ? [
                                     "Custom dashboard with analytics",
                                     "Priority Customer support",
@@ -320,7 +328,7 @@ const BillingToggle = () => {
                         }
                         buttonLabel="Get Started"
                         icon={<StarIcon />}
-                        billingPeriod={isAnually ? "Year" : "Month"}
+                        billingPeriod={isAnnually ? "Year" : "Month"}
                         handleCheckout={handleCheckout}
                     />                                 
                 </Box>
