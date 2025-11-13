@@ -11,6 +11,30 @@ const Success = () => {
     const router = useRouter();
 
     useEffect(() => {
+        const varifyPayment = async () => {
+            if (typeof window !== 'undefined') {
+                const searchParams = new URLSearchParams(window.location.search);
+                const sessionId = searchParams.get('session_id');
+                if (sessionId) {
+                    try {
+                        const response = await fetch(`/api/user/billing-toggle/verify-payment?session_id=${sessionId}`);
+                        const data = await response.json();
+                        console.log("Payment verification response:", data);
+
+                        if (!data.ok) {
+                            router.push("/cancel");
+                        } else {
+                            router.push("/dashboard/user");
+                        }
+                    } catch (error) {
+                        console.error("Error verifying payment:", error);
+                        router.push("/cancel");
+                    }
+                }
+            }
+        }
+        varifyPayment();
+
         const timer = setTimeout(() => {
             router.push("/dashboard/user");
         }, 10000);
