@@ -29,7 +29,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
 
             if (!result.ok) {
                 toast.error(response?.message);
-                router.push("/billing-toggle");
+                router.push("/pick-subscription");
             } else {
                 setIsLoading(false);
             }
