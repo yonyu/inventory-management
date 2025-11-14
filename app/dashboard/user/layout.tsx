@@ -46,25 +46,22 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
         }
     }, [status]); 
 
-    if (status === "loading" || isLoading) {
-
-        return (
-            <motion.div
-                initial={{ opacity: 0, y: -50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-            >
+    return (
+        <DashboardUser>
+            {(status === "loading" || isLoading) && (
                 <Box
                     sx={{
-                        backgroundImage: "url('/images/pos1.png')",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100vw",
+                        height: "100vh",
+                        backgroundColor: "rgba(0, 0, 0, 0.4)",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        height: "100vh",
                         flexDirection: "column",
-                        backgroundColor: "rgba(0, 0, 0, 0.1)",
+                        zIndex: 9999,
                     }}
                 >
                     <CloudDownload sx={{ color: "primary.main", fontSize: 60, mb: 2 }} />
@@ -73,12 +70,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
                     </Typography>
                     <CircularProgress size={30} color="primary" />
                 </Box>
-            </motion.div>
-        ); 
-    }
-
-    return (
-        <DashboardUser>
+            )}
             {children}
         </DashboardUser>
     )
