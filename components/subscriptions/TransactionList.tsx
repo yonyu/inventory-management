@@ -36,7 +36,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 
-import { useAddSubscriptionMutation, useGetSubscriptionsQuery, useDeleteSubscriptionMutation } from "@/lib/features/subscriptions/transactionsApiSlice";
+import { useAddTransactionMutation, useGetTransactionsQuery, useDeleteTransactionMutation } from "@/lib/features/subscriptions/transactionsApiSlice";
 import { useGetUnitsQuery } from "@/lib/features/units/unitsApiSlice";
 import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
@@ -49,15 +49,15 @@ const TransactionTable = () => {
 
     const dispatch = useAppDispatch();
 
-    const { data: transactionData, error, isLoading: loading } = useGetSubscriptionsQuery();
+    const { data: transactionData, error, isLoading: loading } = useGetTransactionsQuery();
     const { data: unitData } = useGetUnitsQuery();
     const { data: supplierData } = useGetSuppliersQuery();
     const { data: categoryData } = useGetCategoriesQuery();
     const { data: paymentData } = useGetPaymentsQuery();
 
     let transactions: any;
-    transactions = transactionData?.subscriptions || [];
-    //console.log("Subscriptions", subscriptions);
+    transactions = transactionData?.transactions || [];
+    //console.log("Transactions", transactions);
     let units: any;
     units = unitData?.units || [];
     console.log("Units", units);
@@ -75,24 +75,24 @@ const TransactionTable = () => {
     const payments = paymentData?.payments || [];
 
     const [openAddModal, setOpenAddModal] = React.useState(false);
-    const [newSubscription, setNewSubscription] = useState({
+    const [newTransaction, setNewTransaction] = useState({
         user: "",
-        stripeSubscriptionId: "",
+        stripeTransactionId: "",
         startDate: new Date(),
         endDate: new Date(),
         price: 0,
     });
 
-    const [editSubscription, setEditSubscription] = useState({
+    const [editTransaction, setEditTransaction] = useState({
         user: "",
-        stripeSubscriptionId: "",
+        stripeTransactionId: "",
         startDate: new Date(),
         endDate: new Date(),
         price: 0,
     });
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
-    const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
+    const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
     const [openEditModal, setOpenEditModal] = useState(false);
 
 
@@ -105,8 +105,8 @@ const TransactionTable = () => {
 
     const [filter, setFilter] = useState("");
 
-    const [addSubscription] = useAddSubscriptionMutation();
-    const [deleteSubscription] = useDeleteSubscriptionMutation();
+    const [addTransaction] = useAddTransactionMutation();
+    const [deleteTransaction] = useDeleteTransactionMutation();
 
     
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -121,7 +121,7 @@ const TransactionTable = () => {
 
     const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        setNewSubscription((prevSubscription) => ({ ...prevSubscription, [name]: value }));
+        setNewTransaction((prevTransaction) => ({ ...prevTransaction, [name]: value }));
 
     }
 
@@ -135,12 +135,12 @@ const TransactionTable = () => {
         setOpenAddModal(false);
     };
 
-    const handleAddSubscription = () => {
-        //const { _id, ...newSubscription } = form;
-        addSubscription(newSubscription)
+    const handleAddTransaction = () => {
+        //const { _id, ...newTransaction } = form;
+        addTransaction(newTransaction)
             .unwrap()
             .then(() => {
-                setSnackbar({ open: true, message: "Subscription added successfully", severity: "success", });
+                setSnackbar({ open: true, message: "Transaction added successfully", severity: "success", });
 
                 handleCloseAddModal();
 
@@ -155,32 +155,32 @@ const TransactionTable = () => {
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
-    const handleOpenDeleteModal = (subscription: any) => {
-        setSelectedSubscription(subscription);
-        //console.log("Selecting Subscription: ", product);
+    const handleOpenDeleteModal = (transaction: any) => {
+        setSelectedTransaction(transaction);
+        //console.log("Selecting Transaction: ", product);
         //setForm(product);
         setOpenDeleteModal(true);
 
     }
 
-    const handleDeleteSubscription = (/* selectedSubscription */) => {
-        //console.log("Deleting product: ", selectedSubscription);
-        deleteSubscription(selectedSubscription?._id).unwrap()
+    const handleDeleteTransaction = (/* selectedTransaction */) => {
+        //console.log("Deleting product: ", selectedTransaction);
+        deleteTransaction(selectedTransaction?._id).unwrap()
             .then(() => {
-                setSnackbar({ open: true, message: "Subscription deleted successfully", severity: "success", });
+                setSnackbar({ open: true, message: "Transaction deleted successfully", severity: "success", });
                 handleCloseDeleteModal();
 
             })
             .catch((error: any) => {
-                //console.log("Error deleting product: ", selectedSubscription);
+                //console.log("Error deleting product: ", selectedTransaction);
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete product", severity: "error", });
             });
     }
 
     const handleOpenEditModal = (product: any) => {
         setOpenEditModal(true);
-        setSelectedSubscription(product);
-        setEditSubscription({ 
+        setSelectedTransaction(product);
+        setEditTransaction({ 
             ...product,
             category: typeof product.category === 'object' ? product.category._id : product.category,
             unit: typeof product.unit === 'object' ? product.unit._id : product.unit,
@@ -191,12 +191,12 @@ const TransactionTable = () => {
 
     const handleCloseEditModal = () => setOpenEditModal(false);
 
-    const handleEditSubscription = () => {
-        // const { _id, ...data } = editSubscription;
-        // updateSubscription({ _id, data })
+    const handleEditTransaction = () => {
+        // const { _id, ...data } = editTransaction;
+        // updateTransaction({ _id, data })
         //     .unwrap()
         //     .then(() => {
-        //         setSnackbar({ open: true, message: "Subscription updated successfully", severity: "success", });
+        //         setSnackbar({ open: true, message: "Transaction updated successfully", severity: "success", });
         //         handleCloseEditModal();
         //     })
         //     .catch((error: any) => {
@@ -209,11 +209,11 @@ const TransactionTable = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const filteredSubscriptions = transactions.filter((subscription: any) => {
+    const filteredTransactions = transactions.filter((transaction: any) => {
         const searchTerm = filter.toLowerCase().trim();
         return (
-            subscription?.subscriptionNumber?.toLowerCase().includes(searchTerm) ||
-            subscription?.description?.toLowerCase().includes(searchTerm)
+            transaction?.transactionNumber?.toLowerCase().includes(searchTerm) ||
+            transaction?.description?.toLowerCase().includes(searchTerm)
         );
     })
 
@@ -279,7 +279,7 @@ const TransactionTable = () => {
             </h2>
 
 
-            {filteredSubscriptions.length === 0 ? (
+            {filteredTransactions.length === 0 ? (
                 <p style={{ textAlign: 'center', fontSize: '18px', color: '#999' }}>No transactions found</p>
             ) : (
                 // Add reponsive container with horizontal scrollbar 122
@@ -298,7 +298,7 @@ const TransactionTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredSubscriptions.map((transaction: any, index: number) => ( // 137
+                            {filteredTransactions.map((transaction: any, index: number) => ( // 137
                                 <tr key={transaction._id} style={{ transition: 'background-color 0.3s ease', cursor: 'pointer' }}>
                                     <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{index + 1}</td>
                                     <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{transaction._id}</td>
@@ -426,7 +426,7 @@ const TransactionTable = () => {
                                 <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
                             </TableRow>
                         ) : (
-                            filteredSubscriptions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((transaction: any, index: number) => (
+                            filteredTransactions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((transaction: any, index: number) => (
                                 <TableRow key={transaction._id} style={{ backgroundColor: 'blue', color: '#FFFFFF', transition: 'background-color 0.3s' }}>
                                     <TableCell style={{ padding: '20px', fontSize: '14px', whiteSpace: 'nowrap', color: 'black' }}>{page * rowsPerPage + index + 1}</TableCell>
                                     <TableCell>{transaction?._id}</TableCell>
@@ -473,7 +473,7 @@ const TransactionTable = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={filteredSubscriptions.length}
+                    count={filteredTransactions.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
@@ -485,21 +485,21 @@ const TransactionTable = () => {
 
 
 
-            {/* start delete subscription modal */}
+            {/* start delete transaction modal */}
             <Modal
                 open={openDeleteModal}
                 onClose={handleCloseDeleteModal}
-                aria-labelledby="delete-subscription-modal"
-                aria-describedby="delet-subscription-modal-description"
+                aria-labelledby="delete-transaction-modal"
+                aria-describedby="delet-transaction-modal-description"
                 sx={modalBackdropStyle}
             >
                 <Box sx={modalStyle}>
-                    <Typography id="delete-subscription-modal" variant="h6" component="h2">
-                        Delete Subscription
+                    <Typography id="delete-transaction-modal" variant="h6" component="h2">
+                        Delete Transaction
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
                         Are you sure you want to delete
-                        &nbsp;&quot;{selectedSubscription?.user}&quot;?
+                        &nbsp;&quot;{selectedTransaction?.user}&quot;?
                     </Typography>
                     <Button
                         onClick={handleCloseDeleteModal}
@@ -526,14 +526,14 @@ const TransactionTable = () => {
                                 backgroundColor: "darkred",
                             },
                         }}
-                        onClick={handleDeleteSubscription}
+                        onClick={handleDeleteTransaction}
                     >
                         Delete
                     </Button>
                 </Box>
             </Modal>
 
-            {/* end delete subscription modal */}
+            {/* end delete transaction modal */}
 
 
             {/* snackbar */}
@@ -556,7 +556,7 @@ const TransactionTable = () => {
 
 </>
     );
-} // end SubscriptionTable()
+} // end TransactionTable()
 
 
 const modalStyle = {
