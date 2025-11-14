@@ -24,14 +24,27 @@ export async function POST(req: Request, context: any) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
-        const res = context?.paramss.id?.toString() === user._id.toString();
-        console.log("res", res);
+        const params = await context?.params;
 
+        const res = params.id?.toString() === user._id.toString();
+        console.log("res", res);
+        if (!res) {
+            console.log("Unauthorized");
+            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
 
         const subscription = await Subscription.findOne({ user: user._id });
 
         if (!subscription) {
+            console.log("Subscription not found");
             return NextResponse.json({ message: "Subscription not found" }, { status: 404 });
+        }
+        if (subscription.endDate > new Date()) {
+            console.log("Subscription already active");
+            return NextResponse.json({ message: "Subscription already active" }, { status: 200 });
+        } else {
+            console.log("Subscription expired");
+            return NextResponse.json({ message: "Subscription expired" }, { status: 500 });
         }
 
         return NextResponse.json({ subscription }, { status: 200 });

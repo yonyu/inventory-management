@@ -17,6 +17,7 @@ export async function POST(req: Request) {
             email, 
             phone,
             password: await bcrypt.hash(password, 10),
+            subscription: 'free',
         }).save();
 
         console.log("User created successfully", user);

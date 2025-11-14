@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { StoreProvider } from "./StoreProvider";
 import AuthSessionProvider from "./SessionProvider";
+import { ToastContainer } from 'react-toastify';
 
 import "@/styles/globals.css";
 import styles from "@/styles/layout.module.css";
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: Props) {
       <body>
         <StoreProvider>
           <AuthSessionProvider>
+            <ToastContainer />
             <section className={styles.container}>
               <main className={styles.main}>{children}</main>
             </section>

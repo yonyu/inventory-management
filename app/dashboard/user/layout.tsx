@@ -1,59 +1,66 @@
 "use client"
 
 import DashboardUser from "../../../components/dashboard/user/User";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { toast } from 'react-toastify';
+
 
 export default function AdminLayout({children}: {children: React.ReactNode}) {
     const { data: session, status } = useSession();
     const router = useRouter();
 
-    const [plan, setPlan] = useState();
+    const [plan, setPlan] = useState(false);
     const [subscription, setSubscription] = useState();
+    const hasCalledApi = useRef(false);
 
     const [loading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        if (!session?.user?.id) return;
-        const fetchSubscription = async () => {
-            const userId = session?.user?.id;
+    const fetchSubscription = async () => {
+        const userId = (session?.user as any)?._id;
 
-            try {
-                const res = await fetch(`${process.env.API}/user/active/${userId}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ userId }),
-                });
-                const data = await res.json();
+        try {
+            const result = await fetch(`${process.env.API}/user/active/${userId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userId }),
+            });
+            const response = await result.json();
 
-                if (!res.ok) {
-                    toast.error(data.message);
-                    router.push("/billing-toggle")
-                } else {
-                    console.log(data);
-                    setPlan(data?.msg);
-                    //setSubscription(data.subscription);
-                    setIsLoading(false);
-                }
-
-            } catch (error) {
-                console.log(error);
+            if (!result.ok) {
+                toast.error(response?.message);
+                router.push("/billing-toggle")
+            } else {
+                //alert(response?.message);
+                setPlan(response?.message);
+                //setSubscription(response?.subscription);
                 setIsLoading(false);
             }
 
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+        }
+    };
 
-        };
-        // if (status === "unauthenticated") {
-        //     router.push("/login");
-        // }
+    useEffect(() => {
+        if (!(session?.user as any)?._id || hasCalledApi.current) return;
+
+        hasCalledApi.current = true;
+        fetchSubscription();
+
     }, [session]);
+
+    
+
     if (status === "loading") {
         return <div>Loading...</div>;
     }
+
     return (
         <>
             <DashboardUser>
