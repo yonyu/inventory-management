@@ -1,6 +1,6 @@
 "use client"
 
-import DashboardUser from "../../../components/dashboard/user/User";
+import DashboardUser from "@/components/dashboard/user/User";
 import React, { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
         if (!userId) return;
 
         try {
-            const result = await fetch(`${process.env.API}/user/active/${userId}`, {
+            const result = await fetch(`${process.env.API}/user/subscription-check/${userId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userId }),
