@@ -57,7 +57,7 @@ const TransactionTable = () => {
 
     let transactions: any;
     transactions = transactionData?.transactions || [];
-    //console.log("Transactions", transactions);
+    console.log("Transactions", transactions);
     let units: any;
     units = unitData?.units || [];
     console.log("Units", units);
@@ -77,18 +77,22 @@ const TransactionTable = () => {
     const [openAddModal, setOpenAddModal] = React.useState(false);
     const [newTransaction, setNewTransaction] = useState({
         user: "",
-        stripeTransactionId: "",
-        startDate: new Date(),
-        endDate: new Date(),
-        price: 0,
+        status: "",
+        paymentMethod: "",
+        paymentStatus: "",
+        transactionId: "",
+        totalPrice: 0,
+        createdAt: new Date(),
     });
 
     const [editTransaction, setEditTransaction] = useState({
         user: "",
-        stripeTransactionId: "",
-        startDate: new Date(),
-        endDate: new Date(),
-        price: 0,
+        status: "",
+        paymentMethod: "",
+        paymentStatus: "",
+        transactionId: "",
+        totalPrice: 0,
+        createdAt: new Date(),
     });
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -212,8 +216,8 @@ const TransactionTable = () => {
     const filteredTransactions = transactions.filter((transaction: any) => {
         const searchTerm = filter.toLowerCase().trim();
         return (
-            transaction?.transactionNumber?.toLowerCase().includes(searchTerm) ||
-            transaction?.description?.toLowerCase().includes(searchTerm)
+            transaction?.user?.toLowerCase().includes(searchTerm) ||
+            transaction?.transactionId?.toLowerCase().includes(searchTerm)
         );
     })
 
@@ -279,12 +283,12 @@ const TransactionTable = () => {
             </h2>
 
 
-            {filteredTransactions.length === 0 ? (
+            {transactions.length === 0 ? (
                 <p style={{ textAlign: 'center', fontSize: '18px', color: '#999' }}>No transactions found</p>
             ) : (
                 // Add reponsive container with horizontal scrollbar 122
                 <div style={{ overflowX: 'auto'}}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#FFFFFF', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#FFFFFF', borderRadius: '8px', color: '#000000', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
                         <thead>
                             <tr style={{ backgroundColor: 'blue', color: '#FFFFFF'}}>
                                 <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>S.No</th>

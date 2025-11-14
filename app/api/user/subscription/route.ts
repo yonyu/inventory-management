@@ -15,8 +15,8 @@ export async function GET(request: Request) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
         await dbConnect();
-        const transaction = await Transaction.find({ user: session?.user?._id });
-        return NextResponse.json(transaction, { status: 200 });
+        const transactions = await Transaction.find({ user: session?.user?._id });
+        return NextResponse.json(transactions, { status: 200 });
     } catch (error) {
         return NextResponse.json({ err: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }

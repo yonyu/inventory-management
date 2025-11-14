@@ -32,7 +32,7 @@ const initialState: TransactionsSliceState = {
 // RTK Query provides automatic caching, background refetching, and optimistic updates
 export const transactionsApiSlice = createApi({
     // Base query configuration - sets the base URL for all endpoints
-    baseQuery: fetchBaseQuery({ baseUrl: "/api/user/transaction" }),
+    baseQuery: fetchBaseQuery({ baseUrl: "/api/user/subscription" }),
     // Unique key for this API slice in the Redux store
     reducerPath: "transactionsApi",
     // Tag types are used for caching and invalidation
@@ -45,6 +45,7 @@ export const transactionsApiSlice = createApi({
         // for the argument type instead.
         getTransactions: build.query<TransactionsApiResponse, void>({
             query: () => '',
+            transformResponse: (response: Transaction[]) => ({ transactions: response }),
             providesTags: ['Transactions'],
         }),
         getTransaction: build.query<TransactionsApiResponse, string>({
