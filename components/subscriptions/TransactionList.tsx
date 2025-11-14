@@ -45,18 +45,18 @@ import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
 
 
 
-const SubscriptionTable = () => {
+const TransactionTable = () => {
 
     const dispatch = useAppDispatch();
 
-    const { data: subscriptionData, error, isLoading: loading } = useGetSubscriptionsQuery();
+    const { data: transactionData, error, isLoading: loading } = useGetSubscriptionsQuery();
     const { data: unitData } = useGetUnitsQuery();
     const { data: supplierData } = useGetSuppliersQuery();
     const { data: categoryData } = useGetCategoriesQuery();
     const { data: paymentData } = useGetPaymentsQuery();
 
-    let subscriptions: any;
-    subscriptions = subscriptionData?.subscriptions || [];
+    let transactions: any;
+    transactions = transactionData?.subscriptions || [];
     //console.log("Subscriptions", subscriptions);
     let units: any;
     units = unitData?.units || [];
@@ -209,7 +209,7 @@ const SubscriptionTable = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const filteredSubscriptions = subscriptions.filter((subscription: any) => {
+    const filteredSubscriptions = transactions.filter((subscription: any) => {
         const searchTerm = filter.toLowerCase().trim();
         return (
             subscription?.subscriptionNumber?.toLowerCase().includes(searchTerm) ||
@@ -222,7 +222,107 @@ const SubscriptionTable = () => {
         setFilter(e.target.value);
     }
 
+    if (loading) {
+        return (
+            <p
+                style={{
+                    marginTop: 30,
+                    textAlign: "center",
+                    color: "grey",
+                    fontSize: 20,
+                }}
+           
+            >
+                Loading transactions ...
+            </p>
+        );
+    }
+
+    if (error) {
+        return (
+            <p
+                style={{
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    color: "#D32F2F", // Red color for error
+                    textAlign: "center",
+                    marginTop: '20px',
+                    padding: '10px',
+                    backgroundColor: '#FFEBEE', // Lighter red background
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                }}
+            >
+                Error: error loading transactions!
+            </p>
+        );
+    }
+
     return (
+<>
+        <div style={{ padding: '10px', maxWidth: '1400px', margin: '4px'}}>
+            <h2
+
+                style={{
+                    fontSize: "3rem",
+                    color: "0073e6", // a nice blue color
+                    marginBottom: "20px", // 1rem = 16px
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    textShadow: "1px 1px 2px rgba(109, 71, 71, 0.2)", // add a subtle shadow
+                    padding: "10px",
+                    borderBottom: "2px solid #0073e6", // underline effect
+                    letterSpacing: "1px",
+                }}
+            >
+                Your transactions
+            </h2>
+
+
+            {filteredSubscriptions.length === 0 ? (
+                <p style={{ textAlign: 'center', fontSize: '18px', color: '#999' }}>No transactions found</p>
+            ) : (
+                // Add reponsive container with horizontal scrollbar 122
+                <div style={{ overflowX: 'auto'}}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: '#FFFFFF', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+                        <thead>
+                            <tr style={{ backgroundColor: 'blue', color: '#FFFFFF'}}>
+                                <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>S.No</th>
+                                <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>ID</th>
+                                <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>Status</th>
+                                <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>Payment Method</th>
+                                <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>Payment Status</th>
+                                <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>Stripe Transaction ID</th>
+                                <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>Total Price</th>
+                                <th style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>Transaction Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredSubscriptions.map((transaction: any, index: number) => ( // 137
+                                <tr key={transaction._id} style={{ transition: 'background-color 0.3s ease', cursor: 'pointer' }}>
+                                    <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{index + 1}</td>
+                                    <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{transaction._id}</td>
+                                    <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{transaction.status}</td>
+                                    <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{transaction.paymentMethod}</td>
+                                    <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{transaction.paymentStatus}</td>
+                                    <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{transaction.transactionId}</td>
+                                    <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{transaction.totalPrice}</td>
+                                    <td style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>{new Date(transaction.createdAt).toLocaleString()}</td>
+                                </tr> // 146
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )
+
+            
+            }
+        </div>
+
+
+
+
+
         <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{
@@ -238,8 +338,17 @@ const SubscriptionTable = () => {
                 }}
 
             >
-                All Subscriptions
+                Your transactions
             </Typography>
+
+
+
+
+
+
+
+
+
 
             <Button
                 variant="contained"
@@ -289,12 +398,15 @@ const SubscriptionTable = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>S.No</TableCell>
+                            <TableCell style={{ padding: '10px', textAlign: 'left', fontSize: '16px', whiteSpace: 'nowrap' }}>S.No</TableCell>
+                            <TableCell>ID</TableCell>
                             <TableCell>User Name</TableCell>
-                            <TableCell>Stripe Subscription ID</TableCell>
-                            <TableCell>Start Date</TableCell>
-                            <TableCell>End Date</TableCell>
-                            <TableCell>Price</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Payment Method</TableCell>
+                            <TableCell>Payment Status</TableCell>
+                            <TableCell>Stripe Transaction ID</TableCell>
+                            <TableCell>Total Price</TableCell>
+                            <TableCell>Create At</TableCell>
                             <TableCell>Actions</TableCell>                           
                         </TableRow>
                     </TableHead>
@@ -314,18 +426,21 @@ const SubscriptionTable = () => {
                                 <TableCell colSpan={3}>Error: {JSON.stringify(error)}</TableCell>
                             </TableRow>
                         ) : (
-                            filteredSubscriptions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((subscription: any, index: number) => (
-                                <TableRow key={subscription._id}>
-                                    <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                                    <TableCell>{subscription?.user}</TableCell>
-                                    <TableCell>{new Date(subscription?.startDate).toLocaleDateString()}</TableCell>
-                                    <TableCell>{new Date(subscription?.endDate).toLocaleDateString()}</TableCell>
-                                    <TableCell>{subscription?.price}</TableCell>
-                                    
+                            filteredSubscriptions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((transaction: any, index: number) => (
+                                <TableRow key={transaction._id} style={{ backgroundColor: 'blue', color: '#FFFFFF', transition: 'background-color 0.3s' }}>
+                                    <TableCell style={{ padding: '20px', fontSize: '14px', whiteSpace: 'nowrap', color: 'black' }}>{page * rowsPerPage + index + 1}</TableCell>
+                                    <TableCell>{transaction?._id}</TableCell>
+                                    <TableCell>{transaction?.user}</TableCell>
+                                    <TableCell>{transaction?.status}</TableCell>
+                                    <TableCell>{transaction?.paymentMethod}</TableCell>
+                                    <TableCell>{transaction?.paymentStatus}</TableCell>
+                                    <TableCell>{transaction?.transactionId}</TableCell>                                  
+                                    <TableCell>{transaction?.totalPrice}</TableCell>
+                                    <TableCell>{new Date(transaction?.createdAt).toLocaleDateString()}</TableCell>                                  
 
                                     <TableCell>
                                         <IconButton
-                                            onClick={() => handleOpenEditModal(subscription)}
+                                            onClick={() => handleOpenEditModal(transaction)}
                                             sx={{ color: "blue" }}
                                         >
                                             <Edit
@@ -338,7 +453,7 @@ const SubscriptionTable = () => {
                                             />
                                         </IconButton>
                                         <IconButton
-                                            onClick={() => handleOpenDeleteModal(subscription)}
+                                            onClick={() => handleOpenDeleteModal(transaction)}
                                         >
                                             <Delete
                                                 sx={{
@@ -368,260 +483,6 @@ const SubscriptionTable = () => {
             </TableContainer>
 
 
-            {/* start edit subscription modal */}
-            <Modal
-                open={openEditModal}
-                onClose={handleCloseEditModal}
-                aria-labelledby="edit-product-modal"
-                aria-describedby="edit-product-modal-description"
-                sx={modalBackdropStyle}
-            >
-                <Box sx={modalStyle}>
-                    <Typography id="edit-product-modal" variant="h6" component="h2">
-                        Edit Subscription
-                    </Typography>
-
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        label="Name"
-                        name="name"
-                        value={editSubscription.user}
-                        onChange={(e) => setEditSubscription({...editSubscription, user: e.target.value})}
-                        required
-                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
-                        sx={{
-                            mt: 2,
-                            input: { color: "white", },
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "blue",
-                                },
-                            },
-                        }}
-                    />
-                    <FormControl fullWidth sx={{ mb: 2}}>
-                        <InputLabel>Supplier Name</InputLabel>
-                        <Select
-                            value={editSubscription.stripeSubscriptionId} // _id
-                            onChange={(e) => setEditSubscription({...editSubscription, stripeSubscriptionId: e.target.value})}
-                            sx={{
-                                mt: 3,
-                                color: "white",
-                                ".MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
-                                    color: 'white !important',
-                                },
-                                "& .MuiSelect-select": {
-                                    color: 'white',
-                                },
-                                
-                            }}
-                            MenuProps={{
-                                PaperProps: {
-                                    sx: {
-                                        bgcolor: 'white',
-                                        "&MuiMenuItem-root": {
-                                            color: 'white',
-                                        }
-                                    }
-                                }
-                            }}
-                        >
-                            {
-                                suppliers && suppliers?.map((s: any, index: number) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={s._id}
-                                    >
-                                        {s.name}
-                                    </MenuItem>
-
-                                  ))
-                            }
-
-                        </Select>
-                    </FormControl>
-
-                    <FormControl fullWidth sx={{ mb: 2}}>
-                        <InputLabel>Unit Name</InputLabel>
-                        <Select
-                            value={editSubscription.unit}
-                            onChange={(e) => {
-                                // const selectedUnit = units.find((unit:any) => unit._id === e.target.value);
-                                // setEditSubscription({...editSubscription, unit: selectedUnit});
-                                setEditSubscription({...editSubscription, unit: e.target.value});
-                            }}
-                            sx={{
-                                mt: 3,
-                                color: "white",
-                                ".MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
-                                },
-                                "& .MuiSelect-select": {
-                                    color: 'white',
-                                },
-                                
-                            }}
-                            MenuProps={{
-                                PaperProps: {
-                                    sx: {
-                                        bgcolor: 'white',
-                                        "&MuiMenuItem-root": {
-                                            color: 'white',
-                                        }
-                                    }
-                                }
-                            }}
-                        >
-                            {
-                                units && units?.map((u: any, index: number) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={u._id}
-                                    >
-                                        {u.name}
-                                    </MenuItem>
-
-                                  ))
-                            }
-
-                        </Select>
-                    </FormControl>
-
-                    <FormControl fullWidth sx={{ mb: 2}}>
-                        <InputLabel>Category Name</InputLabel>
-                        <Select
-                            value={editSubscription.category}
-                            onChange={(e) => setEditSubscription({...editSubscription, category: e.target.value})}
-                            sx={{
-                                mt: 3,
-                                color: "white",
-                                ".MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: 'blue',
-                                },
-                                "& .MuiSvgIcon-root": {
-                                    fill: 'white !important',
-                                },
-                                "& .MuiSelect-select": {
-                                    color: 'white',
-                                },
-                                
-                            }}
-                            MenuProps={{
-                                PaperProps: {
-                                    sx: {
-                                        bgcolor: 'white',
-                                        "&MuiMenuItem-root": {
-                                            color: 'white',
-                                        }
-                                    }
-                                }
-                            }}
-                        >
-                            {
-                                categories && categories?.map((c: any, index: number) => (
-                                    <MenuItem
-                                        key={index}
-                                        value={c._id}
-                                    >
-                                        {c.name}
-                                    </MenuItem>
-
-                                  ))
-                            }
-
-                        </Select>
-                    </FormControl>
-
-                    <TextField
-                        type="number"
-                        required
-                        fullWidth
-                        variant="outlined"
-                        label="Price"
-                        name="price"
-                        value={editSubscription.price || ""}
-                        onChange={(e) => setEditSubscription({...editSubscription, price: parseInt(e.target.value)})}
-                        slotProps={{ inputLabel: { style: { color: 'white', }, }, }}
-                        sx={{
-                            mt: 2,
-                            input: { color: "white", },
-                            "& .MuiOutlinedInput-root": {
-                                "& fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&:hover fieldset": {
-                                    borderColor: "blue",
-                                },
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "blue",
-                                },
-                            },
-                        }}
-                    />
-                    <Button
-                        variant="contained"
-                        onClick={handleEditSubscription}
-                        sx={{
-                            mt: 2,
-                            backgroundColor: "blue",
-                            "&:hover": {
-                                backgroundColor: "blue",
-                            },
-                        }}
-                    >
-                        Save
-                    </Button>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            mt: 2,
-                            ml: 2,
-                            color: "white",
-                            borderColor: "blue",
-                            "&:hover": {
-                                borderColor: "blue",
-                            },
-                        }}
-                        onClick={handleCloseEditModal}
-                    >
-                        Cancel
-                    </Button>
-                </Box>
-            </Modal>
-
-            {/* end edit subscription modal */}
 
 
             {/* start delete subscription modal */}
@@ -638,7 +499,7 @@ const SubscriptionTable = () => {
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
                         Are you sure you want to delete
-                        &nbsp;&quot;{selectedSubscription?.subscriptionNumber}&quot;?
+                        &nbsp;&quot;{selectedSubscription?.user}&quot;?
                     </Typography>
                     <Button
                         onClick={handleCloseDeleteModal}
@@ -692,6 +553,8 @@ const SubscriptionTable = () => {
             </Snackbar>
 
         </Box>
+
+</>
     );
 } // end SubscriptionTable()
 
@@ -716,4 +579,4 @@ const modalBackdropStyle = {
     backdropFilter: "blur(5px)",
 };
 
-export default SubscriptionTable;
+export default TransactionTable;

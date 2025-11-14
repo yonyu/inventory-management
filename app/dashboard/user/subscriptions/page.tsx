@@ -2,7 +2,7 @@
 
 import { Container } from "@mui/material";
 
-import Subscriptions from "@/components/subscriptions/SubscriptionList";
+import Transactions from "@/components/subscriptions/TransactionList";
 
 
 export default function Pos() {
@@ -10,7 +10,7 @@ export default function Pos() {
     return (
         <>
             <Container maxWidth="xl" sx={{width: "100%", height: "100%"}}>
-                <Subscriptions />
+                <Transactions />
             </Container>
         </>
     )
