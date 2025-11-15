@@ -124,6 +124,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   const [isCollapseInvoices, setIsCollapseInvoices] = React.useState(true);
   const [isCollapseSubscriptions, setIsCollapseSubscriptions] = React.useState(true);
   const [isCollapseBillings, setIsCollapseBillings] = React.useState(true);
+  const [isCollapseStock, setIsCollapseStock] = React.useState(true);
 
 
   const router = useRouter();
@@ -171,6 +172,11 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   const handleCollapseBillings = () => {
     setIsCollapseBillings(!isCollapseBillings);
   }
+
+  const handleCollapseStock = () => {
+    setIsCollapseStock(!isCollapseStock);
+  }
+
 
   const handleNavigation = (path: String)=> {
     router.push(`/dashboard/user/${path}`);
@@ -895,6 +901,70 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
           }}
         />
         {/* end all billings */}
+
+        {/* start stock report */}
+
+        <List>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleCollapseStock}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon sx={{ color: "white" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Manage Stock Report"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+              {isCollapseStock ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={isCollapseStock} timeout="auto" unmountOnExit>
+            {["Stock-Report"].map((text, index) => (
+                <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
+                    sx={{ 
+                      minHeight: 48,
+                      px: 2.5,
+                      justifyContent: open ? "initial" : "center",
+                      marginLeft: "40px",
+                      color: "white",
+                      borderBottom: "2px solid white",
+                    }}
+                  >
+                    <ListItemText
+                      primary={text.replace(/-/g, " ")}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </Collapse>
+        </List>
+        <Divider
+          sx={{
+            borderColor: "white",
+            backgroundColor: "2px solid white",
+          }}
+        />
+        {/* end stock report */}
+
 
       </Drawer>
 
