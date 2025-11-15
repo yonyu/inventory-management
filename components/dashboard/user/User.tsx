@@ -123,6 +123,8 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   const [isCollapseOrders, setIsCollapseOrders] = React.useState(true);
   const [isCollapseInvoices, setIsCollapseInvoices] = React.useState(true);
   const [isCollapseSubscriptions, setIsCollapseSubscriptions] = React.useState(true);
+  const [isCollapseBillings, setIsCollapseBillings] = React.useState(true);
+
 
   const router = useRouter();
 
@@ -164,6 +166,10 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   
   const handleCollapseSubscriptions = () => {
     setIsCollapseSubscriptions(!isCollapseSubscriptions);
+  }
+  
+  const handleCollapseBillings = () => {
+    setIsCollapseBillings(!isCollapseBillings);
   }
 
   const handleNavigation = (path: String)=> {
@@ -760,7 +766,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
 
 
 
-        {/* start all subscriptions */}
+        {/* start all histories */}
 
         <List>
           <ListItem
@@ -821,9 +827,74 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
             backgroundColor: "2px solid white",
           }}
         />
-        {/* end all subscriptions */}
+        {/* end all histories */}
 
 
+
+
+
+        {/* start all billings */}
+
+        <List>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleCollapseBillings}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon sx={{ color: "white" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Manage Billing"
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+              {isCollapseBillings ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={isCollapseBillings} timeout="auto" unmountOnExit>
+            {["Billing"].map((text, index) => (
+                <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
+                    sx={{ 
+                      minHeight: 48,
+                      px: 2.5,
+                      justifyContent: open ? "initial" : "center",
+                      marginLeft: "40px",
+                      color: "white",
+                      borderBottom: "2px solid white",
+                    }}
+                  >
+                    <ListItemText
+                      primary={text.replace(/-/g, " ")}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </Collapse>
+        </List>
+        <Divider
+          sx={{
+            borderColor: "white",
+            backgroundColor: "2px solid white",
+          }}
+        />
+        {/* end all billings */}
 
       </Drawer>
 
