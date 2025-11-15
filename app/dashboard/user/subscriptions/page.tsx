@@ -2,7 +2,7 @@
 
 import { Container } from "@mui/material";
 
-import Transactions from "@/components/subscriptions/TransactionList";
+import Transactions from "@/components/transactions/TransactionList";
 
 
 export default function Pos() {

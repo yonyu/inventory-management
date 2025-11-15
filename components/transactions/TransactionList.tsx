@@ -36,7 +36,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
 
-import { useAddTransactionMutation, useGetTransactionsQuery, useDeleteTransactionMutation } from "@/lib/features/subscriptions/transactionsApiSlice";
+import { useAddTransactionMutation, useGetTransactionsQuery, useDeleteTransactionMutation } from "@/lib/features/transactions/transactionsApiSlice";
 import { useGetUnitsQuery } from "@/lib/features/units/unitsApiSlice";
 import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";

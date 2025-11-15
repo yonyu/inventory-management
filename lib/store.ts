@@ -14,7 +14,7 @@ import { invoicesApiSlice } from "./features/invoices/invoicesApiSlice";
 import { paymentsApiSlice } from "./features/payments/paymentsApiSlice";
 import { invoiceDetailsApiSlice } from "./features/invoice-details/invoiceDetailsApiSlice";
 import { invoicesApproveApiSlice } from "./features/invoice-approve/invoicesApproveApiSlice";
-import { transactionsApiSlice as transactionsApiSlice } from "./features/subscriptions/transactionsApiSlice";
+import { transactionsApiSlice as transactionsApiSlice } from "./features/transactions/transactionsApiSlice";
 
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
