@@ -125,7 +125,7 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   const [isCollapseSubscriptions, setIsCollapseSubscriptions] = React.useState(true);
   const [isCollapseBillings, setIsCollapseBillings] = React.useState(true);
   const [isCollapseStock, setIsCollapseStock] = React.useState(true);
-
+  const [isCollapseSupplierProductReport, setIsCollapseSupplierProductReport] = React.useState(true);
 
   const router = useRouter();
 
@@ -174,9 +174,13 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
   }
 
   const handleCollapseStock = () => {
+    
     setIsCollapseStock(!isCollapseStock);
   }
 
+  const handleCollapseSupplierProductReport = () => {
+    setIsCollapseSupplierProductReport(!isCollapseSupplierProductReport);
+  }
 
   const handleNavigation = (path: String)=> {
     router.push(`/dashboard/user/${path}`);
@@ -965,6 +969,69 @@ export default function SideNav({ children }: { children: React.ReactNode }) {
         />
         {/* end stock report */}
 
+
+        {/* start supplier product wise report */}
+
+        <List>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleCollapseSupplierProductReport}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon sx={{ color: "white" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary="Manage Supplier Product Wise Report "
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+              {isCollapseSupplierProductReport ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={isCollapseSupplierProductReport} timeout="auto" unmountOnExit>
+            {["Supplier-Product-Report"].map((text, index) => (
+                <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+
+                    onClick={ ()=> handleNavigation(text.toLowerCase()) }
+                    sx={{ 
+                      minHeight: 48,
+                      px: 2.5,
+                      justifyContent: open ? "initial" : "center",
+                      marginLeft: "40px",
+                      color: "white",
+                      borderBottom: "2px solid white",
+                    }}
+                  >
+                    <ListItemText
+                      primary={text.replace(/-/g, " ")}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </Collapse>
+        </List>
+        <Divider
+          sx={{
+            borderColor: "white",
+            backgroundColor: "2px solid white",
+          }}
+        />
+        {/* end supplier product wise report */}
 
       </Drawer>
 
