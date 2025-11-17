@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import PrintIcon  from '@mui/icons-material/Print';
 import {
     Box, Button,
-    Typography, Table, TableBody, TableCell, TableHead, TableRow,
+    Typography, Table, TableBody, TableCell, TableHead, TableRow, TablePagination,
     FormControl,
     MenuItem,
     RadioGroup,
@@ -75,8 +75,6 @@ const SupplierProductReport = () => {
             setCategory(report.categories);
             setSupplier(report.suppliers);
 
-            //const products = report.products;
-            //setStockReport(products);
         } catch (error) {
             console.error('Error fetching report:', error);
         }
@@ -103,12 +101,12 @@ const SupplierProductReport = () => {
                 }),
             });
 
-            const data = await response.json();
-            setData(data);
+            const result = await response.json();
+            setData(result.data || []);
 
         } catch(error) {
             console.log("Error fetching data", error);
-        
+        }
     }
 
     const printTable = () => {
@@ -201,10 +199,11 @@ const SupplierProductReport = () => {
                         <InputLabel>Supplier Name</InputLabel>
                         <Select
                             label='Supplier Name'
-                            value='supplierName'
+                            value={supplierName}
                             onChange={(e)=> setSupplierName(e.target.value)}
                             fullWidth
-                            //margin='normal' //90
+                            defaultChecked
+                            //margin='normal'
                             sx={{
                                 mt: 3,
                                 color: 'white',
@@ -241,10 +240,10 @@ const SupplierProductReport = () => {
                         <InputLabel>Category Name</InputLabel>
                         <Select
                             label='Product Name'
-                            value='productName'
+                            value={productName}
                             onChange={(e)=> setProductName(e.target.value)}
                             fullWidth
-                            //margin='normal' //177
+                            //margin='normal'
                             sx={{
                                 mt: 3,
                                 color: 'white',
@@ -277,9 +276,9 @@ const SupplierProductReport = () => {
 
 
 
-// 260
+
 <Grid container spacing={2} sx={{ mt: 2 }}>
-    <Grid sx={{ xs: 12, sm: 12}}>
+    <Grid size={12}>
         <Button
 
             variant='contained'
@@ -295,12 +294,14 @@ const SupplierProductReport = () => {
             }}
             onClick={handleSubmit}
         >
-            Search  //276
+            Search
         </Button>
     </Grid>
 </Grid>
 {data && (
-    <div>
+    <div
+        ref={tableRef}
+    >
         <h2
             style={{
                 fontSize: '3rem',
@@ -308,22 +309,23 @@ const SupplierProductReport = () => {
                 marginBottom: "20px",
                 textAlign: "center",
                 fontWeight: "bold",
-                textShadow: "1px 1px 2px rgba(0,0,0,0.2)",
+                textShadow: "1px 1px 2px rgba(0, 0, 0, 0.2)",
                 padding:"10px",
                 borderBottom: "2px solid #0073E6",
-                letterSpacing: "1px", //291
+                letterSpacing: "1px",
             }}
         >
             Supplier and Product Wise Report
 
         </h2>
+        <SnapPOS/>
 
         <Table
             style={{
                 backgroundColor: "white",
                 borderRadius: "8px",
                 overflow: "hidden",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // 306
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
         >
             <TableHead>
@@ -331,7 +333,7 @@ const SupplierProductReport = () => {
                     <TableCell>S.No</TableCell>
                     <TableCell>Product Name</TableCell>
                     <TableCell>Category Name</TableCell>
-                    <TableCell>Stock //314</TableCell>
+                    <TableCell>Stock</TableCell>
 
                 </TableRow>
             </TableHead>
@@ -339,7 +341,7 @@ const SupplierProductReport = () => {
 
 
             <TableBody>
-                {data &&
+                {Array.isArray(data) && data.length > 0 &&
                 data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((product: any, index: number) => (
                     <TableRow key={product._id}>
                         <TableCell>{page * rowsPerPage + index + 1}</TableCell>
@@ -351,10 +353,23 @@ const SupplierProductReport = () => {
                 }
             </TableBody>
         </Table>
+
+
+        <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={Array.isArray(data) ? data.length : 0}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{ backgroundColor: "white" }}
+        />
+
         {
-            data &&
+            Array.isArray(data) && data.length > 0 &&
             <Grid container spacing={2} sx={{ mt: 2}}>
-                <Grid sx={{ xs: 12, sm: 12}}>
+                <Grid size={12}>
                     <Button
                         fullWidth
                         variant='contained'
@@ -362,13 +377,13 @@ const SupplierProductReport = () => {
                         onClick={ printTable }
                         sx={{
                             p: 3,
-                            alignContent: 'center',
+                            //alignContent: 'center',
                             backgroundColor: 'blue',
                             '&:hover': {
                                 backgroundColor: 'blue',
                             },
                             height: '100%',
-                            minWidth: '600px',
+                            //minWidth: '600px',
                         }}
                     >
                         Print
@@ -391,6 +406,6 @@ const SupplierProductReport = () => {
         </>
     );
 }
-}
+
 
 export default SupplierProductReport;

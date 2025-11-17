@@ -28,26 +28,19 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
 
-    const { supplierId, categoryId, startDate, endDate } = await request.json();
+    const { reportType, name } = await request.json();
+    console.log(reportType, name);
 
-    const supplier = await Supplier.findById(supplierId);
+    const data = reportType === "supplier" 
+      ? await Product.find({ supplier: name })
+        .populate('supplier')
+        .populate('category') 
+      : await Product.find({ category: name })
+        .populate('supplier')
+        .populate('category');
 
-    const category = await Category.findById(categoryId);
-
-    const products = await Product.find({
-      supplier: supplierId,
-      category: categoryId,
-      createdAt: {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      },
-    })
-      .populate('supplier')
-      .populate('category');
-
-    return NextResponse.json({ supplier, category, products }, { status: 200 });
+    return NextResponse.json({ data }, { status: 200 });
   } catch (error) {
-    //console.error('Stock report error:', error);
     return NextResponse.json({ err: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }
