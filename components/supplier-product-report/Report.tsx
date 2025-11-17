@@ -325,7 +325,7 @@ const SupplierProductReport = () => {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            sx={{ backgroundColor: "white" }}
+            sx={{ mt: 1, backgroundColor: "white" }}
           />
 
           {Array.isArray(data) && data.length > 0 && (

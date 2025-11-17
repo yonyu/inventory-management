@@ -13,7 +13,7 @@ export async function GET() {
 
     return NextResponse.json({ products }, { status: 200 });
   } catch (error) {
-    console.error('Stock report error:', error);
+    //console.error('Stock report error:', error);
     return NextResponse.json({ err: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }
