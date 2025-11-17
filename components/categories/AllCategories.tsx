@@ -3,22 +3,17 @@
 import React, { useEffect, useState } from "react";
 
 import {
+    Alert,
     Box,
     Button,
     TextField,
     Typography,
     IconButton,
-
-
     Modal,
     Snackbar,
-
-
-    InputAdornment,
-
-    Alert,
-
 } from "@mui/material";
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -26,30 +21,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
-import Paper from '@mui/material/Paper';
-
-
-
-
-import Grid from '@mui/material/Grid';
-
-
-
-
-
-
-
-
-
-
 
 import { Edit, Delete, Add } from "@mui/icons-material";
-
-import { useAppSelector, useAppDispatch } from "@/lib/hooks";
-
-
 import CircularProgress from "@mui/material/CircularProgress";
 
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { useAddCategoryMutation, useGetCategoriesQuery, useDeleteCategoryMutation, useUpdateCategoryMutation } from "@/lib/features/categories/categoriesApiSlice";
 
 
@@ -196,17 +172,17 @@ const CategoryTable = () => { // 56
     }
 
     return (
-        <Box sx={{ p: 2, maxWidth: "100%", width: "4096px" }} >
+        <Box sx={{ p: 2 }} >
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{
                     fontSize: "3rem",
-                    color: "0073e6", // a nice blue color
+                    color: "#0073E6", // a nice blue color
                     marginBottom: "20px", // 1rem = 16px
                     textAlign: "center",
                     fontWeight: "bold",
-                    textShadow: "1px 1px 2px rgba(109, 71, 71, 0.2)", // add a subtle shadow
+                    textShadow: "1px 1px 2px rgba(0, 0, 0, 0.2)", // add a subtle shadow
                     padding: "10px",
-                    borderBottom: "2px solid #0073e6", // underline effect
+                    borderBottom: "2px solid #0073E6", // underline effect
                     letterSpacing: "1px",
                 }}
 
