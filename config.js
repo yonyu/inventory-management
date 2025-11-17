@@ -1,16 +1,16 @@
 const MONGODB_URI = "mongodb://192.168.1.89:27017/inventories";
 
-const API = "http://192.168.1.69:3000/api";
+const API = "http://localhost:3000/api";
 
-const NEXTAUTH_SECRET = "1234567890ABDCGHTSHRTDKIPSAZXM";
+const NEXTAUTH_SECRET = "";
 
-const GOOGLE_API_KEY = "AIzaSyD0fRe6atbUP5SaXR3YjOqafCO9PVHJxOo";
+const GOOGLE_API_KEY = "";
 
-const CLOUDINARY_CLOUD_NAME = "do57apg18";
-const CLOUDINARY_API_KEY = "423564622937158";
-const CLOUDINARY_API_SECRET = "kyaN9ff0mFr744rPsMZ8aZEOuYk";
+const CLOUDINARY_CLOUD_NAME = "";
+const CLOUDINARY_API_KEY = "";
+const CLOUDINARY_API_SECRET = "";
 
-const CLIENT_URL = "http://192.168.1.69:3000";
+const CLIENT_URL = "http://localhost:3000";
 
 const STRIPE_SECRET_KEY = "";
 
