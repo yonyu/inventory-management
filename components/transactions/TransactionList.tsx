@@ -49,7 +49,7 @@ const TransactionTable = () => {
     }
 
     return (
-      <div style={{ padding: "10px", maxWidth: "1400px", margin: "4px" }}>
+      <div style={{ padding: "10px", margin: "4px" }}>
         <h2
           style={{
             fontSize: "3rem",

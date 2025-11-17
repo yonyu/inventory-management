@@ -161,7 +161,7 @@ const InvoiceTable = ({search}: {search: string})=> {
     }
 
     return ( 
-        <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
+        <Box sx={{ p: 2 }} >
             {/* Page Title */}
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{

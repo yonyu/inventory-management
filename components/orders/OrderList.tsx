@@ -266,7 +266,7 @@ const OrderTable = () => {
     }
 
     return (
-        <Box sx={{ p: 2, maxWidth: "100%", width: "1024px" }} >
+        <Box sx={{ p: 2 }} >
             <Typography variant="h4" sx={{ mb: 2 }}
                 style={{
                     fontSize: "3rem",
