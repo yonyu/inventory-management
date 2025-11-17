@@ -27,36 +27,23 @@ import {
 } from "@mui/material";
 
 import Grid from '@mui/material/Grid';
-import { Edit, Delete, Add, Refresh, Description, BorderStyle } from "@mui/icons-material";
-
+import { Delete, Add } from "@mui/icons-material";
 
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
-
-
-import CircularProgress from "@mui/material/CircularProgress";
-
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 
-import { useAddInvoiceMutation, useGetInvoicesQuery, useDeleteInvoiceMutation/*, useUpdateInvoiceMutation*/ } from "@/lib/features/invoices/invoicesApiSlice";
-import { useAddCustomerMutation, useGetCustomersQuery, useDeleteCustomerMutation, useUpdateCustomerMutation } from "@/lib/features/customers/customersApiSlice";
+import { useAddInvoiceMutation, useGetInvoicesQuery } from "@/lib/features/invoices/invoicesApiSlice";
+import {  useGetCustomersQuery } from "@/lib/features/customers/customersApiSlice";
 import { useGetProductsQuery, useGetProductByIdQuery } from "@/lib/features/products/productsApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
-
-import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
-
-import { bgcolor, borderColor, height, minWidth } from "@mui/system";
-
-
 
 import InvoiceList from "./InvoiceList";
 
 const AddInvoice = () => {
 
     const [openAddMoreModal, setOpenAddMoreModal] = useState(false);
-
-    const handleOpen = () => setOpenAddMoreModal(true);
 
     const [rowToDelete, setRowToDelete] = useState<number | null>(null);
 
@@ -66,7 +53,6 @@ const AddInvoice = () => {
 
     const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
-    const [pendingInvoices, setPendingInvoices] = useState<any[]>([]);
 
     const dispatch = useAppDispatch();
 
@@ -74,9 +60,7 @@ const AddInvoice = () => {
     const [addInvoice] = useAddInvoiceMutation();
     
     // Only load reference data when modals are open
-    const needsReferenceData = openAddMoreModal || openEditModal;
-    // const { data: productData} = useGetProductsQuery(undefined, { skip: !needsReferenceData });
-    // const { data: categoryData } = useGetCategoriesQuery(undefined, { skip: !needsReferenceData });    
+    const needsReferenceData = openAddMoreModal || openEditModal; 
     const { data: productData} = useGetProductsQuery(undefined, { skip: !needsReferenceData });
     const { data: categoryData } = useGetCategoriesQuery();
     const { data: customerData } = useGetCustomersQuery();
@@ -87,9 +71,6 @@ const AddInvoice = () => {
 
     const [discount, setDiscount] = useState<number>(0);
     const [grandTotal, setGrandTotal] = useState<number>(0);
-    // const [description, setDescription] = useState<string>("");
-    // const [status, setStatus] = useState<string>("");
-    // const [partialAmount, setPartialAmount] = useState<number | ''>(0);
 
     const [status, setStatus] = useState('');
     const [partialAmount, setPartialAmount] = useState<number | ''>('');
@@ -99,23 +80,14 @@ const AddInvoice = () => {
     const [phone, setPhone] = useState('');
     const [selectedCustomer, setSelectedCustomer] = useState('');
 
-
-
     let invoices: any = invoiceData?.invoices || [];
-    console.log("Invoices", invoices);
 
     //let suppliers: any = supplierData?.suppliers || [];
     let categories: any = categoryData?.categories || [];
     let products: any = productData?.products || [];
     let customers: any = customerData?.customers || [];
-
-    console.log('Categories: ', categories);
-    console.log('Products: ', products);
     
     const [selectedCategory, setSelectedCategory] = useState("");
-
-    console.log('Selected Category: ', selectedCategory);
-
 
     const [newRowData, setNewRowData] = useState({
         quantity: 0,
@@ -123,7 +95,6 @@ const AddInvoice = () => {
     });
 
     const [startDate, setStartDate] = useState<Date | null>(new Date());
-
     interface RowData {
         id: number;
         startDate: Date | null;
@@ -135,26 +106,7 @@ const AddInvoice = () => {
     }
 
     const [rows, setRows] = useState<RowData[]>([]);
-
-
-    const [openAddRowModal, setOpenAddRowModal] = useState(false);
-
-    const handleCloseAddRowModal = () => {
-
-        setOpenAddRowModal(false);
-    };
-
-
-
-
-
-
-
-
-
-
-    //const t = new Date().toLocaleDateString();
-    
+ 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -179,12 +131,7 @@ const AddInvoice = () => {
     });
 
     const [filter, setFilter] = useState("");
-
-    // const [addInvoice] = useAddInvoiceMutation();
-    // const [deleteInvoice] = useDeleteInvoiceMutation();
-    //const [updateInvoice] = useUpdateInvoiceMutation();
-
-    
+  
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -200,7 +147,6 @@ const AddInvoice = () => {
     //     console.log("Form state changed:", form);
     // }, [form]);
 
-
     const handleCloseDeleteConfirmation = () => {
         setRowToDelete(null);
         setOpenDeleteConfirmation(false);
@@ -210,17 +156,10 @@ const AddInvoice = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-
     const filteredInvoices = invoices.filter((invoice: any) => {
         return invoice?.product?.name.toLowerCase().includes(filter.toLowerCase()) ||
                invoice?.supplier?.name.toLowerCase().includes(filter.toLowerCase());
     });
-
-
-    const handleFilterChange = (e: any) => {
-        setFilter(e.target.value);
-    };
-
 
     useEffect(() => {
         if (error) {
@@ -237,15 +176,12 @@ const AddInvoice = () => {
         setNewInvoice({...newInvoice, product: e.target.value});
     }
 
-
-
     useEffect(() => {
         if (selectedProductData?.product) {
             setStock(selectedProductData.product.quantity);
             console.log('Product data:', selectedProductData.product);
         }
     }, [selectedProductData]);
-
 
     const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setNewRowData({...newRowData, [event.target.name]: event.target.value});
@@ -297,24 +233,19 @@ const AddInvoice = () => {
         setRows(updatedRows);
     };
 
-
     const calculateGrandTotal = () => {
         const totalWithoutDiscount = rows.reduce((total, row) => total + (parseFloat(row.totalPrice.toString()) || 0), 0);
         return totalWithoutDiscount - discount;
     }
 
-
     const handleDeleteRowInList = (id: number) => {
         setRowToDelete(id);
         setOpenDeleteConfirmation(true);
-
     }
-
     
     const handleDeleteNewItem = () => {
         setRows(rows.filter(row => row.id !== rowToDelete));
         setOpenDeleteConfirmation(false);
-
     }
 
     const handleStatusChange = (e: SelectChangeEvent) => {
@@ -355,7 +286,6 @@ const AddInvoice = () => {
         }
 
         const purchaseData = rows.map((invDetails) => ({
-            //invoice: invoice?.id,
             category: invDetails.category,
             product: invDetails.productName,
             date: invDetails.startDate?.toISOString(),
@@ -392,8 +322,7 @@ const AddInvoice = () => {
         console.log('Payload:', payload);
 
         await addInvoice(payload).unwrap()
-            .then((res: any) => {
-                
+            .then((res: any) => {         
                 setSnackbar({ open: true, message: "Invoice saved successfully", severity: "success" });
                 setRows([]);
                 setDiscount(0);
@@ -409,7 +338,6 @@ const AddInvoice = () => {
                 console.error('Error saving invoice:', error);
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to save invoice", severity: "error" });
             });
-
     }
 
 
@@ -547,9 +475,6 @@ const AddInvoice = () => {
                                 <Typography variant="h6">{grandTotal.toFixed(2)}</Typography>
                             </TableCell>
                         </TableRow>
-             
-
-
                     </TableBody>
                 </Table>
                 <TablePagination
@@ -562,7 +487,6 @@ const AddInvoice = () => {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     sx={{ backgroundColor: "white" }}
                 />
-
 
                 <Grid container spacing={2} sx={{
                     xs: 12, 
@@ -623,9 +547,6 @@ const AddInvoice = () => {
                     )}     
                 </Box>
 
-
-
-
                 <Box 
                     sx={{ display: "flex", flexDirection: "raw", alignItems: "center" }}
                 > 
@@ -640,23 +561,6 @@ const AddInvoice = () => {
                             label="Customer Name"
                             value={selectedCustomer}
                             onChange={ handleCustommerSelectionChange }
-                            // sx={{
-                            //     mt: 0,
-                            //     color: "black",
-                            //     ".MuiOutlinedInput-notchedOutline": {
-                            //         borderColor: 'blue',
-                            //     },
-                            //     "&Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            //         borderColor: 'blue',
-                            //     },
-                            //     "&:hover .MuiOutlinedInput-notchedOutline": {
-                            //         borderColor: 'blue',
-                            //     },
-                            //     "& .MuiSvgIcon-root": {
-                            //         fill: 'black !important',
-                            //     },
-                                
-                            // }}
                         >
                             <MenuItem value="">Select Customer</MenuItem>
                             {
@@ -703,10 +607,7 @@ const AddInvoice = () => {
                                 sx={{ mb: 2}}
                             />
                         </Box>
-
                     )}
-
-
                 </Box>
             </TableContainer>
 
@@ -726,9 +627,7 @@ const AddInvoice = () => {
                 Invoice Store
             </Button>
 
-
             <InvoiceList />
-
 
             {/* start add new row modal */}
             <Modal
@@ -768,7 +667,6 @@ const AddInvoice = () => {
                                         },
                                         
                                     }}
-                                    //disabled={!newInvoice.supplier}
                                 >
                                     {
                                         categories && categories?.map((c: any, index: number) => (
@@ -810,7 +708,6 @@ const AddInvoice = () => {
                                         },
                                         
                                     }}
-                                    //disabled={!newInvoice.category}
                                 >
 
                                     {
@@ -830,7 +727,6 @@ const AddInvoice = () => {
 
                          <Grid size={{ xs: 12, sm: 6 }}>
                             <TextField
-                                //required
                                 type="number"
                                 fullWidth
                                 variant="outlined"
@@ -859,7 +755,6 @@ const AddInvoice = () => {
                         <Grid size={{ xs: 12 }}>
                             <TextField
                                 type="number"
-                                //required
                                 fullWidth
                                 variant="outlined"
                                 label="Unit Price"
@@ -890,13 +785,11 @@ const AddInvoice = () => {
 
                             <DatePicker 
                                 dateFormat="MMMM d, yyyy"
-                                //value={newInvoice.date}
                                 selected={startDate}
                                 customInput={ <input style={customInputStyle} /> }
                                 onChange={(date: Date | null) => {
                                     if (date) {
                                         setStartDate(date);
-                                        //setNewInvoice({ ...newInvoice, invoiceDate: date.toISOString() });
                                     }
                                 }}
                             />
@@ -937,10 +830,6 @@ const AddInvoice = () => {
 
             {/* end add new row modal */}
 
-
- 
-
-
             {/* start confirm deletion modal */}
             <Modal
                 open={openDeleteConfirmation}
@@ -955,7 +844,6 @@ const AddInvoice = () => {
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
                         Are you sure you want to delete this item
-                        {/* &nbsp;&quot;{row.invoiceNumber}&quot;? */}
                     </Typography>
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
                         <Button

@@ -41,10 +41,8 @@ const CustomerTable = () => {
 
     let customers: any;
     customers = data?.customers || [];
-    //console.log("Customers", customers);
 
     const [page, setPage] = React.useState(0);
-
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     const [openAddModal, setOpenAddModal] = React.useState(false);
@@ -93,10 +91,8 @@ const CustomerTable = () => {
                 });
 
                 const image = await response.json();
-                //console.log("Cloudinary response: ", image);
                 
                 if (!response.ok) {
-                    //console.error("Cloudinary error:", image);
                     setSnackbar({ open: true, message: `Upload failed: ${image?.error?.message || 'Invalid upload preset'}`, severity: "error", });
                     return;
                 }
@@ -113,9 +109,7 @@ const CustomerTable = () => {
                 }
 
             } catch (error) {
-                //console.log("Error uploading image: ", error);
                 setSnackbar({ open: true, message: "Error uploading image", severity: "error", });
-
             }
         }
     };
@@ -158,15 +152,11 @@ const CustomerTable = () => {
             .unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Customer added successfully", severity: "success", });
-
                 handleCloseAddModal();
-
             })
             .catch((error: any) => {
-
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add customer", severity: "error", });
-
-                console.error("Error adding customer:", error);
+               // console.error("Error adding customer:", error);
             });
     }
 
@@ -174,14 +164,10 @@ const CustomerTable = () => {
 
     const handleOpenDeleteModal = (customer: any) => {
         setSelectedCustomer(customer);
-        //console.log("Selecting Customer: ", customer);
-        //setForm(customer);
         setOpenDeleteModal(true);
-
     }
 
-    const handleDeleteCustomer = (/* selectedCustomer */) => {
-        //console.log("Deleting customer: ", selectedCustomer);
+    const handleDeleteCustomer = () => {
         deleteCustomer(selectedCustomer?._id).unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Customer deleted successfully", severity: "success", });
@@ -189,7 +175,6 @@ const CustomerTable = () => {
 
             })
             .catch((error: any) => {
-                //console.log("Error deleting customer: ", selectedCustomer);
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete customer", severity: "error", });
             });
     }
@@ -213,23 +198,20 @@ const CustomerTable = () => {
             .catch((error: any) => {
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update customer", severity: "error", });
             });
-
-    }
+    };
 
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
-
     const filteredCustomers = customers.filter((customer: any) =>
-
         customer?.name?.toLowerCase().includes(filter.toLowerCase())
-    )
-
+    );
 
     const handleFilterChange = (e: any) => {
         setFilter(e.target.value);
-    }
+    };
+
 
     return (
         <Box sx={{ p: 2 }} >
@@ -272,10 +254,8 @@ const CustomerTable = () => {
                         fullWidth
                         variant="outlined"
                         placeholder="Search......"
-
                         value={filter}
                         onChange={handleFilterChange}
-
                         sx={{
                             input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
@@ -348,7 +328,6 @@ const CustomerTable = () => {
                                     <TableCell>{customer.email}</TableCell>
                                     <TableCell>{customer.mobileNumber}</TableCell>
                                     <TableCell>
-                                        {/* <img src= {customer.image} alt="Customer image" height="40px" width="40px"/> */}
                                         {customer.image && (<Box
                                             component="img"
                                             sx={{ height: 40, width: 40, borderRadius: "50%" }}
@@ -866,7 +845,6 @@ const modalStyle = {
     boxShadow: 24,
     width: "90%",
     maxWidth: "600px",
-
     border: "2px solid #000",
     color: "white",
 };

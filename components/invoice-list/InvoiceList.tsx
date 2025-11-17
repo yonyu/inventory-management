@@ -291,23 +291,6 @@ const InvoiceTable = () => {
                 </Grid>
             </Grid>
 
-
-            {/* <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Refresh />}
-                onClick={() => window.location.reload()}
-                sx={{
-                    backgroundColor: "blue",
-                    "&:hover": {
-                        backgroundColor: "blue",
-                    },
-                    height: "100%",
-                }}
-            >
-                Reload
-            </Button> */}
-
             <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={{ xs: 12, sm: 12 }}>
                     <TextField
@@ -372,7 +355,6 @@ const InvoiceTable = () => {
                                     <TableCell>{invoice?.invoiceNumber}</TableCell>
                                     <TableCell>{new Date(invoice?.invoiceDate).toLocaleDateString()}</TableCell>
                                     <TableCell>{invoice?.description}</TableCell>
-                                    {/* <TableCell>{invoice?.status ? 'Active' : 'Inactive'}</TableCell> */}
                                     {
                                         (() => {
                                             const matchingPayment = Array.isArray(payments) ? payments.find((payment: any) => payment?.invoice?._id?.toString() === invoice._id.toString()) : null;
@@ -392,19 +374,15 @@ const InvoiceTable = () => {
                                             startIcon={<PrintIcon />}
                                             onClick={() => router.push(`/dashboard/user/invoice-list-pdf?invoiceid=${invoice._id}`)}
                                             style={{
-                                                //m: 5,
                                                 borderRadius: '20px',
                                                 padding: '5px 10px',
                                                 minWidth: 'auto',
                                                 fontSize: '0.8rem',
                                             }}
-                                            sx={{ 
-                                                
-                                                //color: "blue", 
+                                            sx={{
                                                 m: 1, 
                                             }}
                                         >
-
                                         </Button>
 
                                     </TableCell>
@@ -509,7 +487,6 @@ const InvoiceTable = () => {
                                     >
                                         {s.name}
                                     </MenuItem>
-
                                   ))
                             }
 

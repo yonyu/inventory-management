@@ -4,22 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import PrintIcon  from '@mui/icons-material/Print';
-import {
-    Box, Button,
-    Typography, Table, TableBody, TableCell, TableHead, TableRow
+import { 
+    Box, Button, Table, TableBody, TableCell, TableHead, TableRow
 } from '@mui/material';
 
 import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
-
-import FindInPageIcon from '@mui/icons-material/FindInPage';
 import Grid from '@mui/material/Grid';
-import { border, borderColor, height, minWidth } from '@mui/system';
-import { BorderStyle } from '@mui/icons-material';
-
-import { useAddInvoiceMutation, useGetInvoicesQuery, useDeleteInvoiceMutation } from "@/lib/features/invoices/invoicesApiSlice";
 import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
 
-import SnapPOS from '@/components/nav/SnapPOS';
 
 const InvoiceDailyReport = () => {
 
@@ -35,8 +27,6 @@ const InvoiceDailyReport = () => {
 
     const tableRef = useRef<HTMLDivElement>(null);
 
-
-
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
@@ -46,11 +36,7 @@ const InvoiceDailyReport = () => {
         setPage(0);
     };
 
-
-
     const payments = paymentData?.payments || [];
-
-
 
     const handleSearch = async () => {
         if (!startDate || !endDate) {
@@ -68,10 +54,7 @@ const InvoiceDailyReport = () => {
             });
 
             const data = await response.json();
-            //console.log('API Response:', data);
-            //console.log('Is Array:', Array.isArray(data));
             const invoices = Array.isArray(data) ? data : (data?.invoices || data?.data || []);
-            //console.log('Orders to set:', orders);
             setDaily(invoices);
 
         } catch(err) {
@@ -156,14 +139,12 @@ const InvoiceDailyReport = () => {
             <Box
                 ref={tableRef}
             >
-                <Table
-                    
+                <Table                   
                     sx={{
                         backgroundColor: 'white',
                         borderRadius: '8px',
                         overflow: 'hidden',
                         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-
                     }}
                 >
                     <TableHead>
@@ -185,7 +166,6 @@ const InvoiceDailyReport = () => {
                                 <TableCell>{invoice?.invoiceNumber}</TableCell>
                                 <TableCell>{new Date(invoice?.invoiceDate).toLocaleDateString()}</TableCell>
                                 <TableCell>{invoice?.description}</TableCell>
-
                                 {
                                     (() => {
                                         const matchingPayment = Array.isArray(payments) ? payments.find((payment: any) => payment?.invoice?._id?.toString() === invoice._id.toString()) : null;

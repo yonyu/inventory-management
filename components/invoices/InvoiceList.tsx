@@ -29,20 +29,13 @@ import Grid from '@mui/material/Grid';
 import { Edit, Delete, Add, Refresh } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
-
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
-
 
 import { useAddInvoiceMutation, useGetInvoicesQuery, useDeleteInvoiceMutation/*, useUpdateInvoiceMutation*/ } from "@/lib/features/invoices/invoicesApiSlice";
 import { useGetUnitsQuery } from "@/lib/features/units/unitsApiSlice";
 import { useGetSuppliersQuery } from "@/lib/features/suppliers/suppliersApiSlice";
 import { useGetCategoriesQuery } from "@/lib/features/categories/categoriesApiSlice";
-import { useGetCustomersQuery } from "@/lib/features/customers/customersApiSlice";
 import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
-
 
 
 const InvoiceTable = () => {
@@ -57,16 +50,15 @@ const InvoiceTable = () => {
 
     let invoices: any;
     invoices = invoiceData?.invoices || [];
-    //console.log("Invoices", invoices);
+
     let units: any;
     units = unitData?.units || [];
-    console.log("Units", units);
+
     let suppliers: any;
     suppliers = supplierData?.suppliers || [];
-    console.log("Suppliers", suppliers);
+
     let categories: any;
     categories = categoryData?.categories || [];
-    console.log("Categories", categories);
 
     const [page, setPage] = React.useState(0);
 
@@ -99,35 +91,20 @@ const InvoiceTable = () => {
     const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
     const [openEditModal, setOpenEditModal] = useState(false);
 
-
-
     const [snackbar, setSnackbar] = useState({
         open: false,
         message: "",
         severity: "success",
     });
 
-    // const [form, setForm] = React.useState({
-    //     _id: "",
-    //     name: "",
-    //     supplier: "",
-    //     category: "",
-    //     unit: "",
-    //     status: true,
-    //     quantity: 0,
-    // });
-
     const [filter, setFilter] = useState("");
 
     const [addInvoice] = useAddInvoiceMutation();
     const [deleteInvoice] = useDeleteInvoiceMutation();
-    //const [updateInvoice] = useUpdateInvoiceMutation();
 
-    
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
-
 
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
@@ -136,65 +113,23 @@ const InvoiceTable = () => {
 
     const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        //setForm((prevForm) => ({ ...prevForm, [name]: value }));
         setNewInvoice((prevInvoice) => ({ ...prevInvoice, [name]: value }));
-
-    }
-
-    //const [newInvoiceImagePreview, setNewInvoiceImagePreview] = useState<string | null>(null);
-
-    // Debug: Monitor form changes
-    // useEffect(() => {
-    //     console.log("Form state changed:", form);
-    // }, [form]);
-
-    const handleOpenAddModal = () => {
-
-        setOpenAddModal(true);
-    };
-
-    const handleCloseAddModal = () => {
-        setOpenAddModal(false);
-    };
-
-    const handleAddInvoice = () => {
-        //const { _id, ...newInvoice } = form;
-        addInvoice(newInvoice)
-            .unwrap()
-            .then(() => {
-                setSnackbar({ open: true, message: "Invoice added successfully", severity: "success", });
-
-                handleCloseAddModal();
-
-            })
-            .catch((error: any) => {
-
-                setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to add product", severity: "error", });
-
-                console.error("Error adding product:", error);
-            });
     }
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
     const handleOpenDeleteModal = (invoice: any) => {
         setSelectedInvoice(invoice);
-        //console.log("Selecting Invoice: ", product);
-        //setForm(product);
         setOpenDeleteModal(true);
-
     }
 
     const handleDeleteInvoice = (/* selectedInvoice */) => {
-        //console.log("Deleting product: ", selectedInvoice);
         deleteInvoice(selectedInvoice?._id).unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Invoice deleted successfully", severity: "success", });
                 handleCloseDeleteModal();
-
             })
             .catch((error: any) => {
-                //console.log("Error deleting product: ", selectedInvoice);
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete product", severity: "error", });
             });
     }
@@ -208,23 +143,11 @@ const InvoiceTable = () => {
             unit: typeof product.unit === 'object' ? product.unit._id : product.unit,
             supplier: typeof product.supplier === 'object' ? product.supplier._id : product.supplier
         });
-        //setForm(product);
     };
 
     const handleCloseEditModal = () => setOpenEditModal(false);
 
     const handleEditInvoice = () => {
-        // const { _id, ...data } = editInvoice;
-        // updateInvoice({ _id, data })
-        //     .unwrap()
-        //     .then(() => {
-        //         setSnackbar({ open: true, message: "Invoice updated successfully", severity: "success", });
-        //         handleCloseEditModal();
-        //     })
-        //     .catch((error: any) => {
-        //         setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to update product", severity: "error", });
-        //     });
-
     }
 
     const handleCloseSnackbar = () => {
@@ -239,10 +162,10 @@ const InvoiceTable = () => {
         );
     })
 
-
     const handleFilterChange = (e: any) => {
         setFilter(e.target.value);
     }
+
 
     return (
         <Box sx={{ p: 2 }} >
@@ -285,10 +208,8 @@ const InvoiceTable = () => {
                         fullWidth
                         variant="outlined"
                         placeholder="Search......"
-
                         value={filter}
                         onChange={handleFilterChange}
-
                         sx={{
                             input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
@@ -443,7 +364,7 @@ const InvoiceTable = () => {
                     <FormControl fullWidth sx={{ mb: 2}}>
                         <InputLabel>Supplier Name</InputLabel>
                         <Select
-                            value={editInvoice.supplier} // _id
+                            value={editInvoice.supplier}
                             onChange={(e) => setEditInvoice({...editInvoice, supplier: e.target.value})}
                             sx={{
                                 mt: 3,
@@ -485,7 +406,6 @@ const InvoiceTable = () => {
                                     >
                                         {s.name}
                                     </MenuItem>
-
                                   ))
                             }
 
@@ -497,8 +417,6 @@ const InvoiceTable = () => {
                         <Select
                             value={editInvoice.unit}
                             onChange={(e) => {
-                                // const selectedUnit = units.find((unit:any) => unit._id === e.target.value);
-                                // setEditInvoice({...editInvoice, unit: selectedUnit});
                                 setEditInvoice({...editInvoice, unit: e.target.value});
                             }}
                             sx={{

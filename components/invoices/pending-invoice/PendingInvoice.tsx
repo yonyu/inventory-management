@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     Alert,
     Box, Button, TextField, Typography, Paper,
-    IconButton,
     Modal,
     Snackbar,
     Table,
@@ -18,18 +17,14 @@ import {
 } from "@mui/material";
 
 import Grid from "@mui/material/Grid";
-
 import DeleteIcon from "@mui/icons-material/Delete";
-import PrintIcon from "@mui/icons-material/Print";
 import AddTaskIcon from "@mui/icons-material/AddTask";
-import { Add, Delete, Edit, Refresh } from "@mui/icons-material";
-import { useAppSelector, useAppDispatch } from "@/lib/hooks";
-
+import { Add } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { useRouter } from "next/navigation";
 
-
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { useGetInvoicesQuery, useDeleteInvoiceMutation } from "@/lib/features/invoices/invoicesApiSlice";
 import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
 
@@ -75,14 +70,12 @@ const PurchaseTable = () => {
 
     const handleOpenDeleteModal = (invoice: any) => {
         setSelectedInvoice(invoice);
-        //console.log("Selecting Invoice: ", invoice);
         setOpenDeleteModal(true);
     }
 
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
     const handleDeleteInvoice = (/* selectedInvoice */) => {
-        //console.log("Deleting product: ", selectedInvoice);
         deleteInvoice(selectedInvoice?._id).unwrap()
             .then(() => {
                 setSnackbar({ open: true, message: "Invoice deleted successfully", severity: "success", });
@@ -90,7 +83,6 @@ const PurchaseTable = () => {
 
             })
             .catch((error: any) => {
-                //console.log("Error deleting product: ", selectedInvoice);
                 setSnackbar({ open: true, message: error?.data?.err || error?.message || "Failed to delete product", severity: "error", });
             });
     }
@@ -108,6 +100,7 @@ const PurchaseTable = () => {
             invoice?.description?.toLowerCase().includes(searchTerm)
         );
     })
+
 
     return ( 
         <Box sx={{ p: 2, maxWidth: "100%", width: "2048px" }} >
@@ -148,22 +141,6 @@ const PurchaseTable = () => {
                     </Button>
                 </Grid>
             </Grid>
-
-            {/* <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Refresh />}
-                onClick={() => window.location.reload()}
-                sx={{
-                    backgroundColor: "blue",
-                    "&:hover": {
-                        backgroundColor: "blue",
-                    },
-                    height: "100%",
-                }}
-            >
-                Reload
-            </Button> */}
 
             <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={{ xs: 12, sm: 12 }}>
@@ -350,10 +327,7 @@ const PurchaseTable = () => {
                     </Button>
                 </Box>
             </Modal>
-
             {/* end delete invoice modal */}
-
-
 
             {/* snackbar */}
             <Snackbar
@@ -373,10 +347,6 @@ const PurchaseTable = () => {
         </Box>
     )
 }
-
-
-
-
 
 const modalStyle = {
     position: "absolute",
@@ -410,4 +380,4 @@ const customInputStyle = {
     outline: "none",    
 };
 
-export default PurchaseTable; // 358
+export default PurchaseTable;

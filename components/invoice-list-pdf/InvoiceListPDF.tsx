@@ -3,9 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
     Alert,
-    Box, Button, TextField, Typography, Paper,
-    IconButton,
-    Modal,
+    Box, Button, Typography, Paper,
     Snackbar,
     Table,
     TableBody,
@@ -18,22 +16,15 @@ import {
 } from "@mui/material";
 
 import Grid from "@mui/material/Grid";
-
-import DeleteIcon from "@mui/icons-material/Delete";
 import PrintIcon from "@mui/icons-material/Print";
-import AddTaskIcon from "@mui/icons-material/AddTask";
-import { Add, Delete, Edit, Refresh } from "@mui/icons-material";
-import { useAppSelector, useAppDispatch } from "@/lib/hooks";
-
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { useRouter } from "next/navigation";
 
-
-import { useGetInvoicesQuery, useDeleteInvoiceMutation } from "@/lib/features/invoices/invoicesApiSlice";
-import { useApproveInvoiceMutation, useApproveAndUpdateMutation } from "@/lib/features/invoice-approve/invoicesApproveApiSlice";
-import { useGetPaymentsQuery } from "@/lib/features/payments/paymentsApiSlice";
-import { useGetInvoiceDetailsByInvoiceQuery, useGetInvoiceWithDetailsQuery } from "@/lib/features/invoice-details/invoiceDetailsApiSlice";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { useDeleteInvoiceMutation } from "@/lib/features/invoices/invoicesApiSlice";
+import { useApproveAndUpdateMutation } from "@/lib/features/invoice-approve/invoicesApproveApiSlice";
+import { useGetInvoiceWithDetailsQuery } from "@/lib/features/invoice-details/invoiceDetailsApiSlice";
 
 const InvoiceTable = ({search}: {search: string})=> {
     //console.log("Search: ", search);
@@ -65,9 +56,6 @@ const InvoiceTable = ({search}: {search: string})=> {
         setSnackbar({ ...snackbar, open: false });
     };
 
-    const [deleteInvoice, { isLoading: isDeleting }] = useDeleteInvoiceMutation();
-    const [approveAndUpdate] = useApproveAndUpdateMutation();
-
     const { data: details, isLoading: loading, error } = useGetInvoiceWithDetailsQuery(search, {
         skip: !search
     });
@@ -75,7 +63,6 @@ const InvoiceTable = ({search}: {search: string})=> {
     const invoices = details?.invoice ? [details.invoice] : [];
     const invoiceDetails = details?.invoiceDetails || [];
     const payments = details?.payment || [];
-    const paymentDetails = details?.paymentDetails || [];
 
     useEffect(() => {
         if (invoices.length > 0) {
@@ -83,70 +70,9 @@ const InvoiceTable = ({search}: {search: string})=> {
         }
     }, [invoices]);
 
-    
-
     const subTotal = invoiceDetails && invoiceDetails?.reduce((acc: number, item: any)=> acc+item.totalCost, 0);
 
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
-
-    const handleOpenDeleteModal = (invoice: any) => {
-        setSelectedInvoice(invoice);
-        //console.log("Selecting Invoice: ", invoice);
-        setOpenDeleteModal(true);
-    }
-
-
-
-    const handleCloseDeleteModal = () => setOpenDeleteModal(false);
-
-    const [filter, setFilter] = useState("");
-
-    const handleFilterChange = (e: any) => {
-        setFilter(e.target.value);
-    }
-
-    const filteredInvoices = invoices.filter((invoice: any) => {
-        const searchTerm = filter.toLowerCase().trim();
-        return (
-            invoice?.invoiceNumber?.toLowerCase().includes(searchTerm) ||
-            invoice?.description?.toLowerCase().includes(searchTerm)
-        );
-    })
-
-    const handleApprove = async () =>  {
-        if (!selectedInvoice?._id) {
-            setSnackbar({ open: true, message: "No invoice selected", severity: "error" });
-            return;
-        }
-
-        // for (const detail of invoiceDetails) {
-        //     console.log("Invoice Detail: ", detail);
-        //     // const product = detail.product;
-        //     // const quantity = detail.quantity;
-
-        //     // if (product.quantity < quantity) {
-        //     //     setSnackbar({ open: true, message: `Insufficient stock of ${product.name}`, severity: "error" });
-        //     //     return;
-        //     // }
-        // }
-
-        const formattedDetails = invoiceDetails.map((detail: any) => ({
-            product: detail.product._id || detail.product,
-            invoice: selectedInvoice._id,
-            quantity: detail.quantity
-        }));
-
-        //console.log("Formatted Details:", formattedDetails);
-
-        try {
-            await approveAndUpdate(formattedDetails).unwrap();
-            setSnackbar({ open: true, message: "Invoice approved successfully", severity: "success" });
-        } catch(error: any) {
-            setSnackbar({ open: true, message: error?.data?.err || "Failed to approve the invoice", severity: "error" });
-            //console.log("Error Approving Invoice: ", error);
-        }
-    }
 
     const printTable = () => {
         if (!tableRef.current) return;
@@ -160,6 +86,7 @@ const InvoiceTable = ({search}: {search: string})=> {
         window.location.reload();
     }
 
+    
     return ( 
         <Box sx={{ p: 2 }} >
             {/* Page Title */}
@@ -208,10 +135,6 @@ const InvoiceTable = ({search}: {search: string})=> {
             <Box
                 ref={tableRef}
             >
-
-
-
-
                 {/* Invoice & cutomer briefs */}
                 <TableContainer component={Paper} sx={{ overflowX: 'auto', mt: 4 }} >
                     <Table>
@@ -239,13 +162,6 @@ const InvoiceTable = ({search}: {search: string})=> {
 
                 </TableContainer>
                 {/* End Invoice & cutomer briefs */}
-
-
-
-
-
-
-
                 
                 {/* Invoice List */}
                 <TableContainer component={Paper} sx={{ overflowX: 'auto', mt: 2 }} >
@@ -288,13 +204,6 @@ const InvoiceTable = ({search}: {search: string})=> {
                                     </TableRow>
                                 ))
                             )}
-
-
-
-
-
-
-
                         </TableBody>
                     </Table>
                     <TablePagination
@@ -340,7 +249,6 @@ const InvoiceTable = ({search}: {search: string})=> {
                                     </TableRow>
                                 ))
                             }
-
 
                             {/* Subtotal row */}
                             <TableRow>
@@ -395,22 +303,6 @@ const InvoiceTable = ({search}: {search: string})=> {
 
                             ))}
                             {/* End payment details */}
-
-                            {/* <TableRow>
-
-                                <TableCell colSpan={7} align="center">
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={ handleApprove }
-
-                                    >
-                                        Approve
-                                    </Button>
-                                </TableCell>
-                            </TableRow> */}
-
-
                         </TableBody>
                     </Table>
 
@@ -439,10 +331,5 @@ const InvoiceTable = ({search}: {search: string})=> {
         </Box>
     )    
 }
-
-const modalBackdropStyle = {
-    backdropFilter: "blur(5px)", // for blurring the background
-    WebkitBackdropFilter: "blur(5px)", // for Safari support
-};
 
 export default InvoiceTable;

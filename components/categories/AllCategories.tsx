@@ -29,7 +29,7 @@ import { useAppSelector, useAppDispatch } from "@/lib/hooks";
 import { useAddCategoryMutation, useGetCategoriesQuery, useDeleteCategoryMutation, useUpdateCategoryMutation } from "@/lib/features/categories/categoriesApiSlice";
 
 
-const CategoryTable = () => { // 56
+const CategoryTable = () => {
 
     const dispatch = useAppDispatch();
 
@@ -68,11 +68,7 @@ const CategoryTable = () => { // 56
         setEditCategoryName(category.name);
     };
 
-
     const handleEditCategory= () => {
-        // Not working: update relies on id is specified
-        // const updatedCategory= { ...selectedCategory, name: editCategoryName };
-        // updateCategory(updatedCategory).unwrap()
         updateCategory({ id: selectedCategory?._id, data: { name: editCategoryName } }).unwrap()
             .then(()=>{
                 setSnackbar({ open: true, message: "Category updated successfully", severity: "success", });
@@ -84,25 +80,18 @@ const CategoryTable = () => { // 56
 
     }
 
-
-
-
     const [addCategory] = useAddCategoryMutation();
     const [deleteCategory] = useDeleteCategoryMutation();
     const [updateCategory] = useUpdateCategoryMutation();
 
-
-
-    const handleChangePage = (event: unknown, newPage: number) => { // 120
+    const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
     };
-
 
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-
 
     const handleCloseAddModal = () => {
         setOpenAddModal(false);
@@ -112,7 +101,6 @@ const CategoryTable = () => { // 56
 
         setOpenAddModal(true);
     };
-
 
     const handleAddCategory= ()=> {
         const newCategory = { name: newCategoryName };
@@ -132,7 +120,6 @@ const CategoryTable = () => { // 56
             });
     }
 
-
     const handleCloseDeleteModal = () => setOpenDeleteModal(false);
 
     const handleDeleteCategory= () => {
@@ -145,10 +132,7 @@ const CategoryTable = () => { // 56
             .catch((error: any)=>{
                 setSnackbar({ open: true, message: `error ${error.err}`, severity: "error", });
             });
-
-
     }
-
 
     const handleOpenDeleteModal = (category: any) => {
         setSelectedCategory(category);
@@ -160,16 +144,15 @@ const CategoryTable = () => { // 56
         setSnackbar({ ...snackbar, open: false });
     };
 
-
     const filteredCategories = categories.filter((category : any) =>
 
         category?.name?.toLowerCase().includes(filter.toLowerCase())
     )
 
-
     const handleFilterChange = (e : any)=> {
         setFilter(e.target.value);
     }
+
 
     return (
         <Box sx={{ p: 2 }} >
@@ -195,11 +178,8 @@ const CategoryTable = () => { // 56
                         fullWidth
                         variant="outlined"
                         placeholder="Search......"
-
                         value={filter}
                         onChange={handleFilterChange}
-
-
                         sx={{
                             input: { color: "white", },
                             "& .MuiOutlinedInput-root": {
@@ -265,7 +245,6 @@ const CategoryTable = () => { // 56
                                     <TableCell>{category.name}</TableCell>
                                     <TableCell>
                                         <IconButton
-
                                             onClick={() => handleOpenEditModal(category)}
                                             sx={{ color: "blue" }}
                                         >
@@ -281,8 +260,6 @@ const CategoryTable = () => { // 56
                                             />
                                         </IconButton>
                                         <IconButton
-
-
                                             sx={{ color: "red" }}
                                         >
                                             <Delete
@@ -293,7 +270,6 @@ const CategoryTable = () => { // 56
                                                         color: "darkred",
                                                     },
                                                 }}
-
                                             />
                                         </IconButton>
                                     </TableCell>
@@ -313,7 +289,6 @@ const CategoryTable = () => { // 56
                     sx={{ backgroundColor: "white"}}
                 />
             </TableContainer>
-
 
             {/* start add category modal */}
             <Modal
@@ -352,7 +327,6 @@ const CategoryTable = () => { // 56
                                 },
                             },
                         }}
-
                     />
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
@@ -415,7 +389,6 @@ const CategoryTable = () => { // 56
                                 },
                             },
                         }}
-
                     />
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
@@ -439,11 +412,6 @@ const CategoryTable = () => { // 56
             </Modal>
             {/* end edit category modal */}
 
-
-
-
-
-
             {/* start delete category modal */}
             <Modal
                 open={openDeleteModal}
@@ -454,16 +422,13 @@ const CategoryTable = () => { // 56
             >
                 <Box
                     sx={modalStyle}
-
                 >
                     <Typography id="delete-category-modal" variant="h6" component="h2">
                         Delete Category
                     </Typography>
                     <Typography sx={{ mt: 2 }}>
                         Are you sure you want to delete this category?
-
                         { JSON.stringify(selectedCategory) }
-
                     </Typography>
                     <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
                         <Button
@@ -486,10 +451,7 @@ const CategoryTable = () => { // 56
                     </Box>
                 </Box>
             </Modal>
-
             {/* end delete category modal */}
-
-
 
             {/* snackbar */}
             <Snackbar
@@ -506,13 +468,9 @@ const CategoryTable = () => { // 56
                     {snackbar.message}
                 </Alert>
             </Snackbar>
-
-
-
         </Box>
     );
 } // end CategoryTable()
-
 
 
 const modalStyle = {
