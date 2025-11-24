@@ -118,12 +118,19 @@ const styles = [
         fontStyle: 'italic',
         textShadow: '2px 2px 4px #000000',
     },
+    {
+        color: 'purple',
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        textShadow: '2px 2px 4px #000000',
+        animation: `${rotate} 2s infinite`,
+    },
 ];
 
 const StyledSpan = styled('span')``;
 
 const SnapPOS = () => {
-    const logoText = 'StockSmart';
+    const logoText = 'Inventories';
     return (
     <Box component="span" display='flex'>
 

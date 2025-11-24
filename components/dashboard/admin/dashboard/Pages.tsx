@@ -21,7 +21,7 @@ const HomePage = () => {
           letterSpacing: "1px",
         }}
       >
-        Welcome to the Inventory System
+        Welcome to the Inventories for Home & Small Business
       </Typography>
 
       <Ai />

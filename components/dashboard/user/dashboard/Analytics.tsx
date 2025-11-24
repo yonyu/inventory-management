@@ -157,7 +157,7 @@ const Home = () => {
                                     animation: 'gradient 5s ease infinite',
                                 }}
                             >
-                                Welcome to the Product Inventory System
+                                Welcome to the Inventories for Home & Small Business
                             </Typography>
 
 
@@ -173,22 +173,17 @@ const Home = () => {
                                         transition={{ delay: 0.2, duration: 0.5 }}
                                     >
                                         <Typography>
-                                            Manage your products, inventory, and orders efficiently with our intuitive dashboard.
+                                            Manage your inventories and orders efficiently with our intuitive dashboard.
                                         </Typography>
                                     </motion.div>
-
-
                                 </Box>
                             </motion.div>
-
-
- 
                         </motion.div>
                     </Box>
                 </motion.div>
 
 
-                {/*Rreponsive Navigation Cards */ }
+                {/*Responsive Navigation Cards */ }
                 <Grid container spacing={4} justifyContent='center'>
                     {pages && pages.map((page, index) => (
                         <Grid 
