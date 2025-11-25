@@ -21,7 +21,6 @@ import {
   Add,
   ListAlt,
   Assessment,
-  ShoppingCart,
   People,
   Settings,
   BarChart,
@@ -30,7 +29,7 @@ import {
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-//import type { Metadata } from "next";
+
 const pages = [
   { name: "Dashboard", icon: <Dashboard />, href: "/dashboard" },
   { name: "Products", icon: <Inventory />, href: "/products" },
@@ -381,8 +380,4 @@ const Home = () => {
   );
 };
 
-// export const metadata: Metadata = {
-//   title: "Redux Toolkit",
-// };
-
-export default Home; // 368
+export default Home;

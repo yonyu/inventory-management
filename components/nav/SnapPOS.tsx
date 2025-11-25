@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { styled, keyframes, fontSize, fontWeight, letterSpacing, fontStyle } from '@mui/system';
+import { Box } from '@mui/material';
+import { styled, keyframes } from '@mui/system';
 
 
 const pulse = keyframes`
@@ -16,13 +16,13 @@ const pulse = keyframes`
 
 const glow = keyframes`
     0% {
-        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff00ff, 0 0 20px #ff00ff;        
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff00ff, 0 0 20px #ff00ff, 0 0 25px #ff00ff, 0 0 30px #ff00ff, 0 0 35px #ff00ff;
     }
     50% {
-        text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #fff;
+        text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #ff00ff, 0 0 50px #ff00ff, 0 0 60px #ff00ff, 0 0 70px #ff00ff;
     }
     100% {
-        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff00ff, 0 0 20px #ff00ff;
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff00ff, 0 0 20px #ff00ff, 0 0 25px #ff00ff, 0 0 30px #ff00ff, 0 0 35px #ff00ff;
     }
 `;
 
