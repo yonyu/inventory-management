@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  //align-items: center;
   padding: 6rem;
   min-height: 100vh;
 }
@@ -70,7 +69,7 @@
   font-size: 0.9rem;
   line-height: 1.5;
   max-width: 30ch;
-  text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 .center {
